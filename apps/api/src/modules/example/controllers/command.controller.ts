@@ -11,7 +11,6 @@ export class CommandController {
     queue: 'command',
   })
   command(message: string) {
-    console.log('Command', message);
     return { message: `Command Received :${JSON.stringify(message)}` };
   }
 }

@@ -23,7 +23,7 @@ export class ApiController {
   query() {
     return this.amqpConnection.request({
       exchange: 'example',
-      routingKey: 'command',
+      routingKey: 'query',
       payload: { message: 'Hello World' }
     });
   }

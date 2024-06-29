@@ -11,8 +11,7 @@ export class QueryController {
     queue: 'query',
   })
   command(message: string) {
-    console.log('Command', message);
-    return { message: `Command Received :${JSON.stringify(message)}` };
+    return { message: `Query Received :${JSON.stringify(message)}` };
   }
 }
 

@@ -11,9 +11,7 @@ export class EventController {
     queue: 'event',
   })
   event(message: string) {
-    console.log('Command', message);
-
-    return { message: `Command Received :${JSON.stringify(message)}` };
+    console.log('Event', message);
   }
 }
 
