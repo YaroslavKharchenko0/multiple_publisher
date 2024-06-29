@@ -18,6 +18,7 @@ export class RmqModule {
         }
       })],
       provides: [RabbitMQModule],
+      exports: [RabbitMQModule]
     };
   }
 }

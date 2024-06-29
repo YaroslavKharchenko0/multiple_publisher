@@ -8,6 +8,8 @@ export const createConfigFactory = async (configService: ConfigService): Promise
     uri,
     exchanges: [
       { name: 'example', type: 'topic' }
-    ]
+    ],
+    connectionInitOptions: { wait: true, timeout: 5000 },
+    enableControllerDiscovery: true,
   };
 }

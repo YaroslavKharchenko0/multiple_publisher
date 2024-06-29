@@ -1,17 +1,18 @@
-import { RabbitRPC } from "@golevelup/nestjs-rabbitmq";
+import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
 import { Controller } from "@nestjs/common";
 
 @Controller()
-export class CommandController {
+export class EventController {
   constructor() { }
 
-  @RabbitRPC({
+  @RabbitSubscribe({
     exchange: 'example',
-    routingKey: 'command',
-    queue: 'command',
+    routingKey: 'event',
+    queue: 'event',
   })
-  command(message: string) {
+  event(message: string) {
     console.log('Command', message);
+
     return { message: `Command Received :${JSON.stringify(message)}` };
   }
 }
