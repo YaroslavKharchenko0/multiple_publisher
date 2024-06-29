@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@app/logger": ["libs/logger/src/index.ts"]
+      "@app/logger": ["libs/logger/src/index.ts"],
+      "@app/rmq": ["libs/rmq/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
