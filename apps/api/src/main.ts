@@ -18,8 +18,6 @@ async function bootstrap() {
 
   const port = Number(configService.getOrThrow<string>('PORT'));
 
-  console.log(port);
-
   await app.listen(port);
 
   const url = await app.getUrl();
