@@ -1,3 +1,4 @@
+import { EventEvent } from "@app/contracts";
 import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
 import { Controller } from "@nestjs/common";
 
@@ -6,11 +7,11 @@ export class EventController {
   constructor() { }
 
   @RabbitSubscribe({
-    exchange: 'example',
-    routingKey: 'event',
-    queue: 'event',
+    exchange: EventEvent.exchange,
+    routingKey: EventEvent.routingKey,
+    queue: EventEvent.queue,
   })
-  event(message: string) {
+  event(message: EventEvent.Request): void {
     console.log('Event', message);
   }
 }

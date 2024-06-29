@@ -1,5 +1,6 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Controller, Get } from "@nestjs/common";
+import { CommandCommand, CommandErrorCommand, EventEvent, QueryQuery } from '@app/contracts'
 
 @Controller('example')
 export class ApiController {
@@ -7,24 +8,49 @@ export class ApiController {
 
   @Get('/command')
   command() {
-    return this.amqpConnection.request({
-      exchange: 'example',
-      routingKey: 'command',
-      payload: { message: 'Hello World' }
+    const payload: CommandCommand.Request = {
+      message: 'Hello World'
+    }
+
+    return this.amqpConnection.request<CommandCommand.Response>({
+      exchange: CommandCommand.exchange,
+      routingKey: CommandCommand.routingKey,
+      payload,
     });
   }
 
   @Get('/event')
   event() {
-    return this.amqpConnection.publish('example', 'event', { message: 'Hello World' });
+    const payload: EventEvent.Request = {
+      message: 'Hello World'
+    }
+
+    return this.amqpConnection.publish<EventEvent.Request>(EventEvent.exchange, EventEvent.routingKey, payload);
   }
 
   @Get('/query')
   query() {
-    return this.amqpConnection.request({
-      exchange: 'example',
-      routingKey: 'query',
-      payload: { message: 'Hello World' }
+    const payload: QueryQuery.Request = {
+      message: 'Hello World'
+    }
+
+    return this.amqpConnection.request<QueryQuery.Response>({
+      exchange: QueryQuery.exchange,
+      routingKey: QueryQuery.routingKey,
+      payload
+    });
+  }
+
+  @Get('/error')
+  error() {
+    const payload: CommandErrorCommand.Request = {
+      message: 'Hello World'
+    }
+
+    return this.amqpConnection.request<CommandErrorCommand.Response>({
+      exchange: CommandErrorCommand.exchange,
+      routingKey: CommandErrorCommand.routingKey,
+      payload
     });
   }
 }
