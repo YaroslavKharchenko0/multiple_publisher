@@ -44,3 +44,12 @@ Thumbs.db
 # Env
 .env
 .env.*
+
+# Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+.terraform.lock.hcl
+
+*.credentials.json

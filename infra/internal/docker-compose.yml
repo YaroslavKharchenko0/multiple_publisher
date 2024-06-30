@@ -10,6 +10,15 @@ services:
     env_file:
       - .env.postgres
 
+  keycloak_postgres:
+    image: postgres:latest
+    volumes:
+      - keycloak_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env.keycloak_postgres
+
   rabbitmq:
     image: "rabbitmq:3-management"
     volumes:
@@ -20,6 +29,17 @@ services:
     env_file:
       - .env.rabbitmq
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak_postgres
+    env_file:
+      - .env.keycloak
+
 volumes:
   postgres_data:
+  keycloak_postgres_data:
   rabbitmq_data:
