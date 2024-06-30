@@ -22,6 +22,106 @@
           "buildTarget": "api:build:production"
         }
       }
+    },
+    "drizzle:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit generate --config apps/api/src/database/drizzle.config.ts"
+      },
+      "configurations": {
+        "development": {
+          "envFile": "apps/api/.env.development",
+          "command": "drizzle-kit generate --config apps/api/src/database/drizzle.config.ts"
+        },
+        "staging": {
+          "envFile": "apps/api/.env.staging",
+          "command": "drizzle-kit generate --config apps/api/src/database/drizzle.config.ts"
+        },
+        "production": {
+          "envFile": "apps/api/.env.production",
+          "command": "drizzle-kit generate --config apps/api/src/database/drizzle.config.ts"
+        }
+      }
+    },
+    "drizzle:push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit push:pg"
+      },
+      "configurations": {
+        "development": {
+          "envFile": "apps/api/.env.development",
+          "command": "drizzle-kit push --config apps/api/src/database/drizzle.config.ts"
+        },
+        "staging": {
+          "envFile": "apps/api/.env.staging",
+          "command": "drizzle-kit push --config apps/api/src/database/drizzle.config.ts"
+        },
+        "production": {
+          "envFile": "apps/api/.env.production",
+          "command": "drizzle-kit push --config apps/api/src/database/drizzle.config.ts"
+        }
+      }
+    },
+    "drizzle:drop": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit drop"
+      },
+      "configurations": {
+        "development": {
+          "envFile": "apps/api/.env.development",
+          "command": "drizzle-kit drop --config apps/api/src/database/drizzle.config.ts"
+        },
+        "staging": {
+          "envFile": "apps/api/.env.staging",
+          "command": "drizzle-kit drop --config apps/api/src/database/drizzle.config.ts"
+        },
+        "production": {
+          "envFile": "apps/api/.env.production",
+          "command": "drizzle-kit drop --config apps/api/src/database/drizzle.config.ts"
+        }
+      }
+    },
+    "drizzle:check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit check"
+      },
+      "configurations": {
+        "development": {
+          "envFile": "apps/api/.env.development",
+          "command": "drizzle-kit check --config apps/api/src/database/drizzle.config.ts"
+        },
+        "staging": {
+          "envFile": "apps/api/.env.staging",
+          "command": "drizzle-kit check --config apps/api/src/database/drizzle.config.ts"
+        },
+        "production": {
+          "envFile": "apps/api/.env.production",
+          "command": "drizzle-kit check --config apps/api/src/database/drizzle.config.ts"
+        }
+      }
+    },
+    "drizzle:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit studio"
+      },
+      "configurations": {
+        "development": {
+          "envFile": "apps/api/.env.development",
+          "command": "drizzle-kit studio --config apps/api/src/database/drizzle.config.ts"
+        },
+        "staging": {
+          "envFile": "apps/api/.env.staging",
+          "command": "drizzle-kit studio --config apps/api/src/database/drizzle.config.ts"
+        },
+        "production": {
+          "envFile": "apps/api/.env.production",
+          "command": "drizzle-kit studio --config apps/api/src/database/drizzle.config.ts"
+        }
+      }
     }
   }
 }
