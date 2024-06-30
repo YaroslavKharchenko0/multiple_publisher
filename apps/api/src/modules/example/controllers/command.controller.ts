@@ -1,22 +1,28 @@
-import { RabbitRPC } from "@golevelup/nestjs-rabbitmq";
+import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
 import { Controller } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, createErrorResponse, createSuccessResponse } from "@app/contracts";
+import { CommandCommand, CommandErrorCommand, createSuccessResponse } from "@app/contracts";
+import { RmqErrorService, internalServerError } from '@app/errors'
 
 @Controller()
 export class CommandController {
-  constructor() { }
+  constructor(private readonly rmqErrorService: RmqErrorService) { }
 
   @RabbitRPC({
     exchange: CommandCommand.exchange,
     routingKey: CommandCommand.routingKey,
     queue: CommandCommand.queue,
   })
-  command(message: CommandCommand.Request): CommandCommand.Response {
-    const payload = createSuccessResponse({
-      message: `Command Received :${JSON.stringify(message)}`
-    });
+  command(@RabbitPayload() message: CommandCommand.Request): CommandCommand.Response {
+    try {
+      const payload = createSuccessResponse({
+        message: `Command Received :${JSON.stringify(message)}`
+      });
 
-    return payload;
+      return payload;
+    }
+    catch (error) {
+      return internalServerError
+    }
   }
 
   @RabbitRPC({
@@ -24,8 +30,8 @@ export class CommandController {
     routingKey: CommandErrorCommand.routingKey,
     queue: CommandErrorCommand.queue,
   })
-  error(message: CommandErrorCommand.Request): CommandErrorCommand.Response {
-    throw new Error('Error');
+  error(@RabbitPayload() _message: CommandErrorCommand.Request): CommandErrorCommand.Response {
+    throw this.rmqErrorService.notFound()
   }
 }
 

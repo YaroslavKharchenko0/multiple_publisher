@@ -16,7 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "@app/contracts": ["libs/contracts/src/index.ts"],
+      "@app/errors": ["libs/errors/src/index.ts"],
       "@app/logger": ["libs/logger/src/index.ts"],
+      "@app/response": ["libs/response/src/index.ts"],
       "@app/rmq": ["libs/rmq/src/index.ts"]
     }
   },

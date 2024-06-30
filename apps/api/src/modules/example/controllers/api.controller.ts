@@ -3,6 +3,7 @@ import { Controller, Get } from "@nestjs/common";
 import { CommandCommand, CommandErrorCommand, EventEvent, QueryQuery } from '@app/contracts'
 
 @Controller('example')
+
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
