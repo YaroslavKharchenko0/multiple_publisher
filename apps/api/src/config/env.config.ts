@@ -9,6 +9,7 @@ const envValidationSchema = Joi.object({
   LOG_JSON: Joi.boolean().default(true),
   RMQ_URI: Joi.string().required(),
   DATABASE_URL: Joi.string().required(),
+  DATABASE_SSL: Joi.boolean().default(false),
 })
 
 export { envValidationSchema }
