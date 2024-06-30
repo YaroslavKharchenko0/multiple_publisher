@@ -20,4 +20,5 @@ module "auth" {
   keycloak_admin_password = var.keycloak_admin_password
   keycloak_service_name  = var.keycloak_service_name
   env                    = var.env
+  valid_redirect_uris = var.valid_redirect_uris
 }

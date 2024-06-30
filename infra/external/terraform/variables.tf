@@ -22,3 +22,8 @@ variable "env" {
   description = "Environment name"
   type        = string
 }
+
+variable "valid_redirect_uris" {
+  description = "Valid redirect URIs for the service"
+  type        = list(string)
+}

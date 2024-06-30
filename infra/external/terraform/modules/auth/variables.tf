@@ -17,3 +17,7 @@ variable "keycloak_service_name" {
 variable "env" {
   type = string
 }
+
+variable "valid_redirect_uris" {
+  type = list(string)
+}
