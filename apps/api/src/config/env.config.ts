@@ -7,6 +7,7 @@ const envValidationSchema = Joi.object({
   APP_NAME: Joi.string().default('api'),
   LOG_LEVEL: Joi.string().allow(...allowLevels).default('info'),
   LOG_JSON: Joi.boolean().default(true),
+  RMQ_URI: Joi.string().required(),
 })
 
 export { envValidationSchema }
