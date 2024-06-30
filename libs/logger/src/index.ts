@@ -1,2 +1,6 @@
 export { createLogger } from './logger.creator'
 export { LoggerLevel, LoggerConfig, LoggerFactory } from './logger.factory'
+export { HTTPLoggingInterceptor } from './http-logging.interceptor'
+export { RMQLoggingInterceptor } from './rmq-logging.interceptor'
+export { TraceInterceptor } from './trace.interceptor'
+export { TraceId } from './trace-id.decorator'

@@ -32,6 +32,12 @@ const createHttpResponse = (context: ExecutionContext, data: unknown) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isRpcResponse = (data: any): data is RmqResponse<unknown> => {
+  const isObject = typeof data === 'object';
+
+  if (!isObject) {
+    return false;
+  }
+
   return 'isRmqResponse' in data;
 }
 
