@@ -2,7 +2,7 @@ import { createZodDto } from 'nestjs-zod'
 import { z } from 'nestjs-zod/z'
 
 export const signInValidationSchema = z.object({
-  username: z.string().min(6).max(50),
+  email: z.string().email(),
   password: z.string(),
 })
 

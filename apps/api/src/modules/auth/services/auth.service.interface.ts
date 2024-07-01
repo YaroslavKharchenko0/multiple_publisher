@@ -1,11 +1,10 @@
 export interface SignUpParams {
-  username: string;
-  password: string;
   email: string;
+  password: string;
 }
 
 export interface SignInParams {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -13,6 +12,7 @@ export interface SignInReturnParams {
   accessToken: string;
   idToken: string;
   refreshToken: string;
+  expiresIn: number;
 }
 
 export interface Service {

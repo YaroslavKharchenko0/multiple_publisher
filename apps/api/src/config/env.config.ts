@@ -12,6 +12,7 @@ const envValidationSchema = Joi.object({
   DATABASE_SSL: Joi.boolean().default(false),
   COGNITO_USER_POOL_ID: Joi.string().required(),
   COGNITO_CLIENT_ID: Joi.string().required(),
+  COGNITO_REGION: Joi.string().required(),
 })
 
 export { envValidationSchema }

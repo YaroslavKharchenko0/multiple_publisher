@@ -1,66 +1,61 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession, ISignUpResult } from "amazon-cognito-identity-js";
+import { CognitoIdentityProvider, InitiateAuthCommandInput } from '@aws-sdk/client-cognito-identity-provider';
 import { SignInByUsername, SignUpByEmailParams } from "./types";
 import { COGNITO_CONFIG } from "./constants";
 import { CognitoConfig } from "./cognito.config";
 
 @Injectable()
 export class CognitoService {
-  private userPool: CognitoUserPool
+  private cognitoISP: CognitoIdentityProvider;
+  private config: CognitoConfig;
 
   constructor(@Inject(COGNITO_CONFIG) config: CognitoConfig) {
-    const poolConfig = {
-      UserPoolId: config.userPoolId,
-      ClientId: config.clientId,
-    };
-
-    this.userPool = new CognitoUserPool(poolConfig);
-  }
-
-  signUpByEmail(params: SignUpByEmailParams): Promise<ISignUpResult | undefined> {
-    const attributes = [
-      new CognitoUserAttribute({
-        Name: 'email',
-        Value: params.email,
-      })
-    ];
-
-    return new Promise((resolve, reject) => {
-      this.userPool.signUp(params.username, params.password, attributes, [], (err, result) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        resolve(result);
-      });
+    this.config = config;
+    this.cognitoISP = new CognitoIdentityProvider({
+      region: config.region,
     });
   }
 
-  signInByUsername(params: SignInByUsername): Promise<CognitoUserSession> {
-    const authenticationData = {
-      Username: params.username,
+  async signUpByEmail(params: SignUpByEmailParams) {
+    const signUpParams = {
+      ClientId: this.config.clientId,
+      Username: params.email,
       Password: params.password,
-    }
-
-    const authenticationDetails = new AuthenticationDetails(authenticationData);
-
-    const userData = {
-      Username: params.username,
-      Pool: this.userPool,
-    }
-
-    return new Promise((resolve, reject) => {
-      const cognitoUser = new CognitoUser(userData);
-
-      cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: (result) => {
-          resolve(result);
+      UserAttributes: [
+        {
+          Name: 'email',
+          Value: params.email,
         },
-        onFailure: (err) => {
-          reject(err);
-        },
-      });
-    })
+      ],
+    };
+
+    const result = await this.cognitoISP.signUp(signUpParams)
+
+    return result;
+  }
+
+  async signInByUsername(params: SignInByUsername) {
+    const authParams: InitiateAuthCommandInput = {
+      AuthFlow: 'USER_PASSWORD_AUTH',
+      ClientId: this.config.clientId,
+      AuthParameters: {
+        USERNAME: params.email,
+        PASSWORD: params.password,
+      },
+    };
+
+    const result = await this.cognitoISP.initiateAuth(authParams);
+    return result
+  }
+
+  async verifyEmail(email: string, code: string) {
+    const params = {
+      ClientId: this.config.clientId,
+      Username: email,
+      ConfirmationCode: code,
+    };
+
+    const result = await this.cognitoISP.confirmSignUp(params);
+    return result;
   }
 }

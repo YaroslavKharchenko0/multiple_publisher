@@ -14,7 +14,7 @@ export class CommandController {
     queue: SignUpCommand.queue,
   })
   async signUp(@RabbitPayload() message: SignUpCommand.Request): Promise<SignUpCommand.Response> {
-    await this.authService.signUp({ username: message.username, password: message.password, email: message.email })
+    await this.authService.signUp({ email: message.email, password: message.password })
 
     return createSuccessResponse(null)
   }
@@ -25,7 +25,7 @@ export class CommandController {
     queue: SignInCommand.queue,
   })
   async signIn(@RabbitPayload() message: SignInCommand.Request): Promise<SignInCommand.Response> {
-    const payload = await this.authService.signIn({ username: message.username, password: message.password })
+    const payload = await this.authService.signIn({ email: message.email, password: message.password })
 
     return createSuccessResponse(payload)
   }
