@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CognitoIdentityProvider, InitiateAuthCommandInput } from '@aws-sdk/client-cognito-identity-provider';
-import { SignInByUsername, SignUpByEmailParams } from "./types";
+import { AuthFlowType, CognitoIdentityProvider, InitiateAuthCommandInput } from '@aws-sdk/client-cognito-identity-provider';
+import { SignInByUsername, SignUpByEmailParams, VerifyEmailParams } from "./types";
 import { COGNITO_CONFIG } from "./constants";
 import { CognitoConfig } from "./cognito.config";
 
@@ -36,7 +36,7 @@ export class CognitoService {
 
   async signInByUsername(params: SignInByUsername) {
     const authParams: InitiateAuthCommandInput = {
-      AuthFlow: 'USER_PASSWORD_AUTH',
+      AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
       ClientId: this.config.clientId,
       AuthParameters: {
         USERNAME: params.email,
@@ -48,14 +48,16 @@ export class CognitoService {
     return result
   }
 
-  async verifyEmail(email: string, code: string) {
-    const params = {
+  async verifyEmail(params: VerifyEmailParams) {
+    const { email, code } = params;
+
+    const confirmSignUpParams = {
       ClientId: this.config.clientId,
       Username: email,
       ConfirmationCode: code,
     };
 
-    const result = await this.cognitoISP.confirmSignUp(params);
+    const result = await this.cognitoISP.confirmSignUp(confirmSignUpParams);
     return result;
   }
 }

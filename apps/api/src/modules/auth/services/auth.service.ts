@@ -1,6 +1,6 @@
 import { Cognito, CognitoService } from "@app/aws";
 import { Injectable } from "@nestjs/common";
-import { Service, SignInParams, SignInReturnParams, SignUpParams } from "./auth.service.interface";
+import { Service, SignInParams, SignInReturnParams, SignUpParams, VerifyEmailParams } from "./auth.service.interface";
 
 @Injectable()
 export class AuthService implements Service {
@@ -23,6 +23,13 @@ export class AuthService implements Service {
     }
 
     return output
+  }
+
+  async verifyEmail(payload: VerifyEmailParams): Promise<void> {
+    await this.cognitoService.verifyEmail({
+      email: payload.email,
+      code: payload.code
+    })
   }
 
 }

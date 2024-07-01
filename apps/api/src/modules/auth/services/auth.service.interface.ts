@@ -15,7 +15,13 @@ export interface SignInReturnParams {
   expiresIn: number;
 }
 
+export interface VerifyEmailParams {
+  email: string;
+  code: string;
+}
+
 export interface Service {
   signUp(payload: SignUpParams): Promise<void>;
   signIn(payload: SignInParams): Promise<SignInReturnParams>;
+  verifyEmail(params: VerifyEmailParams): Promise<void>;
 }
