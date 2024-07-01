@@ -4,9 +4,8 @@ export interface CreateUser {
   email: string;
 }
 
-export interface UpdateUser {
-  email?: string;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface UpdateUser { }
 
 export interface Service {
   createUser(input: CreateUser): Promise<UserModel>;
