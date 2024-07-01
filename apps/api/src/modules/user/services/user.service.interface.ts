@@ -2,6 +2,7 @@ import { UserModel } from "../models/user.model";
 
 export interface CreateUser {
   email: string;
+  providerId: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

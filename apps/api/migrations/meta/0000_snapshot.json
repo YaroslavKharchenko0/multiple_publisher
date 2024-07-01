@@ -1,5 +1,5 @@
 {
-  "id": "f45688a1-dc7a-484b-81bd-612d1e866ea0",
+  "id": "52a8ff2b-7a99-44b3-af22-3bb386f0fd22",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -17,6 +17,12 @@
         "email": {
           "name": "email",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -44,6 +50,13 @@
           "nullsNotDistinct": false,
           "columns": [
             "email"
+          ]
+        },
+        "users_provider_id_unique": {
+          "name": "users_provider_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "provider_id"
           ]
         }
       }
