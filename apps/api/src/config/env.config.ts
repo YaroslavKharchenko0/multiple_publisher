@@ -13,6 +13,8 @@ const envValidationSchema = Joi.object({
   COGNITO_USER_POOL_ID: Joi.string().required(),
   COGNITO_CLIENT_ID: Joi.string().required(),
   COGNITO_REGION: Joi.string().required(),
+  COGNITO_JWKS_URI: Joi.string().required(),
+  COGNITO_AUTHORITY: Joi.string().required(),
 })
 
 export { envValidationSchema }
