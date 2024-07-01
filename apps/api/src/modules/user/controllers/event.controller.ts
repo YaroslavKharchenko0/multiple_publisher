@@ -1,18 +1,25 @@
-import { EventEvent } from "@app/contracts";
+import { SignUpSuccessEvent } from "@app/contracts";
 import { RabbitPayload, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
+import { UserService } from "../services/user.service";
+import { USER_SERVICE } from "../providers/user.service.provider";
 
 @Controller()
 export class EventController {
-  constructor() { }
+  constructor(
+    @Inject(USER_SERVICE) private readonly userService: UserService,
+  ) { }
 
   @RabbitSubscribe({
-    exchange: EventEvent.exchange,
-    routingKey: EventEvent.routingKey,
-    queue: EventEvent.queue,
+    exchange: SignUpSuccessEvent.exchange,
+    routingKey: SignUpSuccessEvent.routingKey,
+    queue: SignUpSuccessEvent.queue,
   })
-  event(@RabbitPayload() message: EventEvent.Request): void {
-    console.log('Event', message);
+  async onSignUp(@RabbitPayload() message: SignUpSuccessEvent.Request): Promise<void> {
+    await this.userService.createUser({
+      email: message.email,
+      providerId: message.providerId,
+    });
   }
 }
 

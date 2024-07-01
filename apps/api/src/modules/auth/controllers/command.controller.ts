@@ -3,6 +3,7 @@ import { Controller, Inject } from "@nestjs/common";
 import { SignInCommand, SignUpCommand, VerifyEmailCommand, createSuccessResponse } from "@app/contracts";
 import { AuthService } from "../services/auth.service";
 import { AUTH_SERVICE } from "../constants";
+import { TraceId } from "@app/logger";
 
 @Controller()
 export class CommandController {
@@ -13,8 +14,8 @@ export class CommandController {
     routingKey: SignUpCommand.routingKey,
     queue: SignUpCommand.queue,
   })
-  async signUp(@RabbitPayload() message: SignUpCommand.Request): Promise<SignUpCommand.Response> {
-    await this.authService.signUp({ email: message.email, password: message.password })
+  async signUp(@RabbitPayload() message: SignUpCommand.Request, @TraceId() traceId: string): Promise<SignUpCommand.Response> {
+    await this.authService.signUp({ email: message.email, password: message.password }, { traceId })
 
     return createSuccessResponse(null)
   }

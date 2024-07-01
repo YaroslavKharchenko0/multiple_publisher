@@ -20,8 +20,12 @@ export interface VerifyEmailParams {
   code: string;
 }
 
+export type Options = {
+  traceId: string
+}
+
 export interface Service {
-  signUp(payload: SignUpParams): Promise<void>;
+  signUp(payload: SignUpParams, options?: Options): Promise<void>;
   signIn(payload: SignInParams): Promise<SignInReturnParams>;
   verifyEmail(params: VerifyEmailParams): Promise<void>;
 }

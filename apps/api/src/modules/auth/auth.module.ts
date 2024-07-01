@@ -5,6 +5,7 @@ import { CommandController } from "./controllers/command.controller";
 import { AWSModule, COGNITO_SERVICE, CognitoService } from "@app/aws";
 import { AuthService } from "./services/auth.service";
 import { AUTH_SERVICE } from "./constants";
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 
 @Module({})
 export class AuthModule {
@@ -16,10 +17,10 @@ export class AuthModule {
       providers: [
         {
           provide: AUTH_SERVICE,
-          useFactory: (cognitoService: CognitoService) => {
-            return new AuthService(cognitoService);
+          useFactory: (cognitoService: CognitoService, amqpConnection: AmqpConnection) => {
+            return new AuthService(cognitoService, amqpConnection);
           },
-          inject: [COGNITO_SERVICE],
+          inject: [COGNITO_SERVICE, AmqpConnection],
         }
       ],
     };
