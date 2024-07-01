@@ -3,10 +3,11 @@ import { CreateUser, Service, UpdateUser } from "./user.service.interface";
 import { UserModel } from "../models/user.model";
 import { UserRepository } from "../repositories/user.repository";
 import { USER_REPOSITORY } from "../providers/user.service.provider";
+import { RmqErrorService } from "@app/errors";
 
 @Injectable()
 export class UserService implements Service {
-  constructor(@Inject(USER_REPOSITORY) private readonly repository: UserRepository) { }
+  constructor(@Inject(USER_REPOSITORY) private readonly repository: UserRepository, private readonly rmqErrorService: RmqErrorService) { }
 
   async createUser(input: CreateUser): Promise<UserModel> {
     const userEntities = await this.repository.createOne(input);
@@ -20,6 +21,10 @@ export class UserService implements Service {
   async findUserById(id: number): Promise<UserModel> {
     const userEntity = await this.repository.findById(id);
 
+    if (!userEntity) {
+      throw this.rmqErrorService.notFound();
+    }
+
     const userModel = UserModel.fromEntity(userEntity);
 
     return userModel;
@@ -27,12 +32,20 @@ export class UserService implements Service {
   async findUserByEmail(email: string): Promise<UserModel> {
     const userEntity = await this.repository.findByEmail(email);
 
+    if (!userEntity) {
+      throw this.rmqErrorService.notFound();
+    }
+
     const userModel = UserModel.fromEntity(userEntity);
 
     return userModel;
   }
   async findUserByProviderId(id: string): Promise<UserModel> {
     const userEntity = await this.repository.findByProviderId(id);
+
+    if (!userEntity) {
+      throw this.rmqErrorService.notFound();
+    }
 
     const userModel = UserModel.fromEntity(userEntity);
 
@@ -42,6 +55,10 @@ export class UserService implements Service {
     const userEntities = await this.repository.updateById(id, input);
 
     const [userEntity] = userEntities
+
+    if (!userEntity) {
+      throw this.rmqErrorService.notFound();
+    }
 
     const userModel = UserModel.fromEntity(userEntity);
 
