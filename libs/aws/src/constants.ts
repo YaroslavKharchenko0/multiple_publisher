@@ -1,0 +1,2 @@
+export const COGNITO_CONFIG = 'COGNITO_CONFIG';
+export const COGNITO_SERVICE = 'COGNITO_SERVICE';
