@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { FindByProviderIdRequest, FindByProviderIdResponse } from '@app/validation'
 
-export namespace FindByProviderIdCommand {
+export namespace FindUserByProviderIdQuery {
   export const exchange = 'user';
 
   export const routingKey = 'find-by-provider-id';

@@ -31,6 +31,13 @@ export class UserService implements Service {
 
     return userModel;
   }
+  async findUserByProviderId(id: string): Promise<UserModel> {
+    const userEntity = await this.repository.findByProviderId(id);
+
+    const userModel = UserModel.fromEntity(userEntity);
+
+    return userModel;
+  }
   async updateUserById(id: number, input: UpdateUser): Promise<UserModel> {
     const userEntities = await this.repository.updateById(id, input);
 

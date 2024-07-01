@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { FindByEmailRequest, FindByEmailResponse } from '@app/validation'
 
-export namespace FindByEmailCommand {
+export namespace FindUserByEmailQuery {
   export const exchange = 'user';
 
   export const routingKey = 'find-by-email';

@@ -35,6 +35,16 @@ export class UserRepository {
     return result;
   }
 
+  async findByProviderId(providerId: string) {
+    const where = eq(this.users.providerId, providerId);
+
+    const result = await this.db.query.users.findFirst({
+      where
+    })
+
+    return result;
+  }
+
   async updateById(id: number, input: Partial<InsertUser>) {
     const where = eq(this.users.id, id);
 
