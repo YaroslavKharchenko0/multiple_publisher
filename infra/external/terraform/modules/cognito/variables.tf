@@ -1,7 +1,6 @@
 variable "region" {
   description = "The AWS region to deploy resources"
   type        = string
-  default     = "us-west-2"
 }
 
 variable "user_pool_name" {
@@ -14,8 +13,7 @@ variable "user_pool_client_name" {
   type        = string
 }
 
-variable "env" {
-  description = "The environment to deploy resources"
+variable "iam_role_arn" {
+  description = "The ARN of the IAM role for Cognito"
   type        = string
-  default     = "dev"
 }
