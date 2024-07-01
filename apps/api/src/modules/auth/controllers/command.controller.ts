@@ -1,37 +1,33 @@
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, createSuccessResponse } from "@app/contracts";
-import { RmqErrorService, internalServerError } from '@app/errors'
+import { Controller, Inject } from "@nestjs/common";
+import { SignInCommand, SignUpCommand, createSuccessResponse } from "@app/contracts";
+import { AuthService } from "../services/auth.service";
+import { AUTH_SERVICE } from "../constants";
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) { }
+  constructor(@Inject(AUTH_SERVICE) private readonly authService: AuthService) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: SignUpCommand.exchange,
+    routingKey: SignUpCommand.routingKey,
+    queue: SignUpCommand.queue,
   })
-  command(@RabbitPayload() message: CommandCommand.Request): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      });
+  async signUp(@RabbitPayload() message: SignUpCommand.Request): Promise<SignUpCommand.Response> {
+    await this.authService.signUp({ username: message.username, password: message.password, email: message.email })
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(null)
   }
 
   @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
+    exchange: SignInCommand.exchange,
+    routingKey: SignInCommand.routingKey,
+    queue: SignInCommand.queue,
   })
-  error(@RabbitPayload() _message: CommandErrorCommand.Request): CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound()
+  async signIn(@RabbitPayload() message: SignInCommand.Request): Promise<SignInCommand.Response> {
+    const payload = await this.authService.signIn({ username: message.username, password: message.password })
+
+    return createSuccessResponse(payload)
   }
 }
 

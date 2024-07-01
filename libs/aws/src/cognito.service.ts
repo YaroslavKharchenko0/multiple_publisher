@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserSession, ISignUpResult } from "amazon-cognito-identity-js";
-import { SignInByUsername, SignUpByUsernameParams } from "./types";
+import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession, ISignUpResult } from "amazon-cognito-identity-js";
+import { SignInByUsername, SignUpByEmailParams } from "./types";
 import { COGNITO_CONFIG } from "./constants";
 import { CognitoConfig } from "./cognito.config";
 
@@ -17,9 +17,16 @@ export class CognitoService {
     this.userPool = new CognitoUserPool(poolConfig);
   }
 
-  signUpByUsername(params: SignUpByUsernameParams): Promise<ISignUpResult | undefined> {
+  signUpByEmail(params: SignUpByEmailParams): Promise<ISignUpResult | undefined> {
+    const attributes = [
+      new CognitoUserAttribute({
+        Name: 'email',
+        Value: params.email,
+      })
+    ];
+
     return new Promise((resolve, reject) => {
-      this.userPool.signUp(params.username, params.password, [], [], (err, result) => {
+      this.userPool.signUp(params.username, params.password, attributes, [], (err, result) => {
         if (err) {
           reject(err);
           return;
@@ -56,5 +63,4 @@ export class CognitoService {
       });
     })
   }
-
 }

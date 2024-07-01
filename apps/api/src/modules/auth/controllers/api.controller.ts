@@ -1,22 +1,21 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Controller, Get } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, EventEvent, QueryQuery } from '@app/contracts'
+import { Body, Controller, Post } from "@nestjs/common";
+import { SignInCommand, SignUpCommand } from '@app/contracts'
 import { TraceId } from "@app/logger";
+import { SignInBodyDto, SignUpBodyDto } from "@app/validation";
 
 @Controller('auth')
 
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/command')
-  command(@TraceId() traceId: string | undefined) {
-    const payload: CommandCommand.Request = {
-      message: 'Hello World'
-    }
+  @Post('/sign-up')
+  signUp(@TraceId() traceId: string | undefined, @Body() body: SignUpBodyDto) {
+    const payload: SignUpCommand.Request = body;
 
-    return this.amqpConnection.request<CommandCommand.Response>({
-      exchange: CommandCommand.exchange,
-      routingKey: CommandCommand.routingKey,
+    return this.amqpConnection.request<SignUpCommand.Response>({
+      exchange: SignUpCommand.exchange,
+      routingKey: SignUpCommand.routingKey,
       payload,
       headers: {
         traceId
@@ -24,44 +23,13 @@ export class ApiController {
     });
   }
 
-  @Get('/event')
-  event(@TraceId() traceId: string | undefined) {
-    const payload: EventEvent.Request = {
-      message: 'Hello World'
-    }
+  @Post('/sign-in')
+  signIn(@TraceId() traceId: string | undefined, @Body() body: SignInBodyDto) {
+    const payload: SignInCommand.Request = body;
 
-    return this.amqpConnection.publish<EventEvent.Request>(EventEvent.exchange, EventEvent.routingKey, payload, {
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Get('/query')
-  query(@TraceId() traceId: string | undefined) {
-    const payload: QueryQuery.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.request<QueryQuery.Response>({
-      exchange: QueryQuery.exchange,
-      routingKey: QueryQuery.routingKey,
-      payload,
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Get('/error')
-  error(@TraceId() traceId: string | undefined) {
-    const payload: CommandErrorCommand.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.request<CommandErrorCommand.Response>({
-      exchange: CommandErrorCommand.exchange,
-      routingKey: CommandErrorCommand.routingKey,
+    return this.amqpConnection.request<SignInCommand.Response>({
+      exchange: SignInCommand.exchange,
+      routingKey: SignInCommand.routingKey,
       payload,
       headers: {
         traceId

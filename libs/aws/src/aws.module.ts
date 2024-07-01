@@ -23,6 +23,7 @@ export class AWSModule {
         },
         inject: [COGNITO_CONFIG],
       }],
+      exports: [COGNITO_SERVICE],
     };
   }
 }

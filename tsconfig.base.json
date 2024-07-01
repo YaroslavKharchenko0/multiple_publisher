@@ -20,7 +20,8 @@
       "@app/errors": ["libs/errors/src/index.ts"],
       "@app/logger": ["libs/logger/src/index.ts"],
       "@app/response": ["libs/response/src/index.ts"],
-      "@app/rmq": ["libs/rmq/src/index.ts"]
+      "@app/rmq": ["libs/rmq/src/index.ts"],
+      "@app/validation": ["libs/validation/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
