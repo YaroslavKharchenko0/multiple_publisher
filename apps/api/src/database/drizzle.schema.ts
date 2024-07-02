@@ -6,6 +6,8 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: text("email").unique().notNull(),
   providerId: uuid("provider_id").unique().notNull(),
+  name: varchar("name", { length: 100 }).notNull().default("'Anonymous'"),
+  birthDate: timestamp("birth_date").notNull().defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
 	"provider_id" uuid NOT NULL,
+	"name" varchar(100) DEFAULT ''Anonymous'' NOT NULL,
+	"birth_date" timestamp DEFAULT now() NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "users_email_unique" UNIQUE("email"),

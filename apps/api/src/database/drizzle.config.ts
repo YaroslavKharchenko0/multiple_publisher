@@ -2,7 +2,7 @@ import { resolve } from "path"
 
 const schemaPath = resolve(__dirname, "drizzle.schema.ts")
 
-const migrationsPath = resolve(__dirname, "../../migrations")
+const migrationsPath = resolve(__dirname, '..', '..', "migrations")
 
 export default {
   dialect: "postgresql",
