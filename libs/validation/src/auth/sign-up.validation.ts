@@ -1,10 +1,12 @@
 import { createZodDto } from 'nestjs-zod'
 import { z } from 'nestjs-zod/z'
-import { userEmail, userPassword } from '../user/user.validation';
+import { userBirthDate, userEmail, userName, userPassword } from '../user/user.validation';
 
 export const signUpValidationSchema = z.object({
   password: userPassword,
   email: userEmail,
+  name: userName,
+  birthDate: userBirthDate,
 })
 
 export type SignUpRequest = z.infer<typeof signUpValidationSchema>

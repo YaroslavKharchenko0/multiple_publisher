@@ -14,6 +14,7 @@
     "@nestjs/platform-express": "^10.0.2",
     "@nestjs/platform-fastify": "^10.3.9",
     "axios": "^1.6.0",
+    "date-fns": "^3.6.0",
     "drizzle-orm": "^0.31.2",
     "fastify": "^4.28.1",
     "joi": "^17.13.3",

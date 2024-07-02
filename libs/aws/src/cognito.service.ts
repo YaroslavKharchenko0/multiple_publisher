@@ -3,11 +3,13 @@ import { AdminDeleteUserAttributesCommandInput, AttributeType, AuthFlowType, Cog
 import { DeleteCustomClaims, SetCustomClaimsParams, SignInByUsername, SignUpByEmailParams, VerifyEmailParams } from "./types";
 import { COGNITO_CONFIG } from "./constants";
 import { CognitoConfig } from "./cognito.config";
-
+import { format } from 'date-fns'
 @Injectable()
 export class CognitoService {
   private cognitoISP: CognitoIdentityProvider;
   private config: CognitoConfig;
+
+  private readonly dateFormat = 'yyyy-MM-dd';
 
   constructor(@Inject(COGNITO_CONFIG) config: CognitoConfig) {
     this.config = config;
@@ -17,16 +19,39 @@ export class CognitoService {
   }
 
   async signUpByEmail(params: SignUpByEmailParams) {
+    const attributes = [];
+
+    const emailAttribute = {
+      Name: 'email',
+      Value: params.email,
+    }
+
+    attributes.push(emailAttribute);
+
+    if (params.attributes?.name) {
+      attributes.push({
+        Name: 'name',
+        Value: params.attributes.name,
+      });
+    }
+
+
+    if (params.attributes?.birthDate) {
+      const date = new Date(params.attributes.birthDate);
+
+      const formattedDate = format(date, this.dateFormat)
+
+      attributes.push({
+        Name: 'birthdate',
+        Value: formattedDate,
+      });
+    }
+
     const signUpParams = {
       ClientId: this.config.clientId,
       Username: params.email,
       Password: params.password,
-      UserAttributes: [
-        {
-          Name: 'email',
-          Value: params.email,
-        },
-      ],
+      UserAttributes: attributes,
     };
 
     const result = await this.cognitoISP.signUp(signUpParams)

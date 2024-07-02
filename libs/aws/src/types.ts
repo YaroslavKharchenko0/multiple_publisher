@@ -1,8 +1,14 @@
 import { Role } from "@app/types";
 
+export type SignUpByEmailAttributes = {
+  name?: string;
+  birthDate?: Date;
+}
+
 export type SignUpByEmailParams = {
   password: string;
   email: string;
+  attributes: SignUpByEmailAttributes;
 }
 
 export type SignInByUsername = {

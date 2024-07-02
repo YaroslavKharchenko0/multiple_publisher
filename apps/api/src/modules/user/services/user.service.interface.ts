@@ -3,10 +3,14 @@ import { UserModel } from "../models/user.model";
 export interface CreateUser {
   email: string;
   providerId: string;
+  name?: string;
+  birthDate?: Date;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface UpdateUser { }
+export interface UpdateUser {
+  name?: string;
+  birthDate?: Date;
+}
 
 export interface Options {
   traceId: string;

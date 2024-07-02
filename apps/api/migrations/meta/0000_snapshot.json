@@ -1,5 +1,5 @@
 {
-  "id": "547bbc61-6954-4a17-8fb5-28bd82d12fb0",
+  "id": "0cf22b97-87e5-47f8-aa04-a4d2dab1c8f1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -116,7 +116,7 @@
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
-          "default": "''Anonymous''"
+          "default": "'Anonymous'"
         },
         "birth_date": {
           "name": "birth_date",

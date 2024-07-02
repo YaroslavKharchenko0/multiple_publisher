@@ -9,13 +9,15 @@ export class AuthService implements Service {
   constructor(@Cognito() private readonly cognitoService: CognitoService, private readonly amqpConnection: AmqpConnection) { }
 
   async signUp(payload: SignUpParams, options?: Options): Promise<void> {
-    const result = await this.cognitoService.signUpByEmail({ password: payload.password, email: payload.email })
+    const result = await this.cognitoService.signUpByEmail({ password: payload.password, email: payload.email, attributes: { name: payload?.name, birthDate: payload?.birthDate } })
 
     const userId = result.UserSub
 
     const eventMessage: SignUpSuccessEvent.Request = {
       email: payload.email,
-      providerId: userId
+      providerId: userId,
+      birthDate: payload?.birthDate,
+      name: payload?.name
     }
 
     await this.amqpConnection.publish(SignUpSuccessEvent.exchange, SignUpSuccessEvent.routingKey, eventMessage, { headers: { traceId: options?.traceId } })

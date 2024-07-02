@@ -20,6 +20,8 @@ export class EventController {
     await this.userService.createUser({
       email: message.email,
       providerId: message.providerId,
+      name: message?.name,
+      birthDate: message?.birthDate ? new Date(message.birthDate) : undefined,
     }, { traceId });
   }
 }
