@@ -1,5 +1,5 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Controller, ForbiddenException, Get, Param } from "@nestjs/common";
+import { Controller, Delete, ForbiddenException, Get, Param, Patch } from "@nestjs/common";
 import { FindUserByIdQuery } from '@app/contracts'
 import { TraceId } from "@app/logger";
 import { Auth, IsStringNumberPipe, JWTUser, User } from "@app/utils";
@@ -10,7 +10,7 @@ export class ApiController {
 
   @Get('/:id')
   @Auth()
-  command(@TraceId() traceId: string | undefined, @Param('id', IsStringNumberPipe) id: string, @User() user: JWTUser) {
+  findUserById(@TraceId() traceId: string | undefined, @Param('id', IsStringNumberPipe) id: string, @User() user: JWTUser) {
     const payload: FindUserByIdQuery.Request = {
       id: Number(id)
     }
@@ -27,5 +27,19 @@ export class ApiController {
         traceId
       }
     });
+  }
+
+  // TODO
+  @Patch('/:id')
+  @Auth()
+  updateUser() {
+
+  }
+
+  // TODO
+  @Delete('/:id')
+  @Auth()
+  deleteUser() {
+
   }
 }
