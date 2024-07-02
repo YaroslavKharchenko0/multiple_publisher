@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { PG_CONNECTION } from './database.constants';
@@ -6,6 +6,7 @@ import * as schema from './drizzle.schema';
 import { ConfigService } from '@nestjs/config';
 
 @Module({})
+@Global()
 export class DatabaseModule {
   static forRoot() {
     return {

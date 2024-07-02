@@ -9,6 +9,7 @@ import {
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { RmqErrorService } from './rmq-error.service';
+import { CognitoIdentityProviderServiceException } from '@aws-sdk/client-cognito-identity-provider';
 
 
 @Injectable()
@@ -27,6 +28,12 @@ export class RmqErrorInterceptor<T>
     return next
       .handle()
       .pipe(catchError((error) => {
+        if (error instanceof CognitoIdentityProviderServiceException) {
+          const httpStatusCode = error.$metadata.httpStatusCode || 403;
+
+          return of(createErrorResponse(httpStatusCode, error.message));
+        }
+
         if (error instanceof RmqErrorService) {
           return of(createErrorResponse(error.statusCode, error.message));
         }

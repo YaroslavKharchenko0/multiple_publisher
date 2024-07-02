@@ -7,7 +7,11 @@ export const createConfigFactory = async (configService: ConfigService): Promise
   return {
     uri,
     exchanges: [
-      { name: 'example', type: 'topic' }
+      { name: 'example', type: 'topic' },
+      { name: 'auth', type: 'topic' },
+      { name: 'user', type: 'topic' },
+      { name: 'role', type: 'topic' },
+      { name: 'user-role', type: 'topic' },
     ],
     connectionInitOptions: { wait: true, timeout: 5000 },
     enableControllerDiscovery: true,

@@ -1,0 +1,5 @@
+export * from './create-user-role.validation'
+export * from './delete-user-role.validation'
+export * from './find-user-role.validation'
+export * from './update-user-role.validation'
+export * from './user-role.validation'
