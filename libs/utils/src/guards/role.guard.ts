@@ -25,7 +25,7 @@ export class RoleGuard implements CanActivate {
       return false;
     }
 
-    const hasRole = requiredRoles.some((role) => role === jwtUser.role);
+    const hasRole = jwtUser.isIncludes(requiredRoles);
 
     return hasRole;
   }

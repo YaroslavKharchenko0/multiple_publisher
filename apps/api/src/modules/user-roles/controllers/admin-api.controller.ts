@@ -3,13 +3,15 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/commo
 import { CreateUserRoleCommand, DeleteUserRoleCommand, FindUserRoleCommand, UpdateUserRoleCommand } from '@app/contracts'
 import { TraceId } from "@app/logger";
 import { CreateUserRoleBodyDto, UpdateUserRoleBodyDto } from "@app/validation";
-import { IsStringNumberPipe } from "@app/utils";
+import { IsStringNumberPipe, Roles } from "@app/utils";
+import { Role } from "@app/types";
 
 @Controller('admin/users/:userId/roles')
 export class AdminApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/')
+  @Roles(Role.ADMIN)
   createUserRole(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) userId: string, @Body() body: CreateUserRoleBodyDto) {
     const payload: CreateUserRoleCommand.Request = {
       ...body,
@@ -27,6 +29,7 @@ export class AdminApiController {
   }
 
   @Get('/')
+  @Roles(Role.ADMIN)
   findUserRole(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) userId: string) {
     const payload: FindUserRoleCommand.Request = {
       userId: Number(userId)
@@ -43,6 +46,7 @@ export class AdminApiController {
   }
 
   @Delete('/')
+  @Roles(Role.ADMIN)
   deleteUserRole(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) userId: string) {
     const payload: DeleteUserRoleCommand.Request = {
       userId: Number(userId)
@@ -59,6 +63,7 @@ export class AdminApiController {
   }
 
   @Patch('/')
+  @Roles(Role.ADMIN)
   updateUserRole(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) userId: string, @Body() body: UpdateUserRoleBodyDto) {
     const payload: UpdateUserRoleCommand.Request = {
       userId: Number(userId),

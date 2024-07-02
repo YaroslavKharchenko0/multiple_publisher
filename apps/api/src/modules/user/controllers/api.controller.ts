@@ -1,8 +1,8 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, ForbiddenException, Get, Param } from "@nestjs/common";
 import { FindUserByIdQuery } from '@app/contracts'
 import { TraceId } from "@app/logger";
-import { Auth, IsStringNumberPipe } from "@app/utils";
+import { Auth, IsStringNumberPipe, JWTUser, User } from "@app/utils";
 
 @Controller('users')
 export class ApiController {
@@ -10,9 +10,13 @@ export class ApiController {
 
   @Get('/:id')
   @Auth()
-  command(@TraceId() traceId: string | undefined, @Param('id', IsStringNumberPipe) id: string) {
+  command(@TraceId() traceId: string | undefined, @Param('id', IsStringNumberPipe) id: string, @User() user: JWTUser) {
     const payload: FindUserByIdQuery.Request = {
       id: Number(id)
+    }
+
+    if (user.isUser() && !user.isMe(id)) {
+      throw new ForbiddenException()
     }
 
     return this.amqpConnection.request<FindUserByIdQuery.Response>({
