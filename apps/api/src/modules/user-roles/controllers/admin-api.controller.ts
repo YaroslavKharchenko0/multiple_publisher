@@ -32,11 +32,14 @@ export class AdminApiController {
       userId: Number(userId)
     }
 
-    return this.amqpConnection.publish<FindUserRoleCommand.Request>(FindUserRoleCommand.exchange, FindUserRoleCommand.routingKey, payload, {
+    return this.amqpConnection.request<FindUserRoleCommand.Response>({
+      exchange: FindUserRoleCommand.exchange,
+      routingKey: FindUserRoleCommand.routingKey,
+      payload,
       headers: {
         traceId
       }
-    });
+    })
   }
 
   @Delete('/')
