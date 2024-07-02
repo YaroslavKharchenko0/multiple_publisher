@@ -1,17 +1,20 @@
 import { RmqModule } from "@app/rmq";
-import { Module } from "@nestjs/common";
-import { ApiController } from "./controllers/api.controller";
+import { DynamicModule, Module } from "@nestjs/common";
 import { CommandController } from "./controllers/command.controller";
 import { QueryController } from "./controllers/query.controller";
 import { EventController } from "./controllers/event.controller";
+import { AdminApiController } from "./controllers/admin-api.controller";
+import { userRoleServiceProvider, userRoleRepositoryProvider, USER_ROLE_REPOSITORY, USER_ROLE_SERVICE } from "./providers/user-role.providers";
 
 @Module({})
 export class UserRoleModule {
-  static forRoot() {
+  static forRoot(): DynamicModule {
     return {
       module: UserRoleModule,
       imports: [RmqModule.forRoot()],
-      controllers: [ApiController, CommandController, QueryController, EventController]
+      controllers: [AdminApiController, CommandController, QueryController, EventController],
+      providers: [userRoleServiceProvider, userRoleRepositoryProvider],
+      exports: [USER_ROLE_SERVICE, USER_ROLE_REPOSITORY],
     };
   }
 }

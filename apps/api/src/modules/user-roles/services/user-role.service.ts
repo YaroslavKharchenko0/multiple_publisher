@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { CreateUserRoleByRoleNameParams, CreateUserRoleParams, Service } from "./user-role.service.interface";
 import { UserRoleModel } from "../models/user-role.model";
 import { UserRoleRepository } from "../repositories/user-roles.repository";
@@ -6,10 +6,11 @@ import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { FindRoleQuery } from "@app/contracts";
 import { RmqResponseService } from "@app/errors";
 import { Role } from "@app/types";
+import { USER_ROLE_REPOSITORY } from "../providers/user-role.providers";
 
 @Injectable()
 export class UserRoleService implements Service {
-  constructor(private readonly repository: UserRoleRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService) { }
+  constructor(@Inject(USER_ROLE_REPOSITORY) private readonly repository: UserRoleRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService) { }
 
   private async findRole(role: Role) {
     const requestPayload: FindRoleQuery.Request = {

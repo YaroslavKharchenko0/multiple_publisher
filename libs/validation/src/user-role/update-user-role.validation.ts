@@ -10,6 +10,8 @@ export const updateUserRoleValidationSchema = z.object({
 
 export type UpdateUserRoleRequest = z.infer<typeof updateUserRoleValidationSchema>
 
-export class UpdateUserRoleBodyDto extends createZodDto(updateUserRoleValidationSchema) { }
+const updateUserRoleBodyDtoValidation = updateUserRoleValidationSchema.omit({ userId: true })
+
+export class UpdateUserRoleBodyDto extends createZodDto(updateUserRoleBodyDtoValidation) { }
 
 export type UpdateUserRoleResponse = UserRole

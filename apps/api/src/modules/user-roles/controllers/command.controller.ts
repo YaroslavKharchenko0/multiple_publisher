@@ -1,37 +1,50 @@
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, createSuccessResponse } from "@app/contracts";
-import { RmqErrorService, internalServerError } from '@app/errors'
+import { Controller, Inject } from "@nestjs/common";
+import { CreateUserRoleCommand, DeleteUserRoleCommand, UpdateUserRoleCommand, createSuccessResponse } from "@app/contracts";
+import { UserRoleService } from "../services/user-role.service";
+import { USER_ROLE_SERVICE } from "../providers/user-role.providers";
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) { }
+  constructor(@Inject(USER_ROLE_SERVICE) private readonly userRoleService: UserRoleService) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: CreateUserRoleCommand.exchange,
+    routingKey: CreateUserRoleCommand.routingKey,
+    queue: CreateUserRoleCommand.queue,
   })
-  command(@RabbitPayload() message: CommandCommand.Request): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      });
+  async createUserRole(@RabbitPayload() message: CreateUserRoleCommand.Request): Promise<CreateUserRoleCommand.Response> {
+    const payload = await this.userRoleService.createUserRoleByRoleName({
+      role: message.role,
+      userId: message.userId
+    })
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(payload)
   }
 
   @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
+    exchange: UpdateUserRoleCommand.exchange,
+    routingKey: UpdateUserRoleCommand.routingKey,
+    queue: UpdateUserRoleCommand.queue,
   })
-  error(@RabbitPayload() _message: CommandErrorCommand.Request): CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound()
+  async updateUserRole(@RabbitPayload() message: UpdateUserRoleCommand.Request): Promise<UpdateUserRoleCommand.Response> {
+    const payload = await this.userRoleService.updateUserRoleByRoleName({
+      role: message.role,
+      userId: message.userId
+    })
+
+    return createSuccessResponse(payload)
+  }
+
+  @RabbitRPC({
+    exchange: DeleteUserRoleCommand.exchange,
+    routingKey: DeleteUserRoleCommand.routingKey,
+    queue: DeleteUserRoleCommand.queue,
+  })
+  async deleteUserRole(@RabbitPayload() message: DeleteUserRoleCommand.Request): Promise<DeleteUserRoleCommand.Response> {
+    await this.userRoleService.deleteUserRole(message.userId)
+
+    return createSuccessResponse(null)
   }
 }
 

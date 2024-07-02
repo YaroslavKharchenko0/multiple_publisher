@@ -1,28 +1,22 @@
-import { QueryQuery, createSuccessResponse } from "@app/contracts";
-import { internalServerError } from "@app/errors";
+import { FindUserRoleCommand, createSuccessResponse } from "@app/contracts";
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
+import { UserRoleService } from "../services/user-role.service";
+import { USER_ROLE_SERVICE } from "../providers/user-role.providers";
 
 @Controller()
 export class QueryController {
-  constructor() { }
+  constructor(@Inject(USER_ROLE_SERVICE) private readonly userRoleService: UserRoleService) { }
 
   @RabbitRPC({
-    exchange: QueryQuery.exchange,
-    routingKey: QueryQuery.routingKey,
-    queue: QueryQuery.queue,
+    exchange: FindUserRoleCommand.exchange,
+    routingKey: FindUserRoleCommand.routingKey,
+    queue: FindUserRoleCommand.queue,
   })
-  command(@RabbitPayload() message: QueryQuery.Request): QueryQuery.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      })
+  async findUserRole(@RabbitPayload() message: FindUserRoleCommand.Request): Promise<FindUserRoleCommand.Response> {
+    const payload = await this.userRoleService.findUserRole(message.userId)
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(payload)
   }
 }
 
