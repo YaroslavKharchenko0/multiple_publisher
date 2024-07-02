@@ -8,8 +8,12 @@ export interface CreateUser {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface UpdateUser { }
 
+export interface Options {
+  traceId: string;
+}
+
 export interface Service {
-  createUser(input: CreateUser): Promise<UserModel>;
+  createUser(input: CreateUser, options?: Options): Promise<UserModel>;
   findUserById(id: number): Promise<UserModel | null>;
   findUserByEmail(email: string): Promise<UserModel | null>;
   updateUserById(id: number, input: UpdateUser): Promise<UserModel | null>;

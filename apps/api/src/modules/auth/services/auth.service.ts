@@ -8,7 +8,7 @@ import { SignUpSuccessEvent } from "@app/contracts";
 export class AuthService implements Service {
   constructor(@Cognito() private readonly cognitoService: CognitoService, private readonly amqpConnection: AmqpConnection) { }
 
-  async signUp(payload: SignUpParams, options: Options): Promise<void> {
+  async signUp(payload: SignUpParams, options?: Options): Promise<void> {
     const result = await this.cognitoService.signUpByEmail({ password: payload.password, email: payload.email })
 
     const userId = result.UserSub
@@ -18,7 +18,7 @@ export class AuthService implements Service {
       providerId: userId
     }
 
-    await this.amqpConnection.publish(SignUpSuccessEvent.exchange, SignUpSuccessEvent.routingKey, eventMessage, { headers: { traceId: options.traceId } })
+    await this.amqpConnection.publish(SignUpSuccessEvent.exchange, SignUpSuccessEvent.routingKey, eventMessage, { headers: { traceId: options?.traceId } })
   }
 
   async signIn(payload: SignInParams): Promise<SignInReturnParams> {

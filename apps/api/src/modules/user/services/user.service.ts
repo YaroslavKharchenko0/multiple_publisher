@@ -1,20 +1,29 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateUser, Service, UpdateUser } from "./user.service.interface";
+import { CreateUser, Options, Service, UpdateUser } from "./user.service.interface";
 import { UserModel } from "../models/user.model";
 import { UserRepository } from "../repositories/user.repository";
 import { USER_REPOSITORY } from "../providers/user.service.provider";
 import { RmqErrorService } from "@app/errors";
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { UserCreatedEvent } from "@app/contracts";
+
 
 @Injectable()
 export class UserService implements Service {
-  constructor(@Inject(USER_REPOSITORY) private readonly repository: UserRepository, private readonly rmqErrorService: RmqErrorService) { }
+  constructor(@Inject(USER_REPOSITORY) private readonly repository: UserRepository, private readonly rmqErrorService: RmqErrorService, private readonly amqpConnection: AmqpConnection) { }
 
-  async createUser(input: CreateUser): Promise<UserModel> {
+  async createUser(input: CreateUser, options: Options): Promise<UserModel> {
     const userEntities = await this.repository.createOne(input);
 
     const [userEntity] = userEntities
 
     const userModel = UserModel.fromEntity(userEntity);
+
+    await this.amqpConnection.publish<UserCreatedEvent.Request>(UserCreatedEvent.exchange, UserCreatedEvent.routingKey, userModel, {
+      headers: {
+        traceId: options?.traceId
+      }
+    })
 
     return userModel;
   }

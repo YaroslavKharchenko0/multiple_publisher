@@ -3,6 +3,7 @@ import { RabbitPayload, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
 import { Controller, Inject } from "@nestjs/common";
 import { UserService } from "../services/user.service";
 import { USER_SERVICE } from "../providers/user.service.provider";
+import { TraceId } from "@app/logger";
 
 @Controller()
 export class EventController {
@@ -15,11 +16,11 @@ export class EventController {
     routingKey: SignUpSuccessEvent.routingKey,
     queue: SignUpSuccessEvent.queue,
   })
-  async onSignUp(@RabbitPayload() message: SignUpSuccessEvent.Request): Promise<void> {
+  async onSignUp(@RabbitPayload() message: SignUpSuccessEvent.Request, @TraceId() traceId: string): Promise<void> {
     await this.userService.createUser({
       email: message.email,
       providerId: message.providerId,
-    });
+    }, { traceId });
   }
 }
 
