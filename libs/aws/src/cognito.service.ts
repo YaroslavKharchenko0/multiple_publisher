@@ -149,4 +149,14 @@ export class CognitoService {
 
     return result;
   }
+
+  async deleteUser(email: string) {
+    const params = {
+      UserPoolId: this.config.userPoolId,
+      Username: email,
+    };
+
+    const result = await this.cognitoISP.adminDeleteUser(params);
+    return result;
+  }
 }

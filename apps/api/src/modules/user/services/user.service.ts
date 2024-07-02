@@ -83,7 +83,13 @@ export class UserService implements Service {
 
     return userModel;
   }
-  deleteUserById(id: number): Promise<void> {
-    return this.repository.deleteById(id);
+  async deleteUserById(id: number): Promise<void> {
+    const deletedUsers = await this.repository.deleteById(id);
+
+    const userEmails = deletedUsers.map(user => user.email);
+
+    const promises = userEmails.map(email => this.cognitoService.deleteUser(email));
+
+    await Promise.all(promises)
   }
 }

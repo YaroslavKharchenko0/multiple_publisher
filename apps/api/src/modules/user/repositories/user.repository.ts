@@ -53,10 +53,10 @@ export class UserRepository {
     return result;
   }
 
-  async deleteById(id: number): Promise<void> {
+  async deleteById(id: number) {
     const where = eq(this.users.id, id);
 
-    const result = await this.db.delete(this.users).where(where).execute();
+    const result = await this.db.delete(this.users).where(where).returning({ email: this.users.email }).execute();
 
     return result;
   }
