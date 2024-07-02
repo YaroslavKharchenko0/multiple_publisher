@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateUserRoleByRoleNameParams, CreateUserRoleParams, Service } from "./user-role.service.interface";
+import { CreateUserRoleByRoleNameParams, CreateUserRoleParams, Options, Service } from "./user-role.service.interface";
 import { UserRoleModel } from "../models/user-role.model";
 import { UserRoleRepository } from "../repositories/user-roles.repository";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
@@ -12,7 +12,7 @@ import { USER_ROLE_REPOSITORY } from "../providers/user-role.providers";
 export class UserRoleService implements Service {
   constructor(@Inject(USER_ROLE_REPOSITORY) private readonly repository: UserRoleRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService) { }
 
-  private async findRole(role: Role) {
+  private async findRole(role: Role, traceId?: string) {
     const requestPayload: FindRoleQuery.Request = {
       role,
     }
@@ -21,6 +21,7 @@ export class UserRoleService implements Service {
       exchange: FindRoleQuery.exchange,
       routingKey: FindRoleQuery.routingKey,
       payload: requestPayload,
+      headers: { traceId }
     })
 
     const roleModel = this.rmqResponseService.handleResponse(response);
@@ -28,10 +29,10 @@ export class UserRoleService implements Service {
     return roleModel;
   }
 
-  async createUserRoleByRoleName(params: CreateUserRoleByRoleNameParams): Promise<UserRoleModel> {
+  async createUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel> {
     const { userId, role } = params;
 
-    const roleModel = await this.findRole(role)
+    const roleModel = await this.findRole(role, options?.traceId)
 
     return this.createUserRole({
       userId,
@@ -57,10 +58,10 @@ export class UserRoleService implements Service {
   deleteUserRole(userId: number): Promise<void> {
     return this.repository.deleteByUserId(userId);
   }
-  async updateUserRoleByRoleName(params: CreateUserRoleByRoleNameParams): Promise<UserRoleModel> {
+  async updateUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel> {
     const { userId, role } = params;
 
-    const roleModel = await this.findRole(role)
+    const roleModel = await this.findRole(role, options?.traceId)
 
     return this.updateUserRole({
       userId,

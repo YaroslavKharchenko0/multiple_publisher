@@ -21,12 +21,16 @@ export interface UpdateUserRoleByRoleNameParams {
   role: Role;
 }
 
+export interface Options {
+  traceId: string;
+}
+
 
 export interface Service {
-  createUserRoleByRoleName(params: CreateUserRoleByRoleNameParams): Promise<UserRoleModel>;
+  createUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel>;
   createUserRole(params: CreateUserRoleParams): Promise<UserRoleModel>;
   findUserRole(userId: number): Promise<UserRoleModel | null>;
   deleteUserRole(userId: number): Promise<void>;
-  updateUserRoleByRoleName(params: CreateUserRoleByRoleNameParams): Promise<UserRoleModel>;
+  updateUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel>;
   updateUserRole(params: CreateUserRoleParams): Promise<UserRoleModel>;
 }
