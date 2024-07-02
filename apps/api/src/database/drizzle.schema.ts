@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { serial, text, timestamp, pgTable, uuid, varchar, integer } from "drizzle-orm/pg-core";
+import { Role } from '@app/types'
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -11,7 +12,7 @@ export const users = pgTable("users", {
 
 export const roles = pgTable("roles", {
   id: serial("id").primaryKey(),
-  role: varchar("role", { length: 50 }).unique().notNull(),
+  role: varchar("role", { length: 50 }).$type<Role>().unique().notNull(),
 });
 
 export const userRoles = pgTable("user_roles", {

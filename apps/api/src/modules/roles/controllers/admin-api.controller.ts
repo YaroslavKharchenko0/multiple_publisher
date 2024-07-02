@@ -5,7 +5,7 @@ import { TraceId } from "@app/logger";
 
 @Controller('roles')
 
-export class ApiController {
+export class AdminApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Get('/command')
