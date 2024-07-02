@@ -5,6 +5,7 @@ import { QueryController } from "./controllers/query.controller";
 import { EventController } from "./controllers/event.controller";
 import { USER_REPOSITORY, USER_SERVICE, userRepositoryProvider, userServiceProvider } from "./providers/user.service.provider";
 import { CommandController } from "./controllers/command.controller";
+import { AdminApiController } from "./controllers/admin-api.controller";
 
 @Module({})
 export class UserModule {
@@ -12,7 +13,7 @@ export class UserModule {
     return {
       module: UserModule,
       imports: [RmqModule.forRoot()],
-      controllers: [ApiController, QueryController, EventController, CommandController],
+      controllers: [ApiController, AdminApiController, QueryController, EventController, CommandController],
       providers: [
         userRepositoryProvider,
         userServiceProvider,
