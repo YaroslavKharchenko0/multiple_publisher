@@ -1,4 +1,4 @@
-import { RmqResponse } from "@app/contracts";
+import { RmqResponse, SuccessResponse } from "@app/contracts";
 import { Injectable } from "@nestjs/common";
 import { RmqErrorService } from "./rmq-error.service";
 
@@ -11,6 +11,8 @@ export class RmqResponseService {
       throw this.rmqErrorService.customError(response.error.message, response.code);
     }
 
-    return response.payload;
+    const successResponse = response as SuccessResponse<T>;
+
+    return successResponse.payload;
   }
 }
