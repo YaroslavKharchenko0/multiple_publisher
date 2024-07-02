@@ -10,6 +10,8 @@ export const updateUserValidationSchema = z.object({
 
 export type UpdateUserRequest = z.infer<typeof updateUserValidationSchema>
 
-export class UpdateUserBodyDto extends createZodDto(updateUserValidationSchema) { }
+const updateUserBodyValidationSchema = updateUserValidationSchema.omit({ userId: true })
+
+export class UpdateUserBodyDto extends createZodDto(updateUserBodyValidationSchema) { }
 
 export type UpdateUserResponse = null;

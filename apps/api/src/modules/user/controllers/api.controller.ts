@@ -1,8 +1,9 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Controller, Delete, ForbiddenException, Get, Param, Patch } from "@nestjs/common";
-import { FindUserByIdQuery } from '@app/contracts'
+import { Body, Controller, Delete, ForbiddenException, Get, Param, Patch } from "@nestjs/common";
+import { FindUserByIdQuery, UpdateUserCommand } from '@app/contracts'
 import { TraceId } from "@app/logger";
 import { Auth, IsStringNumberPipe, JWTUser, User } from "@app/utils";
+import { UpdateUserBodyDto } from "@app/validation";
 
 @Controller('users')
 export class ApiController {
@@ -15,7 +16,7 @@ export class ApiController {
       id: Number(id)
     }
 
-    if (user.isUser() && !user.isMe(id)) {
+    if (user.isUser() && !user.isMe(Number(id))) {
       throw new ForbiddenException()
     }
 
@@ -29,11 +30,26 @@ export class ApiController {
     });
   }
 
-  // TODO
   @Patch('/:id')
   @Auth()
-  updateUser() {
+  updateUser(@TraceId() traceId: string | undefined, @Param('id', IsStringNumberPipe) id: string, @User() user: JWTUser, @Body() body: UpdateUserBodyDto) {
+    const payload: UpdateUserCommand.Request = {
+      ...body,
+      userId: Number(id),
+    }
 
+    if (user.isUser() && !user.isMe(Number(id))) {
+      throw new ForbiddenException()
+    }
+
+    return this.amqpConnection.request<UpdateUserCommand.Response>({
+      exchange: UpdateUserCommand.exchange,
+      routingKey: UpdateUserCommand.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
   }
 
   // TODO

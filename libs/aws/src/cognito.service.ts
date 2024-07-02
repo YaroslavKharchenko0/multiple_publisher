@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { AdminDeleteUserAttributesCommandInput, AttributeType, AuthFlowType, CognitoIdentityProvider, InitiateAuthCommandInput } from '@aws-sdk/client-cognito-identity-provider';
-import { DeleteCustomClaims, SetCustomClaimsParams, SignInByUsername, SignUpByEmailParams, VerifyEmailParams } from "./types";
+import { DeleteCustomClaims, SetCustomClaimsParams, SignInByUsername, SignUpByEmailParams, UserAttributes, VerifyEmailParams } from "./types";
 import { COGNITO_CONFIG } from "./constants";
 import { CognitoConfig } from "./cognito.config";
 import { format } from 'date-fns'
@@ -16,6 +16,41 @@ export class CognitoService {
     this.cognitoISP = new CognitoIdentityProvider({
       region: config.region,
     });
+  }
+
+  private createBirthDateAttribute(date: Date) {
+    const formattedDate = format(date, this.dateFormat)
+
+    return {
+      Name: 'birthdate',
+      Value: formattedDate,
+    };
+  }
+
+  async updateUserAttributes(email: string, params: UserAttributes) {
+    const attributes = [];
+
+    if (params?.name) {
+      attributes.push({
+        Name: 'name',
+        Value: params.name,
+      });
+    }
+
+    if (params?.birthDate) {
+      const attribute = this.createBirthDateAttribute(params.birthDate);
+
+      attributes.push(attribute);
+    }
+
+    const updateUserParams = {
+      UserPoolId: this.config.userPoolId,
+      Username: email,
+      UserAttributes: attributes,
+    };
+
+    const result = await this.cognitoISP.adminUpdateUserAttributes(updateUserParams);
+    return result;
   }
 
   async signUpByEmail(params: SignUpByEmailParams) {
@@ -37,14 +72,9 @@ export class CognitoService {
 
 
     if (params.attributes?.birthDate) {
-      const date = new Date(params.attributes.birthDate);
+      const attribute = this.createBirthDateAttribute(params.attributes?.birthDate);
 
-      const formattedDate = format(date, this.dateFormat)
-
-      attributes.push({
-        Name: 'birthdate',
-        Value: formattedDate,
-      });
+      attributes.push(attribute);
     }
 
     const signUpParams = {

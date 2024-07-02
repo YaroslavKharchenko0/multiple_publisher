@@ -10,6 +10,13 @@ resource "aws_cognito_user_pool" "user_pool" {
     required            = false
   }
 
+  schema {
+    attribute_data_type = "String"
+    name                = "app_id"
+    mutable             = true
+    required            = false
+  }
+
   verification_message_template {
     default_email_option  = "CONFIRM_WITH_CODE"
     email_message         = "Your verification code is {####}"

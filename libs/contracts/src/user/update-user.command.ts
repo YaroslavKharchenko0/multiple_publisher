@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { UpdateUserRequest, UpdateUserResponse } from '@app/validation'
 
-export namespace UpdateUserQuery {
+export namespace UpdateUserCommand {
   export const exchange = 'user';
 
   export const routingKey = 'update-user';
