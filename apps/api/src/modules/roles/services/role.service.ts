@@ -1,9 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Service } from "./role.service.interface";
-import { Pagination, Role } from "@app/types";
+import { Role } from "@app/types";
 import { RoleRepository } from "../repositories/roles.repository";
 import { RoleModel } from "../models/role.model";
 import { ROLE_REPOSITORY } from "../providers/role.providers";
+import { Pagination } from "@app/validation";
 
 
 @Injectable()

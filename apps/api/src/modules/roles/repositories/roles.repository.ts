@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { Database, Orm, schema } from "../../../database";
 import { eq } from "drizzle-orm";
-import { Pagination, Role } from "@app/types";
+import { Role } from "@app/types";
+import { Pagination } from "@app/validation";
 
 export type InsertRole = typeof schema.roles.$inferInsert
 export type SelectRole = typeof schema.roles.$inferSelect

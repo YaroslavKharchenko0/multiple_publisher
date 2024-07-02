@@ -1,22 +1,22 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Controller, Get } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, EventEvent, QueryQuery } from '@app/contracts'
+import { Body, Controller, Delete, Get, Param, Post, Query } from "@nestjs/common";
 import { TraceId } from "@app/logger";
+import { CreateRoleCommand, DeleteRoleCommand, FindRoleQuery, FindRolesQuery } from "@app/contracts";
+import { CreateRoleBodyDto, FindRolesBodyDto } from "@app/validation";
+import { Role } from "@app/types";
+import { IsEnumPipe } from "@app/utils";
 
-@Controller('roles')
-
+@Controller('admin/roles')
 export class AdminApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/command')
-  command(@TraceId() traceId: string | undefined) {
-    const payload: CommandCommand.Request = {
-      message: 'Hello World'
-    }
+  @Post('/')
+  createRole(@TraceId() traceId: string | undefined, @Body() body: CreateRoleBodyDto) {
+    const payload: CreateRoleCommand.Request = body
 
-    return this.amqpConnection.request<CommandCommand.Response>({
-      exchange: CommandCommand.exchange,
-      routingKey: CommandCommand.routingKey,
+    return this.amqpConnection.request<CreateRoleCommand.Response>({
+      exchange: CreateRoleCommand.exchange,
+      routingKey: CreateRoleCommand.routingKey,
       payload,
       headers: {
         traceId
@@ -24,28 +24,13 @@ export class AdminApiController {
     });
   }
 
-  @Get('/event')
-  event(@TraceId() traceId: string | undefined) {
-    const payload: EventEvent.Request = {
-      message: 'Hello World'
-    }
+  @Delete('/:role')
+  deleteRole(@TraceId() traceId: string | undefined, @Param('role', new IsEnumPipe(Role)) role: Role) {
+    const payload: DeleteRoleCommand.Request = { role }
 
-    return this.amqpConnection.publish<EventEvent.Request>(EventEvent.exchange, EventEvent.routingKey, payload, {
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Get('/query')
-  query(@TraceId() traceId: string | undefined) {
-    const payload: QueryQuery.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.request<QueryQuery.Response>({
-      exchange: QueryQuery.exchange,
-      routingKey: QueryQuery.routingKey,
+    return this.amqpConnection.request<DeleteRoleCommand.Response>({
+      exchange: DeleteRoleCommand.exchange,
+      routingKey: DeleteRoleCommand.routingKey,
       payload,
       headers: {
         traceId
@@ -53,15 +38,27 @@ export class AdminApiController {
     });
   }
 
-  @Get('/error')
-  error(@TraceId() traceId: string | undefined) {
-    const payload: CommandErrorCommand.Request = {
-      message: 'Hello World'
-    }
+  @Get('/:role')
+  findRole(@TraceId() traceId: string | undefined, @Param('role', new IsEnumPipe(Role)) role: Role) {
+    const payload: FindRoleQuery.Request = { role }
 
-    return this.amqpConnection.request<CommandErrorCommand.Response>({
-      exchange: CommandErrorCommand.exchange,
-      routingKey: CommandErrorCommand.routingKey,
+    return this.amqpConnection.request<FindRoleQuery.Response>({
+      exchange: FindRoleQuery.exchange,
+      routingKey: FindRoleQuery.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
+  }
+
+  @Get('/')
+  findRoles(@TraceId() traceId: string | undefined, @Query() query: FindRolesBodyDto) {
+    const payload: FindRolesQuery.Request = query
+
+    return this.amqpConnection.request<FindRolesQuery.Response>({
+      exchange: FindRolesQuery.exchange,
+      routingKey: FindRolesQuery.routingKey,
       payload,
       headers: {
         traceId

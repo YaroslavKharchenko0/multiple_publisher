@@ -1,37 +1,33 @@
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, createSuccessResponse } from "@app/contracts";
-import { RmqErrorService, internalServerError } from '@app/errors'
+import { Controller, Inject } from "@nestjs/common";
+import { CreateRoleCommand, DeleteRoleCommand, createSuccessResponse } from "@app/contracts";
+import { RoleService } from "../services/role.service";
+import { ROLE_SERVICE } from "../providers/role.providers";
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) { }
+  constructor(@Inject(ROLE_SERVICE) private readonly roleService: RoleService) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: CreateRoleCommand.exchange,
+    routingKey: CreateRoleCommand.routingKey,
+    queue: CreateRoleCommand.queue,
   })
-  command(@RabbitPayload() message: CommandCommand.Request): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      });
+  async createRole(@RabbitPayload() message: CreateRoleCommand.Request): Promise<CreateRoleCommand.Response> {
+    const role = await this.roleService.createRole(message.role)
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(role)
   }
 
   @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
+    exchange: DeleteRoleCommand.exchange,
+    routingKey: DeleteRoleCommand.routingKey,
+    queue: DeleteRoleCommand.queue,
   })
-  error(@RabbitPayload() _message: CommandErrorCommand.Request): CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound()
+  async deleteRole(@RabbitPayload() message: DeleteRoleCommand.Request): Promise<DeleteRoleCommand.Response> {
+    await this.roleService.deleteRole(message.role)
+
+    return createSuccessResponse(null)
   }
 }
 

@@ -4,9 +4,9 @@ import { FindRolesRequest, FindRolesResponse } from '@app/validation'
 export namespace FindRolesQuery {
   export const exchange = 'role';
 
-  export const routingKey = 'find-role';
+  export const routingKey = 'find-roles';
 
-  export const queue = 'find-role';
+  export const queue = 'find-roles';
 
   export type Request = FindRolesRequest;
 

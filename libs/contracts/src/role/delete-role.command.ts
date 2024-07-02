@@ -4,9 +4,9 @@ import { DeleteRoleRequest, DeleteRoleResponse } from '@app/validation'
 export namespace DeleteRoleCommand {
   export const exchange = 'role';
 
-  export const routingKey = 'create-role';
+  export const routingKey = 'delete-role';
 
-  export const queue = 'create-role';
+  export const queue = 'delete-role';
 
   export type Request = DeleteRoleRequest;
 
