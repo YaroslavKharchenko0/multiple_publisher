@@ -8,6 +8,8 @@ import { TraceId } from "@app/logger";
 
 @Controller()
 export class EventController {
+  private readonly baseRole = Role.USER;
+
   constructor(@Inject(USER_ROLE_SERVICE) private readonly userRoleService: UserRoleService) { }
 
   @RabbitSubscribe({
@@ -17,7 +19,7 @@ export class EventController {
   })
   async onCreateUser(@RabbitPayload() message: UserCreatedEvent.Request, @TraceId() traceId: string) {
     await this.userRoleService.createUserRoleByRoleName({
-      role: Role.USER,
+      role: this.baseRole,
       userId: message.id
     }, { traceId })
   }

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { AuthFlowType, CognitoIdentityProvider, InitiateAuthCommandInput } from '@aws-sdk/client-cognito-identity-provider';
-import { SignInByUsername, SignUpByEmailParams, VerifyEmailParams } from "./types";
+import { AdminDeleteUserAttributesCommandInput, AttributeType, AuthFlowType, CognitoIdentityProvider, InitiateAuthCommandInput } from '@aws-sdk/client-cognito-identity-provider';
+import { DeleteCustomClaims, SetCustomClaimsParams, SignInByUsername, SignUpByEmailParams, VerifyEmailParams } from "./types";
 import { COGNITO_CONFIG } from "./constants";
 import { CognitoConfig } from "./cognito.config";
 
@@ -58,6 +58,40 @@ export class CognitoService {
     };
 
     const result = await this.cognitoISP.confirmSignUp(confirmSignUpParams);
+    return result;
+  }
+
+  async setCustomClaims(params: SetCustomClaimsParams) {
+    const { email, claims } = params;
+
+    const userAttributes: AttributeType[] = Object.entries(claims).map(([key, value]) => ({
+      Name: `custom:${key}`,
+      Value: value,
+    }));
+
+    const updateUserParams = {
+      UserPoolId: this.config.userPoolId,
+      Username: email,
+      UserAttributes: userAttributes,
+    };
+
+    const result = await this.cognitoISP.adminUpdateUserAttributes(updateUserParams);
+    return result;
+  }
+
+  async deleteCustomClaims(params: DeleteCustomClaims) {
+    const { email, claims } = params;
+
+    const names = claims.map((key) => `custom:${key}`);
+
+    const deleteParams: AdminDeleteUserAttributesCommandInput = {
+      UserPoolId: this.config.userPoolId,
+      Username: email,
+      UserAttributeNames: names,
+    };
+
+    const result = await this.cognitoISP.adminDeleteUserAttributes(deleteParams);
+
     return result;
   }
 }

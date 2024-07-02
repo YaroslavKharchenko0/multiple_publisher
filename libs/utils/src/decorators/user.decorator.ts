@@ -1,9 +1,11 @@
+import { Role } from '@app/types';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export type JWTUser = {
   id: string;
   email: string;
   email_verified: boolean;
+  role: Role;
 }
 
 export const User = createParamDecorator(

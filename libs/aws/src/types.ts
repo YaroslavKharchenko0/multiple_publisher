@@ -1,3 +1,5 @@
+import { Role } from "@app/types";
+
 export type SignUpByEmailParams = {
   password: string;
   email: string;
@@ -25,4 +27,15 @@ export type CognitoJWTUser = {
   jti: string;
   client_id: string;
   'cognito:username': string;
+  'custom:role': Role;
+}
+
+export type SetCustomClaimsParams = {
+  email: string;
+  claims: Record<string, string>;
+}
+
+export type DeleteCustomClaims = {
+  email: string;
+  claims: string[];
 }

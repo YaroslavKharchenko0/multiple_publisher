@@ -2,9 +2,10 @@ import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Controller, Get } from "@nestjs/common";
 import { CommandCommand, CommandErrorCommand, EventEvent, QueryQuery } from '@app/contracts'
 import { TraceId } from "@app/logger";
+import { Auth, Roles } from "@app/utils";
+import { Role } from "@app/types";
 
 @Controller('example')
-
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
@@ -67,5 +68,29 @@ export class ApiController {
         traceId
       }
     });
+  }
+
+  @Auth()
+  @Get('/auth')
+  auth() {
+    return 'Auth';
+  }
+
+  @Roles(Role.ADMIN)
+  @Get('/admin')
+  getAdmin() {
+    return 'Admin';
+  }
+
+  @Roles(Role.USER)
+  @Get('/user')
+  getUser() {
+    return 'User';
+  }
+
+  @Roles(Role.ADMIN, Role.USER)
+  @Get('/both')
+  getBoth() {
+    return 'Both';
   }
 }

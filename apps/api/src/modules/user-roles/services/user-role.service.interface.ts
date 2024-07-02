@@ -28,9 +28,7 @@ export interface Options {
 
 export interface Service {
   createUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel>;
-  createUserRole(params: CreateUserRoleParams): Promise<UserRoleModel>;
   findUserRole(userId: number): Promise<UserRoleModel | null>;
-  deleteUserRole(userId: number): Promise<void>;
+  deleteUserRole(userId: number, options?: Options): Promise<void>;
   updateUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel>;
-  updateUserRole(params: CreateUserRoleParams): Promise<UserRoleModel>;
 }
