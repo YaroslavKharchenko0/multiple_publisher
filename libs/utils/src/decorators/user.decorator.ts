@@ -6,6 +6,7 @@ export class JWTUser {
   id!: string;
   email!: string;
   email_verified!: boolean;
+  app_id!: number;
   role!: Role;
 
   isAdmin() {
@@ -20,8 +21,8 @@ export class JWTUser {
     return roles.includes(this.role);
   }
 
-  isMe(id: string) {
-    return this.id === id;
+  isMe(id: number) {
+    return this.app_id === id;
   }
 
   setFields(user: Partial<JWTUser>) {
@@ -29,6 +30,7 @@ export class JWTUser {
     this.email = user.email ?? this.email;
     this.email_verified = user.email_verified ?? this.email_verified;
     this.role = user.role ?? this.role;
+    this.app_id = user.app_id ?? this.app_id;
   }
 
   static fromCognito(user: CognitoJWTUser) {
@@ -38,6 +40,7 @@ export class JWTUser {
       email: user.email,
       email_verified: user.email_verified,
       role: user['custom:role'],
+      app_id: Number(user['custom:app_id']),
     });
     return jwtUser;
   }

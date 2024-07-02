@@ -1,6 +1,9 @@
+
 export interface SignUpParams {
   email: string;
   password: string;
+  name?: string;
+  birthDate?: Date;
 }
 
 export interface SignInParams {

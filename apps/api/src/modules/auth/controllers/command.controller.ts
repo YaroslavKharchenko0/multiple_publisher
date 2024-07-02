@@ -15,7 +15,7 @@ export class CommandController {
     queue: SignUpCommand.queue,
   })
   async signUp(@RabbitPayload() message: SignUpCommand.Request, @TraceId() traceId: string): Promise<SignUpCommand.Response> {
-    await this.authService.signUp({ email: message.email, password: message.password }, { traceId })
+    await this.authService.signUp({ email: message.email, password: message.password, birthDate: message?.birthDate, name: message?.name }, { traceId })
 
     return createSuccessResponse(null)
   }

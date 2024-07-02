@@ -6,11 +6,12 @@ import { USER_REPOSITORY } from "../providers/user.service.provider";
 import { RmqErrorService } from "@app/errors";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { UserCreatedEvent } from "@app/contracts";
+import { Cognito, CognitoService } from "@app/aws";
 
 
 @Injectable()
 export class UserService implements Service {
-  constructor(@Inject(USER_REPOSITORY) private readonly repository: UserRepository, private readonly rmqErrorService: RmqErrorService, private readonly amqpConnection: AmqpConnection) { }
+  constructor(@Inject(USER_REPOSITORY) private readonly repository: UserRepository, private readonly rmqErrorService: RmqErrorService, private readonly amqpConnection: AmqpConnection, @Cognito() private readonly cognitoService: CognitoService) { }
 
   async createUser(input: CreateUser, options: Options): Promise<UserModel> {
     const userEntities = await this.repository.createOne(input);
@@ -24,6 +25,13 @@ export class UserService implements Service {
         traceId: options?.traceId
       }
     })
+
+    await this.cognitoService.setCustomClaims({
+      email: input.email,
+      claims: {
+        app_id: userEntity.id.toString(),
+      }
+    });
 
     return userModel;
   }
@@ -69,11 +77,19 @@ export class UserService implements Service {
       throw this.rmqErrorService.notFound();
     }
 
+    await this.cognitoService.updateUserAttributes(userEntity.email, input);
+
     const userModel = UserModel.fromEntity(userEntity);
 
     return userModel;
   }
-  deleteUserById(id: number): Promise<void> {
-    return this.repository.deleteById(id);
+  async deleteUserById(id: number): Promise<void> {
+    const deletedUsers = await this.repository.deleteById(id);
+
+    const userEmails = deletedUsers.map(user => user.email);
+
+    const promises = userEmails.map(email => this.cognitoService.deleteUser(email));
+
+    await Promise.all(promises)
   }
 }

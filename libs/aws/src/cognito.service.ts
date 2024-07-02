@@ -1,13 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { AdminDeleteUserAttributesCommandInput, AttributeType, AuthFlowType, CognitoIdentityProvider, InitiateAuthCommandInput } from '@aws-sdk/client-cognito-identity-provider';
-import { DeleteCustomClaims, SetCustomClaimsParams, SignInByUsername, SignUpByEmailParams, VerifyEmailParams } from "./types";
+import { DeleteCustomClaims, SetCustomClaimsParams, SignInByUsername, SignUpByEmailParams, UserAttributes, VerifyEmailParams } from "./types";
 import { COGNITO_CONFIG } from "./constants";
 import { CognitoConfig } from "./cognito.config";
-
+import { format } from 'date-fns'
 @Injectable()
 export class CognitoService {
   private cognitoISP: CognitoIdentityProvider;
   private config: CognitoConfig;
+
+  private readonly dateFormat = 'yyyy-MM-dd';
 
   constructor(@Inject(COGNITO_CONFIG) config: CognitoConfig) {
     this.config = config;
@@ -16,17 +18,70 @@ export class CognitoService {
     });
   }
 
+  private createBirthDateAttribute(date: Date) {
+    const formattedDate = format(date, this.dateFormat)
+
+    return {
+      Name: 'birthdate',
+      Value: formattedDate,
+    };
+  }
+
+  async updateUserAttributes(email: string, params: UserAttributes) {
+    const attributes = [];
+
+    if (params?.name) {
+      attributes.push({
+        Name: 'name',
+        Value: params.name,
+      });
+    }
+
+    if (params?.birthDate) {
+      const attribute = this.createBirthDateAttribute(params.birthDate);
+
+      attributes.push(attribute);
+    }
+
+    const updateUserParams = {
+      UserPoolId: this.config.userPoolId,
+      Username: email,
+      UserAttributes: attributes,
+    };
+
+    const result = await this.cognitoISP.adminUpdateUserAttributes(updateUserParams);
+    return result;
+  }
+
   async signUpByEmail(params: SignUpByEmailParams) {
+    const attributes = [];
+
+    const emailAttribute = {
+      Name: 'email',
+      Value: params.email,
+    }
+
+    attributes.push(emailAttribute);
+
+    if (params.attributes?.name) {
+      attributes.push({
+        Name: 'name',
+        Value: params.attributes.name,
+      });
+    }
+
+
+    if (params.attributes?.birthDate) {
+      const attribute = this.createBirthDateAttribute(params.attributes?.birthDate);
+
+      attributes.push(attribute);
+    }
+
     const signUpParams = {
       ClientId: this.config.clientId,
       Username: params.email,
       Password: params.password,
-      UserAttributes: [
-        {
-          Name: 'email',
-          Value: params.email,
-        },
-      ],
+      UserAttributes: attributes,
     };
 
     const result = await this.cognitoISP.signUp(signUpParams)
@@ -92,6 +147,16 @@ export class CognitoService {
 
     const result = await this.cognitoISP.adminDeleteUserAttributes(deleteParams);
 
+    return result;
+  }
+
+  async deleteUser(email: string) {
+    const params = {
+      UserPoolId: this.config.userPoolId,
+      Username: email,
+    };
+
+    const result = await this.cognitoISP.adminDeleteUser(params);
     return result;
   }
 }
