@@ -40,6 +40,7 @@ export const workspaceUsers = pgTable("workspace_users", {
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   workspaceId: integer("workspace_id").notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
   roleId: integer("role_id").notNull().references(() => workspaceRoles.id, { onDelete: 'cascade' }),
+  joinedAt: timestamp("joined_at").defaultNow(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

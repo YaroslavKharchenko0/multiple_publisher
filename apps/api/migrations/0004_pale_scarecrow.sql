@@ -1,0 +1,1 @@
+ALTER TABLE "workspace_users" ADD COLUMN "joined_at" timestamp DEFAULT now();
