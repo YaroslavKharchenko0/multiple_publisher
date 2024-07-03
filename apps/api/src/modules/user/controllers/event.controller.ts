@@ -1,28 +1,48 @@
-import { SignUpSuccessEvent } from "@app/contracts";
-import { RabbitPayload, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
-import { Controller, Inject } from "@nestjs/common";
-import { UserService } from "../services/user.service";
-import { USER_SERVICE } from "../providers/user.service.provider";
+import { CreateUserRoleCommand, CreateWorkspaceCommand, UserCreatedEvent } from "@app/contracts";
+import { AmqpConnection, RabbitPayload, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
+import { Controller } from "@nestjs/common";
 import { TraceId } from "@app/logger";
+import { Role } from "@app/types";
 
 @Controller()
 export class EventController {
   constructor(
-    @Inject(USER_SERVICE) private readonly userService: UserService,
+    private readonly amqpConnection: AmqpConnection
   ) { }
 
   @RabbitSubscribe({
-    exchange: SignUpSuccessEvent.exchange,
-    routingKey: SignUpSuccessEvent.routingKey,
-    queue: SignUpSuccessEvent.queue,
+    exchange: UserCreatedEvent.exchange,
+    routingKey: UserCreatedEvent.routingKey,
+    queue: UserCreatedEvent.queue,
   })
-  async onSignUp(@RabbitPayload() message: SignUpSuccessEvent.Request, @TraceId() traceId: string): Promise<void> {
-    await this.userService.createUser({
-      email: message.email,
-      providerId: message.providerId,
-      name: message?.name,
-      birthDate: message?.birthDate ? new Date(message.birthDate) : undefined,
-    }, { traceId });
+  async onCreateUser(@RabbitPayload() message: UserCreatedEvent.Request, @TraceId() traceId: string): Promise<void> {
+    const rolePayload: CreateUserRoleCommand.Request = {
+      role: Role.USER,
+      userId: message.id,
+    }
+
+    await this.amqpConnection.request({
+      exchange: CreateUserRoleCommand.exchange,
+      routingKey: CreateUserRoleCommand.routingKey,
+      payload: rolePayload,
+      headers: {
+        traceId
+      }
+    })
+
+    const workspacePayload: CreateWorkspaceCommand.Request = {
+      userId: message.id,
+      name: `${message.name}'s Workspace`
+    }
+
+    await this.amqpConnection.request({
+      exchange: CreateWorkspaceCommand.exchange,
+      routingKey: CreateWorkspaceCommand.routingKey,
+      payload: workspacePayload,
+      headers: {
+        traceId
+      }
+    })
   }
 }
 

@@ -1,14 +1,31 @@
-import { createSuccessResponse, UpdateUserCommand, DeleteUserCommand } from "@app/contracts";
+import { createSuccessResponse, UpdateUserCommand, DeleteUserCommand, CreateUserCommand } from "@app/contracts";
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
 import { Controller, Inject } from "@nestjs/common";
 import { USER_SERVICE } from "../providers/user.service.provider";
 import { UserService } from "../services/user.service";
+import { TraceId } from "@app/logger";
 
 @Controller()
 export class CommandController {
   constructor(
     @Inject(USER_SERVICE) private readonly userService: UserService,
   ) { }
+
+  @RabbitRPC({
+    exchange: CreateUserCommand.exchange,
+    routingKey: CreateUserCommand.routingKey,
+    queue: CreateUserCommand.queue,
+  })
+  async createUser(@TraceId() traceId: string, @RabbitPayload() message: CreateUserCommand.Request): Promise<CreateUserCommand.Response> {
+    const payload = await this.userService.createUser({
+      email: message.email,
+      providerId: message.providerId,
+      name: message?.name,
+      birthDate: message?.birthDate ? new Date(message.birthDate) : undefined,
+    }, { traceId });
+
+    return createSuccessResponse(payload);
+  }
 
   @RabbitRPC({
     exchange: UpdateUserCommand.exchange,
