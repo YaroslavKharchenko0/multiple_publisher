@@ -1,1 +1,1 @@
-export { WorkspaceRoleModule } from './workspaceRole.module'
+export { WorkspaceRoleModule } from './workspace-role.module'
