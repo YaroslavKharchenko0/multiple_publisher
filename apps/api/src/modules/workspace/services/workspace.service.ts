@@ -4,12 +4,12 @@ import { CreateWorkspaceParams, Options, Service } from "./workspace.service.int
 import { WorkspaceModel } from "../models/workspace.model";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { FindUserByIdQuery } from "@app/contracts";
-import { RmqResponseService } from "@app/errors";
+import { RmqErrorService, RmqResponseService } from "@app/errors";
 import { WORKSPACE_REPOSITORY } from "../providers/workspace.providers";
 
 @Injectable()
 export class WorkspaceService implements Service {
-  constructor(@Inject(WORKSPACE_REPOSITORY) private readonly repository: WorkspaceRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService) { }
+  constructor(@Inject(WORKSPACE_REPOSITORY) private readonly repository: WorkspaceRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService, private readonly rmqErrorService: RmqErrorService) { }
   private async findUserById(userId: number, traceId?: string) {
     const requestPayload: FindUserByIdQuery.Request = {
       id: userId,
@@ -29,6 +29,10 @@ export class WorkspaceService implements Service {
 
   async createWorkspaceByUser(userId: number, options?: Options): Promise<WorkspaceModel> {
     const user = await this.findUserById(userId, options?.traceId);
+
+    if (!user) {
+      throw this.rmqErrorService.notFound();
+    }
 
     return this.createWorkspace({
       name: `${user.name}'s Workspace`,
@@ -50,6 +54,10 @@ export class WorkspaceService implements Service {
   }
   async findWorkspace(id: number): Promise<WorkspaceModel> {
     const entity = await this.repository.findById(id);
+
+    if (!entity) {
+      throw this.rmqErrorService.notFound();
+    }
 
     return WorkspaceModel.fromEntity(entity);
   }

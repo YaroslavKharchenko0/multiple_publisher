@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { serial, text, timestamp, pgTable, uuid, varchar, integer } from "drizzle-orm/pg-core";
-import { Role } from '@app/types';
+import { Role, WorkspaceRole } from '@app/types';
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -28,6 +28,18 @@ export const workspaces = pgTable("workspaces", {
   name: varchar("name", { length: 100 }).notNull(),
   userId: integer("user_id").references(() => users.id, { onDelete: 'set null' }),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const workspaceRoles = pgTable("workspace_roles", {
+  id: serial("id").primaryKey(),
+  role: varchar("role", { length: 50 }).$type<WorkspaceRole>().unique().notNull(),
+})
+
+export const workspaceUserRoles = pgTable("workspace_user_roles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  workspaceId: integer("workspace_id").notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+  roleId: integer("role_id").notNull().references(() => workspaceRoles.id, { onDelete: 'cascade' }),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

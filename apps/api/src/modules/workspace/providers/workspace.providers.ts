@@ -1,4 +1,4 @@
-import { RmqResponseService } from "@app/errors";
+import { RmqErrorService, RmqResponseService } from "@app/errors";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Provider } from "@nestjs/common";
 import { WorkspaceRepository } from "../repositories/workspace.repository";
@@ -9,10 +9,10 @@ export const WORKSPACE_REPOSITORY = 'WORKSPACE_REPOSITORY';
 
 export const workspaceServiceProvider: Provider = {
   provide: WORKSPACE_SERVICE,
-  useFactory: (repository: WorkspaceRepository, amqpConnection: AmqpConnection, rmqResponseService: RmqResponseService) => {
-    return new WorkspaceService(repository, amqpConnection, rmqResponseService);
+  useFactory: (repository: WorkspaceRepository, amqpConnection: AmqpConnection, rmqResponseService: RmqResponseService, rmqErrorService: RmqErrorService) => {
+    return new WorkspaceService(repository, amqpConnection, rmqResponseService, rmqErrorService);
   },
-  inject: [WORKSPACE_REPOSITORY, AmqpConnection, RmqResponseService],
+  inject: [WORKSPACE_REPOSITORY, AmqpConnection, RmqResponseService, RmqErrorService],
 };
 
 export const workspaceRepositoryProvider: Provider = {
