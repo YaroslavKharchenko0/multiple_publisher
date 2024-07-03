@@ -18,3 +18,5 @@ CREATE TRIGGER before_workspace_delete
   BEFORE DELETE ON workspaces
   FOR EACH ROW
   EXECUTE FUNCTION check_workspace_deletion();
+
+INSERT INTO workspace_roles (role) VALUES ('admin'), ('editor'), ('viewer') ON CONFLICT DO NOTHING;

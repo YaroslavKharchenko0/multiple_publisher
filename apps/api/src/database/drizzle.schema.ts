@@ -33,9 +33,9 @@ export const workspaces = pgTable("workspaces", {
 export const workspaceRoles = pgTable("workspace_roles", {
   id: serial("id").primaryKey(),
   role: varchar("role", { length: 50 }).$type<WorkspaceRole>().unique().notNull(),
-})
+});
 
-export const workspaceUserRoles = pgTable("workspace_user_roles", {
+export const workspaceUsers = pgTable("workspace_users", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   workspaceId: integer("workspace_id").notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
@@ -45,6 +45,7 @@ export const workspaceUserRoles = pgTable("workspace_user_roles", {
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
+  workspaceUsers: many(workspaceUsers),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
@@ -56,6 +57,29 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
   role: one(roles),
 }));
 
-export const workspacesRelations = relations(workspaces, ({ one }) => ({
-  user: one(users),
+export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
+  user: one(users, {
+    fields: [workspaces.userId],
+    references: [users.id],
+  }),
+  workspaceUsers: many(workspaceUsers),
+}));
+
+export const workspaceRolesRelations = relations(workspaceRoles, ({ many }) => ({
+  workspaceUsers: many(workspaceUsers),
+}));
+
+export const workspaceUsersRelations = relations(workspaceUsers, ({ one }) => ({
+  user: one(users, {
+    fields: [workspaceUsers.userId],
+    references: [users.id],
+  }),
+  workspace: one(workspaces, {
+    fields: [workspaceUsers.workspaceId],
+    references: [workspaces.id],
+  }),
+  role: one(workspaceRoles, {
+    fields: [workspaceUsers.roleId],
+    references: [workspaceRoles.id],
+  }),
 }));
