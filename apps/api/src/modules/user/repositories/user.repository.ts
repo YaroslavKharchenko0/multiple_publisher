@@ -12,7 +12,7 @@ export class UserRepository {
   private users = schema.users;
 
   async createOne(input: InsertUser) {
-    return this.db.insert(this.users).values(input).returning({ id: this.users.id }).execute();
+    return this.db.insert(this.users).values(input).returning().execute();
   }
 
   async findById(id: number) {

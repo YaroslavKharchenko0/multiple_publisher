@@ -12,6 +12,7 @@ export const createConfigFactory = async (configService: ConfigService): Promise
       { name: 'user', type: 'topic' },
       { name: 'role', type: 'topic' },
       { name: 'user-role', type: 'topic' },
+      { name: 'workspace', type: 'topic' },
     ],
     connectionInitOptions: { wait: true, timeout: 5000 },
     enableControllerDiscovery: true,

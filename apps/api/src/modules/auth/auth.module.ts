@@ -8,6 +8,7 @@ import { AUTH_SERVICE } from "./constants";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { PassportModule } from "@nestjs/passport";
 import { JwtStrategy } from "./strategies/jwt.strategy";
+import { EventController } from "./controllers/event.controller";
 
 @Module({})
 export class AuthModule {
@@ -15,7 +16,7 @@ export class AuthModule {
     return {
       module: AuthModule,
       imports: [RmqModule.forRoot(), AWSModule.forRoot(), PassportModule.register({ defaultStrategy: 'jwt' })],
-      controllers: [ApiController, CommandController],
+      controllers: [ApiController, CommandController, EventController],
       providers: [
         {
           provide: AUTH_SERVICE,
