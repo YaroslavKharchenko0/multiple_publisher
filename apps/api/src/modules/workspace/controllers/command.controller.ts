@@ -1,37 +1,36 @@
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, createSuccessResponse } from "@app/contracts";
-import { RmqErrorService, internalServerError } from '@app/errors'
+import { Controller, Inject } from "@nestjs/common";
+import { CreateWorkspaceCommand, DeleteWorkspaceCommand, createSuccessResponse } from "@app/contracts";
+import { WORKSPACE_SERVICE } from "../providers/workspace.providers";
+import { WorkspaceService } from "../services/workspace.service";
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) { }
+  constructor(@Inject(WORKSPACE_SERVICE) private readonly workspaceService: WorkspaceService) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: CreateWorkspaceCommand.exchange,
+    routingKey: CreateWorkspaceCommand.routingKey,
+    queue: CreateWorkspaceCommand.queue,
   })
-  command(@RabbitPayload() message: CommandCommand.Request): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      });
+  async createWorkspaces(@RabbitPayload() message: CreateWorkspaceCommand.Request): Promise<CreateWorkspaceCommand.Response> {
+    const payload = await this.workspaceService.createWorkspace({
+      name: message.name,
+      userId: message.userId,
+    });
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(payload);
   }
 
   @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
+    exchange: DeleteWorkspaceCommand.exchange,
+    routingKey: DeleteWorkspaceCommand.routingKey,
+    queue: DeleteWorkspaceCommand.queue,
   })
-  error(@RabbitPayload() _message: CommandErrorCommand.Request): CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound()
+  async deleteWorkspaces(@RabbitPayload() message: DeleteWorkspaceCommand.Request): Promise<DeleteWorkspaceCommand.Response> {
+    await this.workspaceService.deleteWorkspace(message.id);
+
+    return createSuccessResponse(null);
   }
 }
 

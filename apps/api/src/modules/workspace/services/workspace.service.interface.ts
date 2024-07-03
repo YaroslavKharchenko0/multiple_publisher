@@ -1,4 +1,3 @@
-import { Pagination } from "@app/validation";
 import { WorkspaceModel } from "../models/workspace.model";
 
 export interface CreateWorkspaceParams {
@@ -6,10 +5,13 @@ export interface CreateWorkspaceParams {
   userId: number;
 }
 
+export interface Options {
+  traceId: string
+}
+
 export interface Service {
-  createWorkspaceByUser(userId: number): Promise<WorkspaceModel>;
+  createWorkspaceByUser(userId: number, options?: Options): Promise<WorkspaceModel>;
   createWorkspace(input: CreateWorkspaceParams): Promise<WorkspaceModel>;
   deleteWorkspace(id: number): Promise<void>;
-  findWorkspace(id: number): Promise<WorkspaceModel>;
-  findUserWorkspaces(userId: number, pagination: Pagination): Promise<WorkspaceModel[]>;
+  findWorkspace(id: number): Promise<WorkspaceModel>
 }

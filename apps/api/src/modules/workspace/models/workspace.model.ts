@@ -1,6 +1,6 @@
 export class WorkspaceModel {
   id: number;
-  userId: number;
+  userId: number | null;
   name: string;
   createdAt: Date;
 

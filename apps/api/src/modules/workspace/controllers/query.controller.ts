@@ -1,28 +1,22 @@
-import { QueryQuery, createSuccessResponse } from "@app/contracts";
-import { internalServerError } from "@app/errors";
+import { FindByIdWorkspaceQuery, createSuccessResponse } from "@app/contracts";
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
+import { WORKSPACE_SERVICE } from "../providers/workspace.providers";
+import { WorkspaceService } from "../services/workspace.service";
 
 @Controller()
 export class QueryController {
-  constructor() { }
+  constructor(@Inject(WORKSPACE_SERVICE) private readonly workspaceService: WorkspaceService) { }
 
   @RabbitRPC({
-    exchange: QueryQuery.exchange,
-    routingKey: QueryQuery.routingKey,
-    queue: QueryQuery.queue,
+    exchange: FindByIdWorkspaceQuery.exchange,
+    routingKey: FindByIdWorkspaceQuery.routingKey,
+    queue: FindByIdWorkspaceQuery.queue,
   })
-  command(@RabbitPayload() message: QueryQuery.Request): QueryQuery.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      })
+  async findByIdWorkspace(@RabbitPayload() message: FindByIdWorkspaceQuery.Request): Promise<FindByIdWorkspaceQuery.Response> {
+    const payload = await this.workspaceService.findWorkspace(message.id);
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(payload);
   }
 }
 

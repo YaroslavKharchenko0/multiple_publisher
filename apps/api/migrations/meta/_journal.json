@@ -15,6 +15,13 @@
       "when": 1720036518432,
       "tag": "0001_dizzy_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1720040596610,
+      "tag": "0002_tricky_black_knight",
+      "breakpoints": true
     }
   ]
 }

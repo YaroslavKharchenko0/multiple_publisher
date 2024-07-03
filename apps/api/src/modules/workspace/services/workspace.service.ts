@@ -1,15 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { WorkspaceRepository } from "../repositories/workspace.repository";
-import { CreateWorkspaceParams, Service } from "./workspace.service.interface";
+import { CreateWorkspaceParams, Options, Service } from "./workspace.service.interface";
 import { WorkspaceModel } from "../models/workspace.model";
-import { Pagination } from "@app/validation";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { FindUserByIdQuery } from "@app/contracts";
 import { RmqResponseService } from "@app/errors";
+import { WORKSPACE_REPOSITORY } from "../providers/workspace.providers";
 
 @Injectable()
 export class WorkspaceService implements Service {
-  constructor(private readonly repository: WorkspaceRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService) { }
+  constructor(@Inject(WORKSPACE_REPOSITORY) private readonly repository: WorkspaceRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService) { }
   private async findUserById(userId: number, traceId?: string) {
     const requestPayload: FindUserByIdQuery.Request = {
       id: userId,
@@ -27,8 +27,8 @@ export class WorkspaceService implements Service {
     return userModel;
   }
 
-  async createWorkspaceByUser(userId: number): Promise<WorkspaceModel> {
-    const user = await this.findUserById(userId);
+  async createWorkspaceByUser(userId: number, options?: Options): Promise<WorkspaceModel> {
+    const user = await this.findUserById(userId, options?.traceId);
 
     return this.createWorkspace({
       name: `${user.name}'s Workspace`,
@@ -52,10 +52,5 @@ export class WorkspaceService implements Service {
     const entity = await this.repository.findById(id);
 
     return WorkspaceModel.fromEntity(entity);
-  }
-  async findUserWorkspaces(userId: number, pagination: Pagination): Promise<WorkspaceModel[]> {
-    const entities = await this.repository.findUserWorkspaces(userId, pagination);
-
-    return entities.map(entity => WorkspaceModel.fromEntity(entity));
   }
 }

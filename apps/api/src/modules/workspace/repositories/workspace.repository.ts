@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Database, Orm, schema } from "../../../database";
 import { eq } from "drizzle-orm";
-import { Pagination } from "@app/validation";
 
 export type InsertWorkspace = typeof schema.workspaces.$inferInsert
 export type SelectWorkspace = typeof schema.workspaces.$inferSelect
@@ -24,16 +23,6 @@ export class WorkspaceRepository {
     })
 
     return result;
-  }
-
-  findUserWorkspaces(userId: number, pagination: Pagination) {
-    const where = eq(this.workspaces.userId, userId);
-
-    return this.db.query.workspaces.findMany({
-      where,
-      offset: pagination.offset,
-      limit: pagination.limit
-    })
   }
 
   async deleteById(id: number): Promise<void> {

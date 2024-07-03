@@ -1,18 +1,21 @@
-import { EventEvent } from "@app/contracts";
+import { UserCreatedEvent } from "@app/contracts";
 import { RabbitPayload, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
+import { WORKSPACE_SERVICE } from "../providers/workspace.providers";
+import { WorkspaceService } from "../services/workspace.service";
+import { TraceId } from "@app/logger";
 
 @Controller()
 export class EventController {
-  constructor() { }
+  constructor(@Inject(WORKSPACE_SERVICE) private readonly workspaceService: WorkspaceService) { }
 
   @RabbitSubscribe({
-    exchange: EventEvent.exchange,
-    routingKey: EventEvent.routingKey,
-    queue: EventEvent.queue,
+    exchange: UserCreatedEvent.exchange,
+    routingKey: UserCreatedEvent.routingKey,
+    queue: UserCreatedEvent.queue,
   })
-  event(@RabbitPayload() message: EventEvent.Request): void {
-    console.log('Event', message);
+  async onCreateUser(@RabbitPayload() message: UserCreatedEvent.Request, @TraceId() traceId: string | undefined) {
+    await this.workspaceService.createWorkspaceByUser(message.id, { traceId });
   }
 }
 
