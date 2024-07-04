@@ -8,7 +8,7 @@ import { UserModule } from '../modules/user';
 import { RolesModule } from '../modules/roles';
 import { UserRoleModule } from '../modules/user-roles';
 import { WorkspaceModule } from '../modules/workspace';
-import { WorkspaceRoleModule } from '../modules/workspace-roles';
+import { WorkspaceRoleModule } from '../modules/workspace-role';
 
 
 @Module({})
