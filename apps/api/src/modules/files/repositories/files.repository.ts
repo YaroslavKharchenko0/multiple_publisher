@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Database, Orm, schema } from "../../../database";
 import { eq } from "drizzle-orm";
+import { Pagination } from "@app/validation";
 
 export type InsertFile = typeof schema.files.$inferInsert
 export type SelectFile = typeof schema.files.$inferSelect
@@ -20,6 +21,17 @@ export class FileRepository {
 
     const result = await this.db.query.files.findFirst({
       where
+    })
+
+    return result;
+  }
+
+  async findUserFiles(authorId: number, pagination: Pagination) {
+    const where = eq(this.files.authorId, authorId);
+
+    const result = await this.db.query.files.findMany({
+      where,
+      ...pagination
     })
 
     return result;
