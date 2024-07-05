@@ -8,5 +8,6 @@ export interface CreateWorkspaceRoleParams {
 export interface Service {
   createWorkspaceRole(input: CreateWorkspaceRoleParams): Promise<WorkspaceRoleModel>
   findWorkspaceRole(role: WorkspaceRole): Promise<WorkspaceRoleModel>
+  findWorkspaceRoleById(id: number): Promise<WorkspaceRoleModel>
   deleteWorkspaceRole(role: WorkspaceRole): Promise<void>
 }

@@ -12,6 +12,15 @@ export class WorkspaceRoleService implements Service {
     @Inject(WORKSPACE_ROLE_REPOSITORY) private repository: WorkspaceRoleRepository,
     private readonly rmqErrorService: RmqErrorService
   ) { }
+  async findWorkspaceRoleById(id: number): Promise<WorkspaceRoleModel> {
+    const entity = await this.repository.findById(id);
+
+    if (!entity) {
+      this.rmqErrorService.notFound();
+    }
+
+    return WorkspaceRoleModel.fromEntity(entity);
+  }
   async createWorkspaceRole(input: CreateWorkspaceRoleParams): Promise<WorkspaceRoleModel> {
     const entities = await this.repository.createOne({
       role: input.role,

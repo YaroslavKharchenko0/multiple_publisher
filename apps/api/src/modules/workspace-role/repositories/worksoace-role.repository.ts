@@ -26,6 +26,16 @@ export class WorkspaceRoleRepository {
     return result;
   }
 
+  async findById(id: number) {
+    const where = eq(this.workspaceRoles.id, id);
+
+    const result = await this.db.query.workspaceRoles.findFirst({
+      where
+    })
+
+    return result;
+  }
+
   async deleteByRole(role: WorkspaceRole) {
     const where = eq(this.workspaceRoles.role, role);
 
