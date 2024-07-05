@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateOne, DeleteOneParams, FindOneParams, FindWorkspaceUsersParams, Service, UpdateOneParams, UpdateWorkspaceUserParams } from "./workspace-user.service.interface";
+import { CreateOne, DeleteOneParams, FindOneParams, FindWorkspaceUsersParams, Options, Service, UpdateOneParams, UpdateWorkspaceUserParams } from "./workspace-user.service.interface";
 import { WorkspaceUserModel } from "../models/workspace-user.model";
 import { WORKSPACE_USER_REPOSITORY } from "../providers/workspace-user.providers";
 import { InsertWorkspaceUser, WorkspaceUserRepository } from "../repositories/workspace-user.repository";
@@ -37,8 +37,8 @@ export class WorkspaceUserService implements Service {
     return WorkspaceUserModel.fromEntity(entity)
   }
 
-  async createOneByRole(input: CreateOne): Promise<WorkspaceUserModel> {
-    const role = await this.findWorkspaceRole(input.role)
+  async createOneByRole(input: CreateOne, options?: Options): Promise<WorkspaceUserModel> {
+    const role = await this.findWorkspaceRole(input.role, options?.traceId)
 
     if (!role) {
       throw this.rmqErrorService.notFound()
@@ -60,8 +60,8 @@ export class WorkspaceUserService implements Service {
     return WorkspaceUserModel.fromEntity(entity)
   }
 
-  async updateOneByRole(params: UpdateOneParams, input: Partial<UpdateWorkspaceUserParams>): Promise<WorkspaceUserModel> {
-    const role = await this.findWorkspaceRole(input.role)
+  async updateOneByRole(params: UpdateOneParams, input: Partial<UpdateWorkspaceUserParams>, options?: Options): Promise<WorkspaceUserModel> {
+    const role = await this.findWorkspaceRole(input.role, options?.traceId)
 
     if (!role) {
       throw this.rmqErrorService.notFound()

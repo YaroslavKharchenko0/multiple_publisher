@@ -9,7 +9,7 @@ export const WORKSPACE_USER_SERVICE = 'WORKSPACE_USER_SERVICE';
 
 export const workspaceUserRepositoryProvider: Provider = {
   provide: WORKSPACE_USER_REPOSITORY,
-  useValue: WorkspaceUserRepository
+  useClass: WorkspaceUserRepository
 }
 
 export const workspaceUserServiceProvider: Provider = {

@@ -3,6 +3,7 @@ import { Controller, Inject } from "@nestjs/common";
 import { createSuccessResponse, CreateWorkspaceUserCommand, DeleteWorkspaceUserCommand, UpdateWorkspaceUserCommand } from "@app/contracts";
 import { WORKSPACE_USER_SERVICE } from "../providers/workspace-user.providers";
 import { WorkspaceUserService } from "../services/workspace-user.service";
+import { TraceId } from "@app/logger";
 
 @Controller()
 export class CommandController {
@@ -13,12 +14,12 @@ export class CommandController {
     routingKey: CreateWorkspaceUserCommand.routingKey,
     queue: CreateWorkspaceUserCommand.queue,
   })
-  async create(@RabbitPayload() message: CreateWorkspaceUserCommand.Request): Promise<CreateWorkspaceUserCommand.Response> {
+  async create(@TraceId() traceId: string, @RabbitPayload() message: CreateWorkspaceUserCommand.Request): Promise<CreateWorkspaceUserCommand.Response> {
     const payload = await this.service.createOneByRole({
       role: message.role,
       userId: message.userId,
       workspaceId: message.workspaceId,
-    });
+    }, { traceId });
 
     return createSuccessResponse(payload);
   }
@@ -28,13 +29,13 @@ export class CommandController {
     routingKey: UpdateWorkspaceUserCommand.routingKey,
     queue: UpdateWorkspaceUserCommand.queue,
   })
-  async update(@RabbitPayload() message: UpdateWorkspaceUserCommand.Request): Promise<UpdateWorkspaceUserCommand.Response> {
+  async update(@TraceId() traceId: string, @RabbitPayload() message: UpdateWorkspaceUserCommand.Request): Promise<UpdateWorkspaceUserCommand.Response> {
     const payload = await this.service.updateOneByRole({
       userId: message.userId,
       workspaceId: message.workspaceId,
     }, {
       role: message.role,
-    });
+    }, { traceId });
 
     return createSuccessResponse(payload);
   }
