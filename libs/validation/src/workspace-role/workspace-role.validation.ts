@@ -4,8 +4,10 @@ import { WorkspaceRole as BaseRole } from '@app/types'
 
 export const workspaceRole = z.nativeEnum(BaseRole)
 
+export const workspaceRoleId = z.number()
+
 const workspaceRoleValidationSchema = z.object({
-  id: z.number(),
+  id: workspaceRoleId,
   role: workspaceRole,
 })
 

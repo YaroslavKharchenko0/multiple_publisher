@@ -1,10 +1,11 @@
 import { Pagination } from "@app/validation";
 import { WorkspaceUserModel } from "../models/workspace-user.model";
+import { WorkspaceRole } from "@app/types";
 
 export interface CreateOne {
   userId: number;
   workspaceId: number;
-  roleId: number;
+  role: WorkspaceRole;
 }
 
 export interface FindOneParams {
@@ -18,7 +19,7 @@ export interface UpdateOneParams {
 }
 
 export interface UpdateWorkspaceUserParams {
-  roleId: number;
+  role: WorkspaceRole;
 }
 
 export interface DeleteOneParams {
@@ -32,9 +33,9 @@ export interface FindWorkspaceUsersParams {
 }
 
 export interface Service {
-  createOne(input: CreateOne): Promise<WorkspaceUserModel>;
+  createOneByRole(input: CreateOne): Promise<WorkspaceUserModel>;
   findOne(params: FindOneParams): Promise<WorkspaceUserModel>;
-  updateOne(params: UpdateOneParams, input: Partial<UpdateWorkspaceUserParams>): Promise<WorkspaceUserModel>;
+  updateOneByRole(params: UpdateOneParams, input: Partial<UpdateWorkspaceUserParams>): Promise<WorkspaceUserModel>;
   deleteOne(params: DeleteOneParams): Promise<WorkspaceUserModel>;
   findWorkspaceUsers(params: FindWorkspaceUsersParams): Promise<WorkspaceUserModel[]>;
 }
