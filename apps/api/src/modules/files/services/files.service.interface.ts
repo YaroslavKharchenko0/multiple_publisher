@@ -6,7 +6,7 @@ export interface CreateFileInput {
   providerId: string;
   type: FileType;
   authorId: number;
-  uploadStatus?: UploadStatus | null;
+  uploadStatus: UploadStatus | null;
 }
 
 export interface Service {
@@ -15,5 +15,5 @@ export interface Service {
   findByProviderId(providerId: string): Promise<FileModel>;
   findUserFiles(authorId: number, pagination: Pagination): Promise<FileModel[]>;
   updateById(id: number, input: Partial<FileModel>): Promise<FileModel>;
-  deleteById(id: number): Promise<FileModel>;
+  deleteById(id: number, userId?: number): Promise<FileModel>;
 }

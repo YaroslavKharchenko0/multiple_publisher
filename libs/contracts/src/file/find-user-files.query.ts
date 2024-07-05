@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { FindUserFilesRequest, FindUserFilesResponse } from '@app/validation'
 
-export namespace FindUserFilesCommand {
+export namespace FindUserFilesQuery {
   export const exchange = 'file';
 
   export const routingKey = 'find-user-files';

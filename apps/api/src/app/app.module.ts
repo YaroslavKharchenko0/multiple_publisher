@@ -10,6 +10,7 @@ import { UserRoleModule } from '../modules/user-roles';
 import { WorkspaceModule } from '../modules/workspace';
 import { WorkspaceRoleModule } from '../modules/workspace-role';
 import { WorkspaceUserModule } from '../modules/workspace-user';
+import { FilesModule } from '../modules/files';
 
 
 @Module({})
@@ -17,7 +18,7 @@ export class AppModule {
   static forRoot() {
     return {
       module: AppModule,
-      imports: [ConfigModule.forRoot(), ExampleModule.forRoot(), RmqErrorModule, DatabaseModule.forRoot(), AuthModule.forRoot(), UserModule.forRoot(), RolesModule.forRoot(), UserRoleModule.forRoot(), WorkspaceModule.forRoot(), WorkspaceRoleModule.forRoot(), WorkspaceUserModule.forRoot()],
+      imports: [ConfigModule.forRoot(), ExampleModule.forRoot(), RmqErrorModule, DatabaseModule.forRoot(), AuthModule.forRoot(), UserModule.forRoot(), RolesModule.forRoot(), UserRoleModule.forRoot(), WorkspaceModule.forRoot(), WorkspaceRoleModule.forRoot(), WorkspaceUserModule.forRoot(), FilesModule.forRoot()],
     };
   }
 }

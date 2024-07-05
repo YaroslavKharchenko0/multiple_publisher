@@ -1,28 +1,44 @@
-import { QueryQuery, createSuccessResponse } from "@app/contracts";
-import { internalServerError } from "@app/errors";
+import { createSuccessResponse, FindFileByIdQuery, FindFileByProviderIdQuery, FindUserFilesQuery } from "@app/contracts";
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
+import { FILE_SERVICE } from "../providers/file.providers";
+import { FileService } from "../services/files.service";
 
 @Controller()
 export class QueryController {
-  constructor() { }
+  constructor(@Inject(FILE_SERVICE) private readonly fileService: FileService) { }
 
   @RabbitRPC({
-    exchange: QueryQuery.exchange,
-    routingKey: QueryQuery.routingKey,
-    queue: QueryQuery.queue,
+    exchange: FindFileByIdQuery.exchange,
+    routingKey: FindFileByIdQuery.routingKey,
+    queue: FindFileByIdQuery.queue,
   })
-  command(@RabbitPayload() message: QueryQuery.Request): QueryQuery.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      })
+  async findById(@RabbitPayload() message: FindFileByIdQuery.Request): Promise<FindFileByIdQuery.Response> {
+    const payload = await this.fileService.findById(message.id)
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(payload)
+  }
+
+  @RabbitRPC({
+    exchange: FindFileByProviderIdQuery.exchange,
+    routingKey: FindFileByProviderIdQuery.routingKey,
+    queue: FindFileByProviderIdQuery.queue,
+  })
+  async findByProviderId(@RabbitPayload() message: FindFileByProviderIdQuery.Request): Promise<FindFileByProviderIdQuery.Response> {
+    const payload = await this.fileService.findByProviderId(message.providerId)
+
+    return createSuccessResponse(payload)
+  }
+
+  @RabbitRPC({
+    exchange: FindUserFilesQuery.exchange,
+    routingKey: FindUserFilesQuery.routingKey,
+    queue: FindUserFilesQuery.queue,
+  })
+  async findUserFiles(@RabbitPayload() message: FindUserFilesQuery.Request): Promise<FindUserFilesQuery.Response> {
+    const payload = await this.fileService.findUserFiles(message.userId, message.pagination)
+
+    return createSuccessResponse(payload)
   }
 }
 

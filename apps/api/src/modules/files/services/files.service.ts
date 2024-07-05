@@ -35,8 +35,8 @@ export class FileService implements Service {
 
     return FileModel.fromEntity(entity);
   }
-  async deleteById(id: number): Promise<FileModel> {
-    const entities = await this.repository.deleteById(id);
+  async deleteById(id: number, userId?: number): Promise<FileModel> {
+    const entities = await this.repository.deleteById(id, userId);
 
     const [entity] = entities;
 

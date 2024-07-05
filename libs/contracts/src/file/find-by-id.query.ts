@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { FindFileByIdRequest, FindFileByIdResponse } from '@app/validation'
 
-export namespace FindFileByIdCommand {
+export namespace FindFileByIdQuery {
   export const exchange = 'file';
 
   export const routingKey = 'find-file-by-id';

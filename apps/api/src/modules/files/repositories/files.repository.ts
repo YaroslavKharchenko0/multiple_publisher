@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Database, Orm, schema } from "../../../database";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Pagination } from "@app/validation";
 
 export type InsertFile = typeof schema.files.$inferInsert
@@ -55,8 +55,12 @@ export class FileRepository {
     return result;
   }
 
-  async deleteById(id: number) {
-    const where = eq(this.files.id, id);
+  async deleteById(id: number, userId?: number) {
+    let where = eq(this.files.id, id);
+
+    if (userId) {
+      where = and(where, eq(this.files.authorId, userId));
+    }
 
     const result = await this.db.delete(this.files).where(where).returning().execute();
 

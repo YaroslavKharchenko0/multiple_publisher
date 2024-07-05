@@ -3,7 +3,7 @@ import { DynamicModule, Module } from "@nestjs/common";
 import { ApiController } from "./controllers/api.controller";
 import { CommandController } from "./controllers/command.controller";
 import { QueryController } from "./controllers/query.controller";
-import { EventController } from "./controllers/event.controller";
+import { FILE_REPOSITORY, FILE_SERVICE, fileRepositoryProvider, fileServiceProvider } from "./providers/file.providers";
 
 @Module({})
 export class FilesModule {
@@ -11,7 +11,9 @@ export class FilesModule {
     return {
       module: FilesModule,
       imports: [RmqModule.forRoot()],
-      controllers: [ApiController, CommandController, QueryController, EventController]
+      controllers: [ApiController, CommandController, QueryController],
+      providers: [fileRepositoryProvider, fileServiceProvider],
+      exports: [FILE_REPOSITORY, FILE_SERVICE]
     };
   }
 }
