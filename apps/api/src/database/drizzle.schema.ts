@@ -48,6 +48,7 @@ export const files = pgTable("files", {
   providerId: uuid("provider_id").unique().notNull(),
   type: varchar("type", { length: 10 }).$type<FileType>().notNull(),
   uploadStatus: varchar("uploadStatus", { length: 50 }).$type<UploadStatus>(),
+  authorId: integer("author_id").notNull().references(() => users.id, { onDelete: 'set null' }),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -62,6 +63,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
   workspaceUsers: many(workspaceUsers),
+  files: many(files),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
@@ -100,8 +102,12 @@ export const workspaceUsersRelations = relations(workspaceUsers, ({ one }) => ({
   }),
 }));
 
-export const filesRelations = relations(files, ({ many }) => ({
+export const filesRelations = relations(files, ({ many, one }) => ({
   fileMetadata: many(fileMetadata),
+  author: one(users, {
+    fields: [files.authorId],
+    references: [users.id],
+  }),
 }));
 
 export const fileMetadataRelations = relations(fileMetadata, ({ one }) => ({

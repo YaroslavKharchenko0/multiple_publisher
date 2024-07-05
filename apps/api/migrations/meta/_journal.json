@@ -64,6 +64,13 @@
       "when": 1720200796752,
       "tag": "0008_broken_norrin_radd",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1720201601765,
+      "tag": "0009_amusing_spacker_dave",
+      "breakpoints": true
     }
   ]
 }
