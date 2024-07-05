@@ -99,3 +99,14 @@ export const workspaceUsersRelations = relations(workspaceUsers, ({ one }) => ({
     references: [workspaceRoles.id],
   }),
 }));
+
+export const filesRelations = relations(files, ({ many }) => ({
+  fileMetadata: many(fileMetadata),
+}));
+
+export const fileMetadataRelations = relations(fileMetadata, ({ one }) => ({
+  file: one(files, {
+    fields: [fileMetadata.fileId],
+    references: [files.id],
+  }),
+}));
