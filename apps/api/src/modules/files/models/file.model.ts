@@ -3,10 +3,10 @@ import { FileType, UploadStatus } from "@app/types";
 export class FileModel {
   id: number;
   providerId: string;
-  createdAt: Date;
   type: FileType;
   uploadStatus: UploadStatus | null;
   authorId: number;
+  createdAt: Date;
 
   setFields(input: Partial<FileModel>) {
     this.id = input.id ?? this.id;
