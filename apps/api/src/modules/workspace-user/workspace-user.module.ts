@@ -4,7 +4,7 @@ import { ApiController } from "./controllers/api.controller";
 import { CommandController } from "./controllers/command.controller";
 import { QueryController } from "./controllers/query.controller";
 import { EventController } from "./controllers/event.controller";
-import { workspaceUserServiceProvider, workspaceUserRepositoryProvider } from "./providers/workspace-user.providers";
+import { workspaceUserServiceProvider, workspaceUserRepositoryProvider, WORKSPACE_USER_REPOSITORY, WORKSPACE_USER_SERVICE } from "./providers/workspace-user.providers";
 
 @Module({})
 export class WorkspaceUserModule {
@@ -13,7 +13,8 @@ export class WorkspaceUserModule {
       module: WorkspaceUserModule,
       imports: [RmqModule.forRoot()],
       providers: [workspaceUserServiceProvider, workspaceUserRepositoryProvider],
-      controllers: [ApiController, CommandController, QueryController, EventController]
+      controllers: [ApiController, CommandController, QueryController, EventController],
+      exports: [WORKSPACE_USER_REPOSITORY, WORKSPACE_USER_SERVICE]
     };
   }
 }
