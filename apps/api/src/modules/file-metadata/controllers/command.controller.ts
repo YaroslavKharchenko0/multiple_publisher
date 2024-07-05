@@ -1,37 +1,37 @@
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, createSuccessResponse } from "@app/contracts";
-import { RmqErrorService, internalServerError } from '@app/errors'
+import { Controller, Inject } from "@nestjs/common";
+import { CreateFileMetadataCommand, createSuccessResponse, DeleteFileMetadataCommand } from "@app/contracts";
+import { FileMetadataService } from "../services/file-metadata.service";
+import { FILE_METADATA_SERVICE } from "../providers/file-metadata.poviders";
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) { }
+  constructor(@Inject(FILE_METADATA_SERVICE) private readonly service: FileMetadataService) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: CreateFileMetadataCommand.exchange,
+    routingKey: CreateFileMetadataCommand.routingKey,
+    queue: CreateFileMetadataCommand.queue,
   })
-  command(@RabbitPayload() message: CommandCommand.Request): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      });
+  async create(@RabbitPayload() message: CreateFileMetadataCommand.Request): Promise<CreateFileMetadataCommand.Response> {
+    const payload = await this.service.createOne({
+      fileId: message.fileId,
+      key: message.key,
+      value: message.value,
+    });
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(payload);
   }
 
   @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
+    exchange: DeleteFileMetadataCommand.exchange,
+    routingKey: DeleteFileMetadataCommand.routingKey,
+    queue: DeleteFileMetadataCommand.queue,
   })
-  error(@RabbitPayload() _message: CommandErrorCommand.Request): CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound()
+  async delete(@RabbitPayload() message: DeleteFileMetadataCommand.Request): Promise<CreateFileMetadataCommand.Response> {
+    await this.service.deleteById(message.id);
+
+    return createSuccessResponse(null);
   }
 }
 

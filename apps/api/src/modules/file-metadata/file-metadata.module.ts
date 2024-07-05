@@ -1,9 +1,8 @@
 import { RmqModule } from "@app/rmq";
 import { DynamicModule, Module } from "@nestjs/common";
-import { ApiController } from "./controllers/api.controller";
 import { CommandController } from "./controllers/command.controller";
 import { QueryController } from "./controllers/query.controller";
-import { EventController } from "./controllers/event.controller";
+import { fileMetadataRepositoryProvider, fileMetadataServiceProvider, FILE_METADATA_REPOSITORY, FILE_METADATA_SERVICE } from "./providers/file-metadata.poviders";
 
 @Module({})
 export class FileMetadataModule {
@@ -11,7 +10,9 @@ export class FileMetadataModule {
     return {
       module: FileMetadataModule,
       imports: [RmqModule.forRoot()],
-      controllers: [ApiController, CommandController, QueryController, EventController]
+      controllers: [CommandController, QueryController],
+      providers: [fileMetadataRepositoryProvider, fileMetadataServiceProvider],
+      exports: [FILE_METADATA_REPOSITORY, FILE_METADATA_SERVICE]
     };
   }
 }

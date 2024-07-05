@@ -16,6 +16,7 @@ export const createConfigFactory = async (configService: ConfigService): Promise
       { name: 'workspace-role', type: 'topic' },
       { name: 'workspace-user', type: 'topic' },
       { name: 'file', type: 'topic' },
+      { name: 'file-metadata', type: 'topic' },
     ],
     connectionInitOptions: { wait: true, timeout: 5000 },
     enableControllerDiscovery: true,

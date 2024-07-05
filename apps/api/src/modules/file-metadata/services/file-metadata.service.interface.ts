@@ -1,5 +1,5 @@
 import { Pagination } from "@app/validation"
-import { FileModel } from "../models/file-metadata.model"
+import { FileMetadataModel } from "../models/file-metadata.model"
 
 export interface CreateMetadata {
   key: string
@@ -8,7 +8,7 @@ export interface CreateMetadata {
 }
 
 export interface Service {
-  createOne(input: CreateMetadata): Promise<FileModel>
-  findByFileId(id: number, pagination: Pagination): Promise<FileModel[]>
-  deleteById(id: number): Promise<FileModel>
+  createOne(input: CreateMetadata): Promise<FileMetadataModel>
+  findByFileId(id: number, pagination: Pagination): Promise<FileMetadataModel[]>
+  deleteById(id: number): Promise<FileMetadataModel>
 }

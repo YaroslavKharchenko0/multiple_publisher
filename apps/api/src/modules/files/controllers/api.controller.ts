@@ -5,11 +5,11 @@ import { TraceId } from "@app/logger";
 import { Auth, IsStringNumberPipe, JWTUser, User } from "@app/utils";
 import { FindUserFilesBodyDto } from "@app/validation";
 
-@Controller('')
+@Controller('/users/:id/files')
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/users/:id/files')
+  @Get('/')
   @Auth()
   findUserFiles(@TraceId() traceId: string | undefined, @Param('id', IsStringNumberPipe) id: string, @Query() query: FindUserFilesBodyDto, @User() user: JWTUser) {
     const numberId = Number(id);
@@ -33,7 +33,7 @@ export class ApiController {
     });
   }
 
-  @Delete('/users/:id/files/:fileId')
+  @Delete('/:fileId')
   @Auth()
   deleteUserFile(@TraceId() traceId: string | undefined, @Param('id', IsStringNumberPipe) id: string, @Param('fileId', IsStringNumberPipe) fileId: string, @User() user: JWTUser) {
     const numberId = Number(id);

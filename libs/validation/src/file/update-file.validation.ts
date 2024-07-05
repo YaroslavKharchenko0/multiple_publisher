@@ -13,6 +13,8 @@ export const updateFileValidationSchema = z.object({
 
 export type UpdateFileRequest = z.infer<typeof updateFileValidationSchema>
 
-export class UpdateFileBodyDto extends createZodDto(updateFileValidationSchema) { }
+export const updateFileBodyValidationSchema = updateFileValidationSchema.omit({ id: true })
+
+export class UpdateFileBodyDto extends createZodDto(updateFileBodyValidationSchema) { }
 
 export type UpdateFileResponse = File
