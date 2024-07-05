@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { serial, text, timestamp, pgTable, uuid, varchar, integer } from "drizzle-orm/pg-core";
-import { Role } from '@app/types';
+import { Role, WorkspaceRole } from '@app/types';
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -30,9 +30,23 @@ export const workspaces = pgTable("workspaces", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const workspaceRoles = pgTable("workspace_roles", {
+  id: serial("id").primaryKey(),
+  role: varchar("role", { length: 50 }).$type<WorkspaceRole>().unique().notNull(),
+});
+
+export const workspaceUsers = pgTable("workspace_users", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  workspaceId: integer("workspace_id").notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+  roleId: integer("role_id").notNull().references(() => workspaceRoles.id, { onDelete: 'cascade' }),
+  joinedAt: timestamp("joined_at").defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
+  workspaceUsers: many(workspaceUsers),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
@@ -44,6 +58,29 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
   role: one(roles),
 }));
 
-export const workspacesRelations = relations(workspaces, ({ one }) => ({
-  user: one(users),
+export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
+  user: one(users, {
+    fields: [workspaces.userId],
+    references: [users.id],
+  }),
+  workspaceUsers: many(workspaceUsers),
+}));
+
+export const workspaceRolesRelations = relations(workspaceRoles, ({ many }) => ({
+  workspaceUsers: many(workspaceUsers),
+}));
+
+export const workspaceUsersRelations = relations(workspaceUsers, ({ one }) => ({
+  user: one(users, {
+    fields: [workspaceUsers.userId],
+    references: [users.id],
+  }),
+  workspace: one(workspaces, {
+    fields: [workspaceUsers.workspaceId],
+    references: [workspaces.id],
+  }),
+  role: one(workspaceRoles, {
+    fields: [workspaceUsers.roleId],
+    references: [workspaceRoles.id],
+  }),
 }));

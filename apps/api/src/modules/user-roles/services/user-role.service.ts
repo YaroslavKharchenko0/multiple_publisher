@@ -4,7 +4,7 @@ import { UserRoleModel } from "../models/user-role.model";
 import { UserRoleRepository } from "../repositories/user-roles.repository";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { FindRoleQuery, FindUserByIdQuery } from "@app/contracts";
-import { RmqResponseService } from "@app/errors";
+import { RmqErrorService, RmqResponseService } from "@app/errors";
 import { Role } from "@app/types";
 import { USER_ROLE_REPOSITORY } from "../providers/user-role.providers";
 import { Cognito, CognitoService } from "@app/aws";
@@ -13,7 +13,7 @@ import { Cognito, CognitoService } from "@app/aws";
 export class UserRoleService implements Service {
   private readonly userClaimsKeys = ['role'];
 
-  constructor(@Inject(USER_ROLE_REPOSITORY) private readonly repository: UserRoleRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService, @Cognito() private readonly cognitoService: CognitoService) { }
+  constructor(@Inject(USER_ROLE_REPOSITORY) private readonly repository: UserRoleRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService, @Cognito() private readonly cognitoService: CognitoService, private readonly rmqErrorService: RmqErrorService) { }
 
   private async findRole(role: Role, traceId?: string) {
     const requestPayload: FindRoleQuery.Request = {
@@ -62,7 +62,15 @@ export class UserRoleService implements Service {
 
     const roleModel = await this.findRole(role, options?.traceId)
 
+    if (!roleModel) {
+      throw this.rmqErrorService.notFound();
+    }
+
     const userModel = await this.findUserById(userId, options?.traceId)
+
+    if (!userModel) {
+      throw this.rmqErrorService.notFound();
+    }
 
     const userClaims = this.createUserClaims(role);
 
@@ -92,6 +100,10 @@ export class UserRoleService implements Service {
   async deleteUserRole(userId: number, options?: Options): Promise<void> {
     const userModel = await this.findUserById(userId, options?.traceId)
 
+    if (!userModel) {
+      throw this.rmqErrorService.notFound();
+    }
+
     await this.cognitoService.deleteCustomClaims({
       email: userModel.email,
       claims: this.userClaimsKeys,
@@ -104,7 +116,15 @@ export class UserRoleService implements Service {
 
     const roleModel = await this.findRole(role, options?.traceId)
 
+    if (!roleModel) {
+      throw this.rmqErrorService.notFound();
+    }
+
     const userModel = await this.findUserById(userId, options?.traceId)
+
+    if (!userModel) {
+      throw this.rmqErrorService.notFound();
+    }
 
     const userClaims = this.createUserClaims(role);
 

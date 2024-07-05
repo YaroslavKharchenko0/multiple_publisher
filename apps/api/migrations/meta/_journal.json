@@ -22,6 +22,20 @@
       "when": 1720040596610,
       "tag": "0002_tricky_black_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1720043946022,
+      "tag": "0003_nebulous_forgotten_one",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1720044362490,
+      "tag": "0004_pale_scarecrow",
+      "breakpoints": true
     }
   ]
 }

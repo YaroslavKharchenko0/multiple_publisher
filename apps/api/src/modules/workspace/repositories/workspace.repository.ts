@@ -12,7 +12,7 @@ export class WorkspaceRepository {
   private workspaces = schema.workspaces;
 
   async createOne(input: InsertWorkspace) {
-    return this.db.insert(this.workspaces).values(input).returning({ id: this.workspaces.id }).execute();
+    return this.db.insert(this.workspaces).values(input).returning().execute();
   }
 
   async findById(id: number) {

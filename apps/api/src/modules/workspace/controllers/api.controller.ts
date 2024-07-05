@@ -2,17 +2,18 @@ import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { CreateWorkspaceCommand, DeleteWorkspaceCommand, FindByIdWorkspaceQuery } from '@app/contracts'
 import { TraceId } from "@app/logger";
-import { IsStringNumberPipe, JWTUser, Roles, User } from "@app/utils";
+import { IsStringNumberPipe, JWTUser, Roles, User, WorkspaceRoles } from "@app/utils";
 import { CreateWorkspaceBodyDto } from "@app/validation";
-import { Role } from "@app/types";
+import { Role, WorkspaceRole } from "@app/types";
 
 @Controller('workspaces')
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/:id')
+  @Get('/:workspaceId')
   @Roles(Role.USER)
-  findById(@TraceId() traceId: string | undefined, @Param('id', IsStringNumberPipe) id: string) {
+  @WorkspaceRoles(WorkspaceRole.ADMIN, WorkspaceRole.EDITOR, WorkspaceRole.VIEWER)
+  findById(@TraceId() traceId: string | undefined, @Param('workspaceId', IsStringNumberPipe) id: string) {
     const payload: FindByIdWorkspaceQuery.Request = {
       id: Number(id)
     }
@@ -45,9 +46,10 @@ export class ApiController {
     });
   }
 
-  @Delete('/:id')
+  @Delete('/:workspaceId')
   @Roles(Role.USER)
-  deleteWorkspace(@TraceId() traceId: string | undefined, @Param('id', IsStringNumberPipe) id: string) {
+  @WorkspaceRoles(WorkspaceRole.ADMIN)
+  deleteWorkspace(@TraceId() traceId: string | undefined, @Param('workspaceId', IsStringNumberPipe) id: string) {
     const payload: DeleteWorkspaceCommand.Request = {
       id: Number(id)
     }
