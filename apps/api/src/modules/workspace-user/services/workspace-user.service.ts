@@ -4,13 +4,13 @@ import { WorkspaceUserModel } from "../models/workspace-user.model";
 import { WORKSPACE_USER_REPOSITORY } from "../providers/workspace-user.providers";
 import { InsertWorkspaceUser, WorkspaceUserRepository } from "../repositories/workspace-user.repository";
 import { WorkspaceRole } from "@app/types";
-import { RmqResponseService } from "@app/errors";
+import { RmqErrorService, RmqResponseService } from "@app/errors";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { FindWorkspaceRoleQuery } from "@app/contracts";
 
 @Injectable()
 export class WorkspaceUserService implements Service {
-  constructor(@Inject(WORKSPACE_USER_REPOSITORY) private readonly repository: WorkspaceUserRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService) { }
+  constructor(@Inject(WORKSPACE_USER_REPOSITORY) private readonly repository: WorkspaceUserRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService, private readonly rmqErrorService: RmqErrorService) { }
 
   private async findWorkspaceRole(role: WorkspaceRole, traceId?: string) {
     const requestPayload: FindWorkspaceRoleQuery.Request = {
@@ -40,6 +40,10 @@ export class WorkspaceUserService implements Service {
   async createOneByRole(input: CreateOne): Promise<WorkspaceUserModel> {
     const role = await this.findWorkspaceRole(input.role)
 
+    if (!role) {
+      throw this.rmqErrorService.notFound()
+    }
+
     const partial = {
       userId: input.userId,
       workspaceId: input.workspaceId,
@@ -59,6 +63,10 @@ export class WorkspaceUserService implements Service {
   async updateOneByRole(params: UpdateOneParams, input: Partial<UpdateWorkspaceUserParams>): Promise<WorkspaceUserModel> {
     const role = await this.findWorkspaceRole(input.role)
 
+    if (!role) {
+      throw this.rmqErrorService.notFound()
+    }
+
     const partial = {
       roleId: role.id
     }
@@ -67,6 +75,10 @@ export class WorkspaceUserService implements Service {
   }
   async findOne(params: FindOneParams): Promise<WorkspaceUserModel> {
     const entity = await this.repository.findOne(params)
+
+    if (!entity) {
+      throw this.rmqErrorService.notFound()
+    }
 
     return WorkspaceUserModel.fromEntity(entity)
   }

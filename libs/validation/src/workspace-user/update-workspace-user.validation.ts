@@ -13,6 +13,8 @@ export const updateWorkspaceUserValidation = z.object({
 
 export type UpdateWorkspaceUserRequest = z.infer<typeof updateWorkspaceUserValidation>
 
-export class UpdateWorkspaceUserDto extends createZodDto(updateWorkspaceUserValidation) { }
+export const updateWorkspaceUserBodyValidationSchema = updateWorkspaceUserValidation.omit({ userId: true, workspaceId: true })
+
+export class UpdateWorkspaceUserDto extends createZodDto(updateWorkspaceUserBodyValidationSchema) { }
 
 export type UpdateWorkspaceUserResponse = WorkspaceUser

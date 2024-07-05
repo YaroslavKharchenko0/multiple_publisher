@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { FindWorkspaceUserRequest, FindWorkspaceUserResponse } from '@app/validation'
 
-export namespace FindWorkspaceUserCommand {
+export namespace FindWorkspaceUserQuery {
   export const exchange = 'workspace-user';
 
   export const routingKey = 'find-workspace-user';

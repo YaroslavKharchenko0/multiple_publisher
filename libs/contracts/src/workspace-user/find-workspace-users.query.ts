@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { FindWorkspaceUsersRequest, FindWorkspaceUsersResponse } from '@app/validation'
 
-export namespace FindWorkspaceUsersCommand {
+export namespace FindWorkspaceUsersQuery {
   export const exchange = 'workspace-user';
 
   export const routingKey = 'find-workspace-users';
@@ -10,8 +10,8 @@ export namespace FindWorkspaceUsersCommand {
 
   export type Request = FindWorkspaceUsersRequest;
 
-  export type ResponsePayload = FindWorkspaceUsersResponse;
+  export type ResponsePayload = FindWorkspaceUsersResponse[];
 
-  export type Response = RmqResponse<FindWorkspaceUsersResponse>
+  export type Response = RmqResponse<ResponsePayload>
 }
 

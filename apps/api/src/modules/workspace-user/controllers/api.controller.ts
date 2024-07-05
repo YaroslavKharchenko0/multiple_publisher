@@ -1,96 +1,103 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Controller, Get } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, EventEvent, QueryQuery } from '@app/contracts'
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { CreateWorkspaceUserCommand, DeleteWorkspaceUserCommand, FindWorkspaceUserQuery, FindWorkspaceUsersQuery, UpdateWorkspaceUserCommand } from '@app/contracts'
 import { TraceId } from "@app/logger";
-import { Auth, Roles } from "@app/utils";
+import { IsStringNumberPipe, JWTUser, Roles, User } from "@app/utils";
 import { Role } from "@app/types";
+import { CreateWorkspaceUserDto, UpdateWorkspaceUserDto } from "@app/validation";
 
-@Controller('workspaces/:id/users')
+@Controller('workspaces/:workspaceId/users')
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/command')
-  command(@TraceId() traceId: string | undefined) {
-    const payload: CommandCommand.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.request<CommandCommand.Response>({
-      exchange: CommandCommand.exchange,
-      routingKey: CommandCommand.routingKey,
-      payload,
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Get('/event')
-  event(@TraceId() traceId: string | undefined) {
-    const payload: EventEvent.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.publish<EventEvent.Request>(EventEvent.exchange, EventEvent.routingKey, payload, {
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Get('/query')
-  query(@TraceId() traceId: string | undefined) {
-    const payload: QueryQuery.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.request<QueryQuery.Response>({
-      exchange: QueryQuery.exchange,
-      routingKey: QueryQuery.routingKey,
-      payload,
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Get('/error')
-  error(@TraceId() traceId: string | undefined) {
-    const payload: CommandErrorCommand.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.request<CommandErrorCommand.Response>({
-      exchange: CommandErrorCommand.exchange,
-      routingKey: CommandErrorCommand.routingKey,
-      payload,
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Auth()
-  @Get('/auth')
-  auth() {
-    return 'Auth';
-  }
-
-  @Roles(Role.ADMIN)
-  @Get('/admin')
-  getAdmin() {
-    return 'Admin';
-  }
-
+  @Post('/')
   @Roles(Role.USER)
-  @Get('/user')
-  getUser() {
-    return 'User';
+  createWorkspaceUser(@TraceId() traceId: string | undefined, @Param('workspaceId', IsStringNumberPipe) workspaceId: string, @Body() body: CreateWorkspaceUserDto, @User() user: JWTUser) {
+    const payload: CreateWorkspaceUserCommand.Request = {
+      ...body,
+      workspaceId: Number(workspaceId),
+      userId: user.app_id,
+    }
+
+    return this.amqpConnection.request<CreateWorkspaceUserCommand.Response>({
+      exchange: CreateWorkspaceUserCommand.exchange,
+      routingKey: CreateWorkspaceUserCommand.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
   }
 
-  @Roles(Role.ADMIN, Role.USER)
-  @Get('/both')
-  getBoth() {
-    return 'Both';
+  @Delete('/:userId')
+  @Roles(Role.USER)
+  deleteWorkspaceUser(@TraceId() traceId: string | undefined, @Param('workspaceId', IsStringNumberPipe) workspaceId: string, @Param('userId', IsStringNumberPipe) userId: string) {
+    const payload: DeleteWorkspaceUserCommand.Request = {
+      workspaceId: Number(workspaceId),
+      userId: Number(userId)
+    }
+
+    return this.amqpConnection.request<DeleteWorkspaceUserCommand.Response>({
+      exchange: DeleteWorkspaceUserCommand.exchange,
+      routingKey: DeleteWorkspaceUserCommand.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
+  }
+
+  @Patch('/:userId')
+  @Roles(Role.USER)
+  updateWorkspaceUser(@TraceId() traceId: string | undefined, @Param('workspaceId', IsStringNumberPipe) workspaceId: string, @Param('userId', IsStringNumberPipe) userId: string, @Body() body: UpdateWorkspaceUserDto) {
+    const payload: UpdateWorkspaceUserCommand.Request = {
+      workspaceId: Number(workspaceId),
+      userId: Number(userId),
+      ...body
+    }
+
+    return this.amqpConnection.request<UpdateWorkspaceUserCommand.Response>({
+      exchange: UpdateWorkspaceUserCommand.exchange,
+      routingKey: UpdateWorkspaceUserCommand.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
+  }
+
+  @Get('/:userId')
+  @Roles(Role.USER)
+  findWorkspaceUser(@TraceId() traceId: string | undefined, @Param('workspaceId', IsStringNumberPipe) workspaceId: string, @Param('userId', IsStringNumberPipe) userId: string) {
+    const payload: FindWorkspaceUserQuery.Request = {
+      workspaceId: Number(workspaceId),
+      userId: Number(userId)
+    }
+
+    return this.amqpConnection.request<FindWorkspaceUserQuery.Response>({
+      exchange: FindWorkspaceUserQuery.exchange,
+      routingKey: FindWorkspaceUserQuery.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
+  }
+
+  @Get('/')
+  @Roles(Role.USER)
+  findWorkspaceUsers(@TraceId() traceId: string | undefined, @Param('workspaceId', IsStringNumberPipe) workspaceId: string) {
+    const payload: FindWorkspaceUsersQuery.Request = {
+      workspaceId: Number(workspaceId),
+    }
+
+    return this.amqpConnection.request<FindWorkspaceUsersQuery.Response>({
+      exchange: FindWorkspaceUsersQuery.exchange,
+      routingKey: FindWorkspaceUsersQuery.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
   }
 }

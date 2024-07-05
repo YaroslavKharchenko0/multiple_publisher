@@ -1,37 +1,56 @@
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, createSuccessResponse } from "@app/contracts";
-import { RmqErrorService, internalServerError } from '@app/errors'
+import { Controller, Inject } from "@nestjs/common";
+import { createSuccessResponse, CreateWorkspaceUserCommand, DeleteWorkspaceUserCommand, UpdateWorkspaceUserCommand } from "@app/contracts";
+import { WORKSPACE_USER_SERVICE } from "../providers/workspace-user.providers";
+import { WorkspaceUserService } from "../services/workspace-user.service";
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) { }
+  constructor(@Inject(WORKSPACE_USER_SERVICE) private readonly service: WorkspaceUserService) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: CreateWorkspaceUserCommand.exchange,
+    routingKey: CreateWorkspaceUserCommand.routingKey,
+    queue: CreateWorkspaceUserCommand.queue,
   })
-  command(@RabbitPayload() message: CommandCommand.Request): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      });
+  async create(@RabbitPayload() message: CreateWorkspaceUserCommand.Request): Promise<CreateWorkspaceUserCommand.Response> {
+    const payload = await this.service.createOneByRole({
+      role: message.role,
+      userId: message.userId,
+      workspaceId: message.workspaceId,
+    });
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(payload);
   }
 
   @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
+    exchange: UpdateWorkspaceUserCommand.exchange,
+    routingKey: UpdateWorkspaceUserCommand.routingKey,
+    queue: UpdateWorkspaceUserCommand.queue,
   })
-  error(@RabbitPayload() _message: CommandErrorCommand.Request): CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound()
+  async update(@RabbitPayload() message: UpdateWorkspaceUserCommand.Request): Promise<UpdateWorkspaceUserCommand.Response> {
+    const payload = await this.service.updateOneByRole({
+      userId: message.userId,
+      workspaceId: message.workspaceId,
+    }, {
+      role: message.role,
+    });
+
+    return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: DeleteWorkspaceUserCommand.exchange,
+    routingKey: DeleteWorkspaceUserCommand.routingKey,
+    queue: DeleteWorkspaceUserCommand.queue,
+  })
+  async delete(@RabbitPayload() message: DeleteWorkspaceUserCommand.Request): Promise<DeleteWorkspaceUserCommand.Response> {
+    await this.service.deleteOne({
+      userId: message.userId,
+      workspaceId: message.workspaceId,
+    });
+
+    return createSuccessResponse(null);
   }
 }
 

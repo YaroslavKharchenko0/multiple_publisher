@@ -1,1 +1,1 @@
-export { WorkspaceUserModule } from './WorkspaceUser.module'
+export { WorkspaceUserModule } from './workspace-user.module'
