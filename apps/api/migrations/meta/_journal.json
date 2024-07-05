@@ -36,6 +36,34 @@
       "when": 1720044362490,
       "tag": "0004_pale_scarecrow",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1720199676227,
+      "tag": "0005_unique_blackheart",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1720200481746,
+      "tag": "0006_lush_dust",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1720200575370,
+      "tag": "0007_wandering_wonder_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1720200796752,
+      "tag": "0008_broken_norrin_radd",
+      "breakpoints": true
     }
   ]
 }

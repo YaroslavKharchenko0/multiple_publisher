@@ -1,0 +1,1 @@
+ALTER TABLE "files" ADD COLUMN "uploadStatus" varchar(50) NOT NULL;

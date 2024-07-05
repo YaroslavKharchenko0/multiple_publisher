@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { serial, text, timestamp, pgTable, uuid, varchar, integer } from "drizzle-orm/pg-core";
-import { Role, WorkspaceRole } from '@app/types';
+import { FileType, Role, UploadStatus, WorkspaceRole } from '@app/types';
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -41,6 +41,21 @@ export const workspaceUsers = pgTable("workspace_users", {
   workspaceId: integer("workspace_id").notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
   roleId: integer("role_id").notNull().references(() => workspaceRoles.id, { onDelete: 'cascade' }),
   joinedAt: timestamp("joined_at").defaultNow(),
+});
+
+export const files = pgTable("files", {
+  id: serial("id").primaryKey(),
+  providerId: uuid("provider_id").unique().notNull(),
+  type: varchar("type", { length: 10 }).$type<FileType>().notNull(),
+  uploadStatus: varchar("uploadStatus", { length: 50 }).$type<UploadStatus>(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const fileMetadata = pgTable("file_metadata", {
+  id: serial("id").primaryKey(),
+  fileId: integer("file_id").notNull().references(() => files.id, { onDelete: 'cascade' }),
+  key: varchar("key", { length: 255 }).notNull(),
+  value: text("value").notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
