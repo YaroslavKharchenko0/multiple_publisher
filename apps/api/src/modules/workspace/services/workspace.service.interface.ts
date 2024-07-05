@@ -11,7 +11,7 @@ export interface Options {
 
 export interface Service {
   createWorkspaceByUser(userId: number, options?: Options): Promise<WorkspaceModel>;
-  createWorkspace(input: CreateWorkspaceParams): Promise<WorkspaceModel>;
+  createWorkspace(input: CreateWorkspaceParams, options?: Options): Promise<WorkspaceModel>;
   deleteWorkspace(id: number): Promise<void>;
   findWorkspace(id: number): Promise<WorkspaceModel>
 }

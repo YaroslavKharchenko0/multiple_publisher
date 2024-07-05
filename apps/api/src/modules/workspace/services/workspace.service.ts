@@ -3,7 +3,7 @@ import { WorkspaceRepository } from "../repositories/workspace.repository";
 import { CreateWorkspaceParams, Options, Service } from "./workspace.service.interface";
 import { WorkspaceModel } from "../models/workspace.model";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { FindUserByIdQuery } from "@app/contracts";
+import { FindUserByIdQuery, WorkspaceCreatedEvent } from "@app/contracts";
 import { RmqErrorService, RmqResponseService } from "@app/errors";
 import { WORKSPACE_REPOSITORY } from "../providers/workspace.providers";
 
@@ -37,9 +37,9 @@ export class WorkspaceService implements Service {
     return this.createWorkspace({
       name: `${user.name}'s Workspace`,
       userId,
-    });
+    }, options);
   }
-  async createWorkspace(input: CreateWorkspaceParams): Promise<WorkspaceModel> {
+  async createWorkspace(input: CreateWorkspaceParams, options?: Options): Promise<WorkspaceModel> {
     const entities = await this.repository.createOne({
       name: input.name,
       userId: input.userId,
@@ -47,7 +47,13 @@ export class WorkspaceService implements Service {
 
     const [entity] = entities;
 
-    return WorkspaceModel.fromEntity(entity);
+    const model = WorkspaceModel.fromEntity(entity);
+
+    const payload: WorkspaceCreatedEvent.Request = model
+
+    await this.amqpConnection.publish(WorkspaceCreatedEvent.exchange, WorkspaceCreatedEvent.routingKey, payload, { headers: { traceId: options?.traceId } });
+
+    return model;
   }
   deleteWorkspace(id: number): Promise<void> {
     return this.repository.deleteById(id);
