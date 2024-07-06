@@ -7,10 +7,10 @@ import { Role } from "@app/types";
 import { UpdateFileBodyDto } from "@app/validation";
 
 @Controller('admin/files')
-export class ApiController {
+export class AdminApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/:fileId')
+  @Delete('/:fileId')
   @Roles(Role.ADMIN)
   deleteFile(@TraceId() traceId: string | undefined, @Param('fileId', IsStringNumberPipe) fileId: string) {
     const numberFileId = Number(fileId);
@@ -65,9 +65,9 @@ export class ApiController {
     });
   }
 
-  @Delete('/authors/:authorId')
+  @Get('/authors/:authorId')
   @Roles(Role.ADMIN)
-  deleteUserFile(@TraceId() traceId: string | undefined, @Param('authorId', IsStringNumberPipe) authorId: string) {
+  findUserFile(@TraceId() traceId: string | undefined, @Param('authorId', IsStringNumberPipe) authorId: string) {
     const payload: FindUserFilesQuery.Request = {
       userId: Number(authorId)
     }

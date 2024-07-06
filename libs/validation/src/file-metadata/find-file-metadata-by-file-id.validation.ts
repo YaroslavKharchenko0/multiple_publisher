@@ -11,6 +11,8 @@ export const findFileMetadataByFileIdValidationSchema = z.object({
 
 export type FindFileMetadataByFileIdRequest = z.infer<typeof findFileMetadataByFileIdValidationSchema>
 
-export class FindFileMetadataByFileIdBodyDto extends createZodDto(findFileMetadataByFileIdValidationSchema) { }
+export const findFileMetadataByFileIdBodyValidationSchema = findFileMetadataByFileIdValidationSchema.omit({ fileId: true })
+
+export class FindFileMetadataByFileIdBodyDto extends createZodDto(findFileMetadataByFileIdBodyValidationSchema) { }
 
 export type FindFileMetadataByFileIdResponse = FileMetadata[]

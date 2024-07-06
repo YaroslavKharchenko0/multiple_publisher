@@ -4,6 +4,7 @@ import { ApiController } from "./controllers/api.controller";
 import { CommandController } from "./controllers/command.controller";
 import { QueryController } from "./controllers/query.controller";
 import { FILE_REPOSITORY, FILE_SERVICE, fileRepositoryProvider, fileServiceProvider } from "./providers/file.providers";
+import { AdminApiController } from "./controllers/admin-api.controller";
 
 @Module({})
 export class FilesModule {
@@ -11,7 +12,7 @@ export class FilesModule {
     return {
       module: FilesModule,
       imports: [RmqModule.forRoot()],
-      controllers: [ApiController, CommandController, QueryController],
+      controllers: [ApiController, AdminApiController, CommandController, QueryController],
       providers: [fileRepositoryProvider, fileServiceProvider],
       exports: [FILE_REPOSITORY, FILE_SERVICE]
     };

@@ -11,6 +11,8 @@ export const createFileMetadata = z.object({
 
 export type CreateFileMetadataRequest = z.infer<typeof createFileMetadata>
 
-export class CreateFileMetadataBodyDto extends createZodDto(createFileMetadata) { }
+export const createFileMetadataBody = createFileMetadata.omit({ fileId: true })
+
+export class CreateFileMetadataBodyDto extends createZodDto(createFileMetadataBody) { }
 
 export type CreateFileMetadataResponse = FileMetadata
