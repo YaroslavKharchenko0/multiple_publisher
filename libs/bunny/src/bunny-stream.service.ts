@@ -20,7 +20,7 @@ export class BunnyStreamService {
   constructor(private readonly httpService: HttpService, @Inject(BUNNY_CONFIG_KEY) private readonly config: BunnyConfig) {
     const client = this.httpService.axiosRef;
 
-    const baseUrl = `${this.config.stream.videoUrl}`;
+    const baseUrl = this.config.stream.videoUrl
 
     this.baseUrl = baseUrl;
 
