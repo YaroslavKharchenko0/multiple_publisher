@@ -10,15 +10,21 @@ import { HttpService } from "@nestjs/axios";
 export class BunnyStreamService {
   private readonly client;
 
+  private readonly baseUrl: string
+
+  private readonly baseHeaders: Record<string, string> = {
+    'accept': 'application/json',
+    'content-type': 'application/*+json',
+  }
+
   constructor(private readonly httpService: HttpService, @Inject(BUNNY_CONFIG_KEY) private readonly config: BunnyConfig) {
     const client = this.httpService.axiosRef;
 
-    client.defaults.baseURL = this.config.stream.videoUrl;
+    const baseUrl = `${this.config.stream.videoUrl}`;
 
-    client.defaults.headers.common['accept'] = 'application/json';
-    client.defaults.headers.common['content-type'] = 'application/*+json';
-    client.defaults.headers.common['AccessKey'] =
-      this.config.stream.apiKey
+    this.baseUrl = baseUrl;
+
+    this.baseHeaders['AccessKey'] = this.config.stream.apiKey;
 
     this.client = client;
   }
@@ -55,8 +61,10 @@ export class BunnyStreamService {
     const libraryId = this.config.stream.libraryId;
     const path = `library/${libraryId}/videos`;
 
+    const url = `${this.baseUrl}/${path}`
+
     try {
-      const response = await this.client.post(path, { title, thumbnailTime: 1 });
+      const response = await this.client.post(url, { title, thumbnailTime: 1 }, { headers: this.baseHeaders });
       if (response.status === 200) {
         return response.data as BunnyCreateVideoResponse;
       }
@@ -71,8 +79,10 @@ export class BunnyStreamService {
     const libraryId = this.config.stream.libraryId;
     const path = `library/${libraryId}/videos/${videoId}`;
 
+    const url = `${this.baseUrl}/${path}`
+
     try {
-      const response = await this.client.delete(path);
+      const response = await this.client.delete(url);
       if (response.status === 200) {
         return response.data as BunnyDeleteVideoResponse;
       }

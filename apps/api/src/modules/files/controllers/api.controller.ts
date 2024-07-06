@@ -19,7 +19,7 @@ export class ApiController {
     const payload: UploadFileCommand.Request = {
       userId: Number(userId),
       file: {
-        buffer: image.buffer,
+        buffer: image.buffer.toString('base64'),
         mimetype: image.mimetype,
         originalname: image.originalname,
         size: image.size,

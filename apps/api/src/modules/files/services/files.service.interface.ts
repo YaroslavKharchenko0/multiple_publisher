@@ -1,4 +1,4 @@
-import { FileType, UploadStatus } from "@app/types";
+import { Base64, FileType, UploadStatus } from "@app/types";
 import { FileModel } from "../models/file.model";
 import { Pagination } from "@app/validation";
 
@@ -11,7 +11,7 @@ export interface CreateFileInput {
 }
 
 export interface UploadFileInput {
-  buffer: Buffer;
+  buffer: Base64;
   originalname: string;
   mimetype: string;
   size: number;

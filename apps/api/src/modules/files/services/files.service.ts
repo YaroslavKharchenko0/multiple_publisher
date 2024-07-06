@@ -51,7 +51,7 @@ export class FileService implements Service {
 
     const dayMonthYear = format(date, 'dd-MM-yyyy');
 
-    return `${userId}/${dayMonthYear}/${originalname}`;
+    return `users/${userId}/${dayMonthYear}/${originalname}`;
   }
 
   async uploadImage(userId: number, input: UploadFileInput): Promise<FileModel> {

@@ -16,6 +16,7 @@ export class FileModel {
     this.type = input.type ?? this.type;
     this.uploadStatus = input.uploadStatus ?? this.uploadStatus;
     this.authorId = input.authorId ?? this.authorId;
+    this.path = input.path ?? this.path;
 
     return this;
   }

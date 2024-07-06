@@ -7,28 +7,33 @@ import { BunnyConfig } from "./bunny.types";
 export class BunnyStorageService {
   private client;
 
+  private readonly baseUrl: string
+
   constructor(private readonly httpService: HttpService, @Inject(BUNNY_CONFIG_KEY) private readonly config: BunnyConfig) {
     const client = this.httpService.axiosRef;
 
-    client.defaults.baseURL = `${this.config.storage.storageEndpoint}/${this.config.storage.storageZoneName}`;
+    const baseUrl = `${this.config.storage.storageEndpoint}/${this.config.storage.storageZoneName}`;
+
+    this.baseUrl = baseUrl;
 
     this.client = client;
   }
 
-  async uploadFile(filePath: string, file: Buffer) {
-    const url = filePath;
+  async uploadFile(filePath: string, file: string, encoding: BufferEncoding = 'base64') {
+    const url = `${this.baseUrl}/${filePath}`;
+
+    const buffer = Buffer.from(file, encoding);
 
     try {
-      await this.client.put(url, file, {
+      await this.client.put(url, buffer, {
         headers: {
-          AccessKey: this.config.storage.storageApiKey,
+          'AccessKey': this.config.storage.storageApiKey,
           'Content-Type': 'application/octet-stream',
-          Accept: 'application/json'
+          'accept': 'application/json'
         }
       })
     }
     catch (error) {
-      console.log(error);
       throw new Error("Error upload to provider");
     }
   }

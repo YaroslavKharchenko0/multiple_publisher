@@ -6,7 +6,7 @@ import { File } from './file.validation'
 export const uploadFileValidationSchema = z.object({
   userId,
   file: z.object({
-    buffer: z.instanceof(Buffer),
+    buffer: z.string().base64(),
     originalname: z.string(),
     mimetype: z.string(),
     size: z.number(),

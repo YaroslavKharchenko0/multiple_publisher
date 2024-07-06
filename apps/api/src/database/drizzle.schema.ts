@@ -45,7 +45,8 @@ export const workspaceUsers = pgTable("workspace_users", {
 
 export const files = pgTable("files", {
   id: serial("id").primaryKey(),
-  providerId: uuid("provider_id").unique().notNull(),
+  providerId: uuid("provider_id").unique(),
+  path: varchar("path", { length: 255 }),
   type: varchar("type", { length: 10 }).$type<FileType>().notNull(),
   uploadStatus: varchar("uploadStatus", { length: 50 }).$type<UploadStatus>(),
   authorId: integer("author_id").notNull().references(() => users.id, { onDelete: 'set null' }),
