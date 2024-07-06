@@ -1,13 +1,75 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateFileInput, Service } from "./files.service.interface";
+import { CreateFileInput, GenerateVideoSignatureParams, GenerateVideoSignatureReturn, Service, UploadFileInput } from "./files.service.interface";
 import { FileModel } from "../models/file.model";
 import { FILE_REPOSITORY } from "../providers/file.providers";
 import { FileRepository } from "../repositories/files.repository";
 import { Pagination } from "@app/validation";
+import { BunnyStorage, BunnyStorageService, BunnyStream, BunnyStreamService } from "@app/bunny";
+import { format } from "date-fns";
+import { FileType, UploadStatus } from "@app/types";
+import { randomUUID } from "crypto";
+import { RmqErrorService } from "@app/errors";
 
 @Injectable()
 export class FileService implements Service {
-  constructor(@Inject(FILE_REPOSITORY) private readonly repository: FileRepository) { }
+  constructor(@Inject(FILE_REPOSITORY) private readonly repository: FileRepository, @BunnyStorage() private readonly storage: BunnyStorageService, @BunnyStream() private readonly stream: BunnyStreamService, private readonly exceptionService: RmqErrorService) { }
+  private generateVideoTitle(): string {
+    return randomUUID()
+  }
+
+  async generateVideoSignature(params: GenerateVideoSignatureParams): Promise<GenerateVideoSignatureReturn> {
+    const { userId } = params;
+
+    const video = await this.stream.createVideo({
+      title: this.generateVideoTitle()
+    })
+
+    if (!video.guid) {
+      throw this.exceptionService.forbidden()
+    }
+
+    const signature = await this.stream.generateSignature({
+      videoId: video.guid,
+    });
+
+    const file = await this.createOne({
+      authorId: userId,
+      path: null,
+      providerId: video.guid,
+      type: FileType.VIDEO,
+      uploadStatus: UploadStatus.QUEUED,
+    })
+
+    return {
+      file,
+      metadata: signature,
+    }
+  }
+
+  private createFilePath(userId: number, originalname: string): string {
+    const date = new Date();
+
+    const dayMonthYear = format(date, 'dd-MM-yyyy');
+
+    return `${userId}/${dayMonthYear}/${originalname}`;
+  }
+
+  async uploadImage(userId: number, input: UploadFileInput): Promise<FileModel> {
+    const { buffer, originalname } = input;
+
+    const filePath = this.createFilePath(userId, originalname);
+
+    await this.storage.uploadFile(filePath, buffer);
+
+    return this.createOne({
+      authorId: userId,
+      providerId: null,
+      path: filePath,
+      type: FileType.IMAGE,
+      uploadStatus: null,
+    })
+  }
+
   async createOne(input: CreateFileInput): Promise<FileModel> {
     const entities = await this.repository.createOne(input);
 

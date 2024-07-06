@@ -4,9 +4,11 @@ import { z } from 'nestjs-zod/z'
 import { userId } from '../user'
 
 export const fileId = z.number()
-export const fileProviderId = z.string().uuid()
+export const fileProviderId = z.string().uuid().nullable()
 export const fileType = z.nativeEnum(FileType)
 export const fileUploadStatus = z.nativeEnum(UploadStatus).nullable()
+export const filePath = z.string().nullable()
+
 
 export const fileValidationSchema = z.object({
   id: fileId,
@@ -14,7 +16,8 @@ export const fileValidationSchema = z.object({
   type: fileType,
   uploadStatus: fileUploadStatus,
   authorId: userId,
-  createdAt: z.date()
+  createdAt: z.date(),
+  path: filePath,
 })
 
 export type File = z.infer<typeof fileValidationSchema>

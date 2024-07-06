@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { BUNNY_CONFIG_KEY } from "./bunny.constants";
-import { BunnyConfig, BunnyCreateVideoResponse, BunnyDeleteVideoResponse, CreateVideoParams, CreateVideoResponse, DeleteVideoFileParams, DeleteVideoResponse, GenerateSignatureParams } from "./bunny.types";
+import { BunnyConfig, BunnyCreateVideoResponse, BunnyDeleteVideoResponse, CreateVideoParams, DeleteVideoFileParams, GenerateSignatureParams } from "./bunny.types";
 import { addHours } from "date-fns";
 import { createHash } from "crypto";
 import { toUnixTimestamp } from "@app/utils";
@@ -50,52 +50,35 @@ export class BunnyStreamService {
     };
   }
 
-  async createVideo(
-    params: CreateVideoParams,
-  ): Promise<BunnyCreateVideoResponse | null> {
+  async createVideo(params: CreateVideoParams): Promise<BunnyCreateVideoResponse | null> {
     const { title } = params;
-
     const libraryId = this.config.stream.libraryId;
-
     const path = `library/${libraryId}/videos`;
 
     try {
-      const response = await this.client.post<
-        BunnyCreateVideoResponse,
-        CreateVideoResponse
-      >(path, { title, thumbnailTime: 1 });
-
+      const response = await this.client.post(path, { title, thumbnailTime: 1 });
       if (response.status === 200) {
-        return response.data;
+        return response.data as BunnyCreateVideoResponse;
       }
-
       return null;
-    }
-    catch (error) {
-      throw new Error('Error create video in provider');
+    } catch (error) {
+      throw new Error('Error creating video in provider');
     }
   }
 
-  async deleteVideoFile(params: DeleteVideoFileParams) {
+  async deleteVideoFile(params: DeleteVideoFileParams): Promise<BunnyDeleteVideoResponse | null> {
     const { videoId } = params;
-
     const libraryId = this.config.stream.libraryId;
-
     const path = `library/${libraryId}/videos/${videoId}`;
 
     try {
-      const response = await this.client.delete<
-        BunnyDeleteVideoResponse,
-        DeleteVideoResponse
-      >(path);
-
+      const response = await this.client.delete(path);
       if (response.status === 200) {
-        return response.data;
+        return response.data as BunnyDeleteVideoResponse;
       }
-
       return null;
     } catch (error) {
-      throw new Error('Error delete video in provider');
+      throw new Error('Error deleting video in provider');
     }
   }
 }

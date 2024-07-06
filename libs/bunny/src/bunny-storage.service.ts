@@ -28,6 +28,7 @@ export class BunnyStorageService {
       })
     }
     catch (error) {
+      console.log(error);
       throw new Error("Error upload to provider");
     }
   }

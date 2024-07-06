@@ -4,9 +4,9 @@ import { UploadFileRequest, UploadFileResponse } from '@app/validation'
 export namespace UploadFileCommand {
   export const exchange = 'file';
 
-  export const routingKey = 'generate-signature';
+  export const routingKey = 'upload-file';
 
-  export const queue = 'generate-signature';
+  export const queue = 'upload-file';
 
   export type Request = UploadFileRequest;
 

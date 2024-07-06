@@ -1,6 +1,6 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile } from "@nestjs/common";
-import { DeleteFileCommand, FindFileByIdQuery, FindFileByProviderIdQuery, FindUserFilesQuery, UpdateFileCommand } from '@app/contracts'
+import { DeleteFileCommand, FindFileByIdQuery, FindFileByProviderIdQuery, FindUserFilesQuery, GenerateSignatureCommand, UpdateFileCommand, UploadFileCommand } from '@app/contracts'
 import { TraceId } from "@app/logger";
 import { FileAccess, ImageUpload, IsStringNumberPipe, Roles, UserAccess } from "@app/utils";
 import { FindUserFilesBodyDto, UpdateFileBodyDto } from "@app/validation";
@@ -16,9 +16,42 @@ export class ApiController {
   @UserAccess()
   @ImageUpload()
   uploadFile(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) userId: string, @UploadedFile() image: File) {
-    console.log({ image })
+    const payload: UploadFileCommand.Request = {
+      userId: Number(userId),
+      file: {
+        buffer: image.buffer,
+        mimetype: image.mimetype,
+        originalname: image.originalname,
+        size: image.size,
+      }
+    }
 
-    return null;
+    return this.amqpConnection.request<UploadFileCommand.Response>({
+      exchange: UploadFileCommand.exchange,
+      routingKey: UploadFileCommand.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
+  }
+
+  @Post('/upload/video/signature')
+  @Roles(Role.USER)
+  @UserAccess()
+  generateSignature(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) userId: string) {
+    const payload: GenerateSignatureCommand.Request = {
+      userId: Number(userId),
+    }
+
+    return this.amqpConnection.request<GenerateSignatureCommand.Response>({
+      exchange: GenerateSignatureCommand.exchange,
+      routingKey: GenerateSignatureCommand.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
   }
 
   @Get('/:fileId')

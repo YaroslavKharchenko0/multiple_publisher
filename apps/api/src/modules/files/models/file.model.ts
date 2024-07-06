@@ -2,7 +2,8 @@ import { FileType, UploadStatus } from "@app/types";
 
 export class FileModel {
   id: number;
-  providerId: string;
+  providerId: string | null;
+  path: string | null;
   type: FileType;
   uploadStatus: UploadStatus | null;
   authorId: number;

@@ -1,6 +1,7 @@
 import { z } from 'nestjs-zod/z'
 import { createZodDto } from 'nestjs-zod'
 import { userId } from '../user'
+import { File } from './file.validation'
 
 export const uploadFileValidationSchema = z.object({
   userId,
