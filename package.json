@@ -6,7 +6,9 @@
   "private": true,
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.606.0",
+    "@fastify/multipart": "^8.3.0",
     "@golevelup/nestjs-rabbitmq": "^5.3.0",
+    "@nest-lab/fastify-multer": "^1.2.0",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.0.2",
     "@nestjs/config": "^3.2.2",

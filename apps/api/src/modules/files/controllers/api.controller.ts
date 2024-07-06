@@ -1,11 +1,11 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile } from "@nestjs/common";
 import { DeleteFileCommand, FindFileByIdQuery, FindFileByProviderIdQuery, FindUserFilesQuery, UpdateFileCommand } from '@app/contracts'
 import { TraceId } from "@app/logger";
-import { FileAccess, ImageFiles, ImageUpload, IsStringNumberPipe, Roles, UserAccess } from "@app/utils";
+import { FileAccess, ImageUpload, IsStringNumberPipe, Roles, UserAccess } from "@app/utils";
 import { FindUserFilesBodyDto, UpdateFileBodyDto } from "@app/validation";
+import { File } from '@nest-lab/fastify-multer';
 import { Role } from "@app/types";
-import { UploadedFiles } from "@blazity/nest-file-fastify";
 
 @Controller('/users/:userId/files')
 export class ApiController {
@@ -15,8 +15,8 @@ export class ApiController {
   @Roles(Role.USER)
   @UserAccess()
   @ImageUpload()
-  uploadFile(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) id: string, @UploadedFiles() files: ImageFiles) {
-    console.log({ files })
+  uploadFile(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) id: string, @UploadedFile() image: File) {
+    console.log({ image })
 
     return null;
   }
