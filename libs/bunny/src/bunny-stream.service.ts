@@ -45,6 +45,8 @@ export class BunnyStreamService {
     return {
       signature,
       unixExpirationTime,
+      videoId,
+      libraryId,
     };
   }
 

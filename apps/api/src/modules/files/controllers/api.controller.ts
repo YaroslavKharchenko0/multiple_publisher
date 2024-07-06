@@ -15,7 +15,7 @@ export class ApiController {
   @Roles(Role.USER)
   @UserAccess()
   @ImageUpload()
-  uploadFile(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) id: string, @UploadedFile() image: File) {
+  uploadFile(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) userId: string, @UploadedFile() image: File) {
     console.log({ image })
 
     return null;
