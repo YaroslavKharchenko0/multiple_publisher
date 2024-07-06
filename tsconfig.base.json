@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@app/aws": ["libs/aws/src/index.ts"],
+      "@app/bunny": ["libs/bunny/src/index.ts"],
       "@app/contracts": ["libs/contracts/src/index.ts"],
       "@app/errors": ["libs/errors/src/index.ts"],
       "@app/logger": ["libs/logger/src/index.ts"],

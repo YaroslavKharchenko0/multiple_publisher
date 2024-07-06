@@ -1,14 +1,25 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Body, Controller, Delete, Get, Param, Patch, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
 import { DeleteFileCommand, FindFileByIdQuery, FindFileByProviderIdQuery, FindUserFilesQuery, UpdateFileCommand } from '@app/contracts'
 import { TraceId } from "@app/logger";
-import { FileAccess, IsStringNumberPipe, Roles, UserAccess } from "@app/utils";
+import { FileAccess, ImageFiles, ImageUpload, IsStringNumberPipe, Roles, UserAccess } from "@app/utils";
 import { FindUserFilesBodyDto, UpdateFileBodyDto } from "@app/validation";
 import { Role } from "@app/types";
+import { UploadedFiles } from "@blazity/nest-file-fastify";
 
 @Controller('/users/:userId/files')
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
+
+  @Post('/upload/image')
+  @Roles(Role.USER)
+  @UserAccess()
+  @ImageUpload()
+  uploadFile(@TraceId() traceId: string | undefined, @Param('userId', IsStringNumberPipe) id: string, @UploadedFiles() files: ImageFiles) {
+    console.log({ files })
+
+    return null;
+  }
 
   @Get('/:fileId')
   @Roles(Role.USER)
