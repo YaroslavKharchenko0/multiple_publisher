@@ -31,9 +31,13 @@ export interface GenerateVideoSignatureReturn {
   file: FileModel
 }
 
+export interface Options {
+  traceId: string;
+}
+
 export interface Service {
-  uploadImage(userId: number, input: UploadFileInput): Promise<FileModel>;
-  generateVideoSignature(params: GenerateVideoSignatureParams): Promise<GenerateVideoSignatureReturn>;
+  uploadImage(userId: number, input: UploadFileInput, options?: Options): Promise<FileModel>;
+  generateVideoSignature(params: GenerateVideoSignatureParams, options?: Options): Promise<GenerateVideoSignatureReturn>;
   createOne(input: CreateFileInput): Promise<FileModel>;
   findById(id: number): Promise<FileModel>;
   findByProviderId(providerId: string): Promise<FileModel>;

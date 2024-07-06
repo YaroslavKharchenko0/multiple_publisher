@@ -3,6 +3,7 @@ import { Controller, Inject } from "@nestjs/common";
 import { CreateFileCommand, createSuccessResponse, DeleteFileCommand, GenerateSignatureCommand, UpdateFileCommand, UploadFileCommand } from "@app/contracts";
 import { FILE_SERVICE } from "../providers/file.providers";
 import { FileService } from "../services/files.service";
+import { TraceId } from "@app/logger";
 
 @Controller()
 export class CommandController {
@@ -13,13 +14,13 @@ export class CommandController {
     routingKey: UploadFileCommand.routingKey,
     queue: UploadFileCommand.queue,
   })
-  async uploadFile(@RabbitPayload() message: UploadFileCommand.Request): Promise<UploadFileCommand.Response> {
+  async uploadFile(@TraceId() traceId: string, @RabbitPayload() message: UploadFileCommand.Request): Promise<UploadFileCommand.Response> {
     const payload = await this.fileService.uploadImage(message.userId, {
       buffer: message.file.buffer,
       mimetype: message.file.mimetype,
       originalname: message.file.originalname,
       size: message.file.size,
-    })
+    }, { traceId })
 
     return createSuccessResponse(payload)
   }
@@ -29,10 +30,10 @@ export class CommandController {
     routingKey: GenerateSignatureCommand.routingKey,
     queue: GenerateSignatureCommand.queue,
   })
-  async generateSignature(@RabbitPayload() message: GenerateSignatureCommand.Request): Promise<GenerateSignatureCommand.Response> {
+  async generateSignature(@TraceId() traceId: string, @RabbitPayload() message: GenerateSignatureCommand.Request): Promise<GenerateSignatureCommand.Response> {
     const payload = await this.fileService.generateVideoSignature({
       userId: message.userId,
-    })
+    }, { traceId })
 
     return createSuccessResponse(payload)
   }

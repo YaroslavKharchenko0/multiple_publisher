@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateFileInput, GenerateVideoSignatureParams, GenerateVideoSignatureReturn, Service, UploadFileInput } from "./files.service.interface";
+import { CreateFileInput, GenerateVideoSignatureParams, GenerateVideoSignatureReturn, Service, UploadFileInput, Options as ServiceOptions } from "./files.service.interface";
 import { FileModel } from "../models/file.model";
 import { FILE_REPOSITORY } from "../providers/file.providers";
 import { FileRepository } from "../repositories/files.repository";
@@ -9,15 +9,16 @@ import { format } from "date-fns";
 import { FileType, UploadStatus } from "@app/types";
 import { randomUUID } from "crypto";
 import { RmqErrorService } from "@app/errors";
+import { FileFacade } from "@app/utils";
 
 @Injectable()
 export class FileService implements Service {
-  constructor(@Inject(FILE_REPOSITORY) private readonly repository: FileRepository, @BunnyStorage() private readonly storage: BunnyStorageService, @BunnyStream() private readonly stream: BunnyStreamService, private readonly exceptionService: RmqErrorService) { }
+  constructor(@Inject(FILE_REPOSITORY) private readonly repository: FileRepository, @BunnyStorage() private readonly storage: BunnyStorageService, @BunnyStream() private readonly stream: BunnyStreamService, private readonly exceptionService: RmqErrorService, private readonly fileFacade: FileFacade) { }
   private generateVideoTitle(): string {
     return randomUUID()
   }
 
-  async generateVideoSignature(params: GenerateVideoSignatureParams): Promise<GenerateVideoSignatureReturn> {
+  async generateVideoSignature(params: GenerateVideoSignatureParams, options?: ServiceOptions): Promise<GenerateVideoSignatureReturn> {
     const { userId } = params;
 
     const video = await this.stream.createVideo({
@@ -40,6 +41,14 @@ export class FileService implements Service {
       uploadStatus: UploadStatus.QUEUED,
     })
 
+    const metadata: Record<string, string> = {
+      title: video.title,
+      storage_size: video?.storageSize?.toString(),
+      library_id: video?.videoLibraryId?.toString(),
+    }
+
+    await this.fileFacade.addMetadata(file.id, metadata, options?.traceId)
+
     return {
       file,
       metadata: signature,
@@ -54,20 +63,29 @@ export class FileService implements Service {
     return `users/${userId}/${dayMonthYear}/${originalname}`;
   }
 
-  async uploadImage(userId: number, input: UploadFileInput): Promise<FileModel> {
-    const { buffer, originalname } = input;
+  async uploadImage(userId: number, input: UploadFileInput, options?: ServiceOptions): Promise<FileModel> {
+    const { buffer, originalname, mimetype, size } = input;
 
     const filePath = this.createFilePath(userId, originalname);
 
     await this.storage.uploadFile(filePath, buffer);
 
-    return this.createOne({
+    const metadata: Record<string, string> = {
+      mimetype,
+      size: size.toString(),
+    }
+
+    const file = await this.createOne({
       authorId: userId,
       providerId: null,
       path: filePath,
       type: FileType.IMAGE,
       uploadStatus: null,
     })
+
+    await this.fileFacade.addMetadata(file.id, metadata, options?.traceId)
+
+    return file
   }
 
   async createOne(input: CreateFileInput): Promise<FileModel> {

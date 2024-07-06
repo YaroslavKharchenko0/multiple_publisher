@@ -1,4 +1,4 @@
-import { FindFileByIdQuery, FindFileByProviderIdQuery, SuccessResponse } from "@app/contracts";
+import { CreateFileMetadataCommand, FindFileByIdQuery, FindFileByProviderIdQuery, SuccessResponse } from "@app/contracts";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Injectable } from "@nestjs/common";
 
@@ -7,6 +7,42 @@ export class FileFacade {
   constructor(
     private readonly amqpConnection: AmqpConnection
   ) { }
+
+
+  async addMetadata(fileId: number, metadata: Record<string, string>, traceId: string) {
+    const entries = Object.entries(metadata);
+
+    const promises = entries.map(([key, value]) => {
+      if (!value) {
+        return Promise.resolve(null);
+      }
+
+      const payload: CreateFileMetadataCommand.Request = {
+        fileId,
+        key,
+        value,
+      }
+
+      return this.amqpConnection.request<CreateFileMetadataCommand.Response>({
+        exchange: CreateFileMetadataCommand.exchange,
+        routingKey: CreateFileMetadataCommand.routingKey,
+        payload,
+        headers: {
+          traceId
+        }
+      })
+    });
+
+    const responses = await Promise.all(promises);
+
+    const payloads = responses.map(response => {
+      const successResponse = response as SuccessResponse<CreateFileMetadataCommand.ResponsePayload>;
+
+      return successResponse.payload;
+    })
+
+    return payloads
+  }
 
   async findById(id: number, traceId: string) {
     const payload: FindFileByIdQuery.Request = {
