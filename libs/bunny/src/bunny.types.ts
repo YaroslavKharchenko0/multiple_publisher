@@ -116,6 +116,7 @@ export interface GenerateSignatureParams {
 
 export interface CreateVideoParams {
   title: string;
+  thumbnailTime?: number;
 }
 
 export interface DeleteVideoFileParams {

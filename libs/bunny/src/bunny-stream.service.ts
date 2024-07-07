@@ -57,14 +57,14 @@ export class BunnyStreamService {
   }
 
   async createVideo(params: CreateVideoParams): Promise<BunnyCreateVideoResponse | null> {
-    const { title } = params;
+    const { title, thumbnailTime = 1 } = params;
     const libraryId = this.config.stream.libraryId;
     const path = `library/${libraryId}/videos`;
 
     const url = `${this.baseUrl}/${path}`
 
     try {
-      const response = await this.client.post(url, { title, thumbnailTime: 1 }, { headers: this.baseHeaders });
+      const response = await this.client.post(url, { title, thumbnailTime }, { headers: this.baseHeaders });
       if (response.status === 200) {
         return response.data as BunnyCreateVideoResponse;
       }
@@ -77,17 +77,19 @@ export class BunnyStreamService {
   async deleteVideoFile(params: DeleteVideoFileParams): Promise<BunnyDeleteVideoResponse | null> {
     const { videoId } = params;
     const libraryId = this.config.stream.libraryId;
+
     const path = `library/${libraryId}/videos/${videoId}`;
 
     const url = `${this.baseUrl}/${path}`
 
     try {
-      const response = await this.client.delete(url);
+      const response = await this.client.delete(url, { headers: this.baseHeaders });
       if (response.status === 200) {
         return response.data as BunnyDeleteVideoResponse;
       }
       return null;
     } catch (error) {
+      console.log(error);
       throw new Error('Error deleting video in provider');
     }
   }
