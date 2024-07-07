@@ -16,6 +16,16 @@ module "cognito" {
   iam_role_arn           = module.iam.cognito_role_arn
 }
 
+module "rds" {
+  source              = "./modules/rds"
+  allocated_storage   = var.db_allocated_storage
+  instance_class      = var.db_instance_class
+  db_name             = var.db_name
+  db_username         = var.db_username
+  db_password         = var.db_password
+  env                 = var.env
+}
+
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
   content  = jsonencode({
@@ -26,6 +36,14 @@ resource "local_file" "credentials" {
         region                = var.region
         user_pool_id          = module.cognito.user_pool_id
         user_pool_client_id   = module.cognito.user_pool_client_id
+      }
+    },
+    db = {
+      credentials = {
+        db_instance_endpoint  = module.rds.db_instance_endpoint
+        db_username           = var.db_username
+        db_password           = var.db_password
+        db_connection_string  = "postgres://${var.db_username}:${var.db_password}@${module.rds.db_instance_endpoint}/${var.db_name}"
       }
     }
   })
