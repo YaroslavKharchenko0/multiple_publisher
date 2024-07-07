@@ -35,10 +35,12 @@ module "rds" {
   vpc_security_group_ids = [module.security_group.security_group_id]
 }
 
-module "api_repository" {
-  source = "./modules/repository"
-  env    = var.env
-  name   = "api_repository"
+module "api_repo" {
+  source = "./modules/ecr"
+  repository_name = "api_repo"
+  tags = {
+    Env = var.env
+  }
 }
 
 resource "local_file" "credentials" {
@@ -62,7 +64,9 @@ resource "local_file" "credentials" {
       }
     },
     ecr = {
-      repo_url = module.repository.repo_url
+      credentials = {
+        repository_url = module.api_repo.repository_url
+      }
     }
   })
 }
