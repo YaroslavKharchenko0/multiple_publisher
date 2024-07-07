@@ -8,13 +8,13 @@ FROM node:18-alpine As development
 WORKDIR /usr/src/app
 
 # Copy the main application dependency manifests to the container image.
-COPY --chown=node:node package*.json yarn.lock ./
+COPY package*.json yarn.lock ./
 
 # Install app dependencies using the `yarn install` command
 RUN yarn install --frozen-lockfile
 
 # Bundle app source
-COPY --chown=node:node . .
+COPY . .
 
 # Use the node user from the image (instead of the root user)
 USER node
@@ -27,11 +27,14 @@ FROM node:18-alpine As build
 
 WORKDIR /usr/src/app
 
-# Copy the main application dependency manifests to the container image.
-COPY --chown=node:node package*.json yarn.lock ./
+# Copy the necessary files for the build
+COPY package*.json yarn.lock ./
 
-# Copy over the source files and dependencies
-COPY --chown=node:node --from=development /usr/src/app ./
+# Copy over the node_modules directory from the development stage
+COPY --from=development /usr/src/app/node_modules ./node_modules
+
+# Copy the rest of the necessary files
+COPY . .
 
 # Run the build command which creates the production bundle
 RUN yarn nx build api --configuration=production
@@ -52,9 +55,10 @@ FROM node:18-alpine As production
 
 WORKDIR /usr/src/app
 
-# Copy the bundled code from the build stage to the production image
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+# Copy only the production dependencies and the built code
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist ./dist
+COPY cert cert
 
 # Start the server using the production build
 CMD [ "node", "dist/apps/api/main.js" ]
