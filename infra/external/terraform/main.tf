@@ -35,6 +35,12 @@ module "rds" {
   vpc_security_group_ids = [module.security_group.security_group_id]
 }
 
+module "api_repository" {
+  source = "./modules/repository"
+  env    = var.env
+  name   = "api_repository"
+}
+
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
   content  = jsonencode({
@@ -54,6 +60,9 @@ resource "local_file" "credentials" {
         db_password           = var.db_password
         db_connection_string  = "postgres://${var.db_username}:${var.db_password}@${module.rds.db_instance_endpoint}/${var.db_name}"
       }
+    },
+    ecr = {
+      repo_url = module.repository.repo_url
     }
   })
 }
