@@ -60,5 +60,7 @@ COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 COPY cert cert
 
+EXPOSE $PORT
+
 # Start the server using the production build
 CMD [ "node", "dist/apps/api/main.js" ]
