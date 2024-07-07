@@ -39,7 +39,7 @@ export class BunnyStorageService {
   }
 
   async deleteFile(filePath: string) {
-    const url = filePath;
+    const url = `${this.baseUrl}/${filePath}`;;
 
     try {
       await this.client.delete(url, {

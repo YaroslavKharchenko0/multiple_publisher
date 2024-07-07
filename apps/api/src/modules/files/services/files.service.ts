@@ -60,7 +60,11 @@ export class FileService implements Service {
 
     const dayMonthYear = format(date, 'dd-MM-yyyy');
 
-    return `users/${userId}/${dayMonthYear}/${originalname}`;
+    const name = originalname.replace(/ /g, '_');
+
+    const time = date.getTime();
+
+    return `users/${userId}/${dayMonthYear}/${time}-${name}`;
   }
 
   async uploadImage(userId: number, input: UploadFileInput, options?: ServiceOptions): Promise<FileModel> {
@@ -120,6 +124,22 @@ export class FileService implements Service {
 
     const [entity] = entities;
 
-    return FileModel.fromEntity(entity);
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
+
+    const model = FileModel.fromEntity(entity);
+
+    if (model.isImage()) {
+      await this.storage.deleteFile(model.path);
+    }
+
+    if (model.isVideo()) {
+      await this.stream.deleteVideoFile({
+        videoId: model.providerId,
+      });
+    }
+
+    return model;
   }
 }
