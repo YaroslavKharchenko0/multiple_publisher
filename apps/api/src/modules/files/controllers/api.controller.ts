@@ -2,7 +2,7 @@ import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile } from "@nestjs/common";
 import { DeleteFileCommand, FindFileByIdQuery, FindFileByProviderIdQuery, FindUserFilesQuery, GenerateSignatureCommand, UpdateFileCommand, UploadFileCommand } from '@app/contracts'
 import { TraceId } from "@app/logger";
-import { FileAccess, ImageUpload, IsStringNumberPipe, Roles, UserAccess } from "@app/utils";
+import { FileAccess, ImageUpload, IsStringNumberPipe, IsUUIDPipe, Roles, UserAccess } from "@app/utils";
 import { FindUserFilesBodyDto, UpdateFileBodyDto } from "@app/validation";
 import { File } from '@nest-lab/fastify-multer';
 import { Role } from "@app/types";
@@ -93,7 +93,7 @@ export class ApiController {
       providerId: true,
     }
   })
-  findByProviderId(@TraceId() traceId: string | undefined, @Param('providerId') providerId: string) {
+  findByProviderId(@TraceId() traceId: string | undefined, @Param('providerId', IsUUIDPipe) providerId: string) {
     const payload: FindFileByProviderIdQuery.Request = {
       providerId,
     }
