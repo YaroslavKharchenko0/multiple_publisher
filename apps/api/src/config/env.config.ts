@@ -15,6 +15,12 @@ const envValidationSchema = Joi.object({
   COGNITO_REGION: Joi.string().required(),
   COGNITO_JWKS_URI: Joi.string().required(),
   COGNITO_AUTHORITY: Joi.string().required(),
+  BUNNY_STORAGE_ENDPOINT: Joi.string().required(),
+  BUNNY_STORAGE_ZONE_NAME: Joi.string().required(),
+  BUNNY_STORAGE_API_KEY: Joi.string().required(),
+  BUNNY_STREAM_LIBRARY_ID: Joi.string().required(),
+  BUNNY_STREAM_API_KEY: Joi.string().required(),
+  BUNNY_STREAM_VIDEO_URL: Joi.string().required(),
 })
 
 export { envValidationSchema }

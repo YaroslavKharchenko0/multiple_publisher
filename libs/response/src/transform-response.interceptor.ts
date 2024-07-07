@@ -38,6 +38,12 @@ const isRpcResponse = (data: any): data is RmqResponse<unknown> => {
     return false;
   }
 
+  const isNull = data === null;
+
+  if (isNull) {
+    return false;
+  }
+
   return 'isRmqResponse' in data;
 }
 
