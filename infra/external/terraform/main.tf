@@ -16,14 +16,23 @@ module "cognito" {
   iam_role_arn           = module.iam.cognito_role_arn
 }
 
+module "security_group" {
+  source   = "./modules/security_group"
+  vpc_id   = var.vpc_id
+  allow_ips = var.allow_ips
+  env      = var.env
+}
+
 module "rds" {
-  source              = "./modules/rds"
-  allocated_storage   = var.db_allocated_storage
-  instance_class      = var.db_instance_class
-  db_name             = var.db_name
-  db_username         = var.db_username
-  db_password         = var.db_password
-  env                 = var.env
+  source                = "./modules/rds"
+  allocated_storage     = var.db_allocated_storage
+  instance_class        = var.db_instance_class
+  db_name               = var.db_name
+  db_username           = var.db_username
+  db_password           = var.db_password
+  env                   = var.env
+  publicly_accessible   = var.db_publicly_accessible
+  vpc_security_group_ids = [module.security_group.security_group_id]
 }
 
 resource "local_file" "credentials" {

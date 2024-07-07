@@ -9,8 +9,21 @@ resource "aws_db_instance" "postgres" {
   parameter_group_name = "default.postgres16"
   skip_final_snapshot  = true
 
+  vpc_security_group_ids = var.vpc_security_group_ids
+
+  publicly_accessible = var.publicly_accessible
+
   tags = {
     Name = var.db_name,
     Env = var.env
   }
+
+  iam_database_authentication_enabled = false
+
+  maintenance_window = "Mon:00:00-Mon:03:00"
+  backup_window      = "03:00-06:00"
+
+  deletion_protection = true
+
+  db_name = var.db_name
 }

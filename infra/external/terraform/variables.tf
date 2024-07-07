@@ -51,3 +51,20 @@ variable "db_name" {
   type        = string
   default     = "mydb"
 }
+
+variable "db_publicly_accessible" {
+  description = "Whether the RDS instance is publicly accessible"
+  type        = bool
+  default     = false
+}
+
+variable "vpc_id" {
+  description = "The VPC ID where the security group will be created"
+  type        = string
+}
+
+variable "allow_ips" {
+  description = "List of IPs allowed to access the database"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}

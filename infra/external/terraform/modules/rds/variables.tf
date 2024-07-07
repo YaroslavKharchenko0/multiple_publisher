@@ -35,3 +35,14 @@ variable "env" {
   type        = string
   default     = "dev"
 }
+
+variable "publicly_accessible" {
+  description = "Whether the RDS instance is publicly accessible"
+  type        = bool
+  default     = false
+}
+
+variable "vpc_security_group_ids" {
+  description = "The security group IDs to associate with the RDS instance"
+  type        = list(string)
+}
