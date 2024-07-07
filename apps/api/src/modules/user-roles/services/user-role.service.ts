@@ -90,6 +90,10 @@ export class UserRoleService implements Service {
 
     const [userRoleEntity] = userRoleEntities;
 
+    if (!userRoleEntity) {
+      throw this.rmqErrorService.notFound()
+    }
+
     return UserRoleModel.fromEntity(userRoleEntity);
   }
   async findUserRole(userId: number): Promise<UserRoleModel> {
@@ -142,6 +146,10 @@ export class UserRoleService implements Service {
     })
 
     const [userRoleEntity] = userRoleEntities;
+
+    if (!userRoleEntity) {
+      throw this.rmqErrorService.notFound()
+    }
 
     return UserRoleModel.fromEntity(userRoleEntity);
   }

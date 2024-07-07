@@ -5,6 +5,7 @@ import { addHours } from "date-fns";
 import { createHash } from "crypto";
 import { toUnixTimestamp } from "@app/utils";
 import { HttpService } from "@nestjs/axios";
+import { UploadStatus } from "@app/types";
 
 @Injectable()
 export class BunnyStreamService {
@@ -15,6 +16,20 @@ export class BunnyStreamService {
   private readonly baseHeaders: Record<string, string> = {
     'accept': 'application/json',
     'content-type': 'application/*+json',
+  }
+
+  readonly statusMap = {
+    0: UploadStatus.QUEUED,
+    1: UploadStatus.PROCESSING,
+    2: UploadStatus.ENCODING,
+    3: UploadStatus.FINISHED,
+    4: UploadStatus.RESOLUTION_FINISHED,
+    5: UploadStatus.FAILED,
+    6: UploadStatus.PRESIGNED_UPLOAD_STARTED,
+    7: UploadStatus.PRESIGNED_UPLOAD_FINISHED,
+    8: UploadStatus.PRESIGNED_UPLOAD_FAILED,
+    9: UploadStatus.CAPTIONS_GENERATED,
+    10: UploadStatus.TITLE_OR_DESCRIPTION_GENERATED,
   }
 
   constructor(private readonly httpService: HttpService, @Inject(BUNNY_CONFIG_KEY) private readonly config: BunnyConfig) {

@@ -34,6 +34,10 @@ export class WorkspaceUserService implements Service {
 
     const [entity] = entities
 
+    if (!entity) {
+      this.rmqErrorService.notFound();
+    }
+
     return WorkspaceUserModel.fromEntity(entity)
   }
 
@@ -56,6 +60,10 @@ export class WorkspaceUserService implements Service {
     const entities = await this.repository.updateOne(params, input)
 
     const [entity] = entities
+
+    if (!entity) {
+      this.rmqErrorService.notFound();
+    }
 
     return WorkspaceUserModel.fromEntity(entity)
   }
@@ -86,6 +94,10 @@ export class WorkspaceUserService implements Service {
     const entities = await this.repository.deleteOne(params)
 
     const [entity] = entities
+
+    if (!entity) {
+      this.rmqErrorService.notFound();
+    }
 
     return WorkspaceUserModel.fromEntity(entity)
   }

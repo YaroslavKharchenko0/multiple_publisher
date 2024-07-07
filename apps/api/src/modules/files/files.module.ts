@@ -7,6 +7,8 @@ import { FILE_REPOSITORY, FILE_SERVICE, fileRepositoryProvider, fileServiceProvi
 import { AdminApiController } from "./controllers/admin-api.controller";
 import { FastifyMulterModule } from "@nest-lab/fastify-multer";
 import { BunnyModule } from "@app/bunny";
+import { EventController } from "./controllers/event.controller";
+import { WebhookController } from "./controllers/webhook-api.controller";
 
 @Module({})
 export class FilesModule {
@@ -14,7 +16,7 @@ export class FilesModule {
     return {
       module: FilesModule,
       imports: [RmqModule.forRoot(), FastifyMulterModule, BunnyModule.forRoot()],
-      controllers: [ApiController, AdminApiController, CommandController, QueryController],
+      controllers: [WebhookController, ApiController, AdminApiController, CommandController, QueryController, EventController],
       providers: [fileRepositoryProvider, fileServiceProvider],
       exports: [FILE_REPOSITORY, FILE_SERVICE]
     };

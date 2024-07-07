@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateFileInput, GenerateVideoSignatureParams, GenerateVideoSignatureReturn, Service, UploadFileInput, Options as ServiceOptions } from "./files.service.interface";
+import { CreateFileInput, GenerateVideoSignatureParams, GenerateVideoSignatureReturn, Service, UploadFileInput, Options as ServiceOptions, OnWebhook } from "./files.service.interface";
 import { FileModel } from "../models/file.model";
 import { FILE_REPOSITORY } from "../providers/file.providers";
 import { FileRepository } from "../repositories/files.repository";
@@ -16,6 +16,20 @@ export class FileService implements Service {
   constructor(@Inject(FILE_REPOSITORY) private readonly repository: FileRepository, @BunnyStorage() private readonly storage: BunnyStorageService, @BunnyStream() private readonly stream: BunnyStreamService, private readonly exceptionService: RmqErrorService, private readonly fileFacade: FileFacade) { }
   private generateVideoTitle(): string {
     return randomUUID()
+  }
+
+  async onWebhook(params: OnWebhook): Promise<void> {
+    const { Status, VideoGuid } = params;
+
+    const status = this.stream.statusMap[Status];
+
+    if (!status) {
+      throw this.exceptionService.badRequest();
+    }
+
+    await this.updateByProviderId(VideoGuid, {
+      uploadStatus: status,
+    })
   }
 
   async generateVideoSignature(params: GenerateVideoSignatureParams, options?: ServiceOptions): Promise<GenerateVideoSignatureReturn> {
@@ -97,15 +111,27 @@ export class FileService implements Service {
 
     const [entity] = entities;
 
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
+
     return FileModel.fromEntity(entity);
   }
   async findById(id: number): Promise<FileModel> {
     const entity = await this.repository.findById(id);
 
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
+
     return FileModel.fromEntity(entity);
   }
   async findByProviderId(providerId: string): Promise<FileModel> {
     const entity = await this.repository.findByProviderId(providerId);
+
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
 
     return FileModel.fromEntity(entity);
   }
@@ -116,6 +142,17 @@ export class FileService implements Service {
   }
   async updateById(id: number, input: Partial<FileModel>): Promise<FileModel> {
     const entity = await this.updateById(id, input);
+
+    return FileModel.fromEntity(entity);
+  }
+  async updateByProviderId(providerId: string, input: Partial<FileModel>): Promise<FileModel> {
+    const entities = await this.repository.updateByProviderId(providerId, input);
+
+    const [entity] = entities;
+
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
 
     return FileModel.fromEntity(entity);
   }

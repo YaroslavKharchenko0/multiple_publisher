@@ -55,6 +55,14 @@ export class FileRepository {
     return result;
   }
 
+  async updateByProviderId(providerId: string, input: Partial<InsertFile>) {
+    const where = eq(this.files.providerId, providerId);
+
+    const result = await this.db.update(this.files).set(input).where(where).returning().execute();
+
+    return result;
+  }
+
   async deleteById(id: number, userId?: number) {
     let where = eq(this.files.id, id);
 
