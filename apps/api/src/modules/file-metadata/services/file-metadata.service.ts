@@ -14,6 +14,10 @@ export class FileMetadataService implements Service {
 
     const [entity] = entities;
 
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
+
     return FileMetadataModel.fromEntity(entity);
   }
 

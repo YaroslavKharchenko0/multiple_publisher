@@ -18,6 +18,10 @@ export class UserService implements Service {
 
     const [userEntity] = userEntities
 
+    if (!userEntity) {
+      throw this.rmqErrorService.notFound()
+    }
+
     const userModel = UserModel.fromEntity(userEntity);
 
     await this.amqpConnection.publish<UserCreatedEvent.Request>(UserCreatedEvent.exchange, UserCreatedEvent.routingKey, userModel, {

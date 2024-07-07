@@ -47,6 +47,10 @@ export class WorkspaceService implements Service {
 
     const [entity] = entities;
 
+    if (!entity) {
+      throw this.rmqErrorService.notFound()
+    }
+
     const model = WorkspaceModel.fromEntity(entity);
 
     const payload: WorkspaceCreatedEvent.Request = model

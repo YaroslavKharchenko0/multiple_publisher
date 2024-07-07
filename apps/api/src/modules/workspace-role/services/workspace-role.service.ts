@@ -28,6 +28,10 @@ export class WorkspaceRoleService implements Service {
 
     const [entity] = entities;
 
+    if (!entity) {
+      this.rmqErrorService.notFound();
+    }
+
     return WorkspaceRoleModel.fromEntity(entity);
   }
   async findWorkspaceRole(role: WorkspaceRole): Promise<WorkspaceRoleModel> {

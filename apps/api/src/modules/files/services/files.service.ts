@@ -111,15 +111,27 @@ export class FileService implements Service {
 
     const [entity] = entities;
 
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
+
     return FileModel.fromEntity(entity);
   }
   async findById(id: number): Promise<FileModel> {
     const entity = await this.repository.findById(id);
 
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
+
     return FileModel.fromEntity(entity);
   }
   async findByProviderId(providerId: string): Promise<FileModel> {
     const entity = await this.repository.findByProviderId(providerId);
+
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
 
     return FileModel.fromEntity(entity);
   }
@@ -137,6 +149,10 @@ export class FileService implements Service {
     const entities = await this.repository.updateByProviderId(providerId, input);
 
     const [entity] = entities;
+
+    if (!entity) {
+      throw this.exceptionService.notFound();
+    }
 
     return FileModel.fromEntity(entity);
   }
