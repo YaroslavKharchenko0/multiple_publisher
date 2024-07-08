@@ -50,6 +50,11 @@ module "vpc" {
   name = "multi-publisher-vpc-${var.env}"
 }
 
+module "ecs" {
+  source = "./modules/ecs"
+  cluster_name = "multi-publisher-cluster-${var.env}"
+}
+
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
   content  = jsonencode({
@@ -75,6 +80,17 @@ resource "local_file" "credentials" {
         repository_url = module.api_repo.repository_url
       }
     },
+    vpc = {
+      credentials = {
+        vpc_id = module.vpc.vpc_id
+      }
+    },
+    ecs = {
+      credentials = {
+        cluster_id = module.ecs.cluster_id
+        cluster_name = module.ecs.cluster_name
+      }
+    }
   })
 }
 
