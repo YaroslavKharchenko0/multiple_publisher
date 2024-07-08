@@ -23,6 +23,7 @@ module "vpc" {
   private_subnets = ["10.0.3.0/24", "10.0.4.0/24"]
   availability_zones = ["eu-west-1a", "eu-west-1b"]
   name = "${var.app_name}-vpc-${var.env}"
+  env = var.env
 }
 
 module "security_group" {
@@ -43,7 +44,7 @@ module "rds" {
   env                   = var.env
   publicly_accessible   = var.db_publicly_accessible
   vpc_security_group_ids = [module.security_group.security_group_id]
-  subnet_ids = module.vpc.private_subnets
+  subnet_ids = module.vpc.public_subnets
 }
 
 module "api_repo" {
