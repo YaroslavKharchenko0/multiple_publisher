@@ -1,6 +1,6 @@
 # Cognito
 resource "aws_iam_role" "cognito_role" {
-  name = "CognitoUserRole"
+  name = "CognitoUserRole-${var.env}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -17,7 +17,7 @@ resource "aws_iam_role" "cognito_role" {
 }
 
 resource "aws_iam_role_policy" "cognito_policy" {
-  name   = "CognitoUserPolicy"
+  name   = "CognitoUserPolicy-${var.env}"
   role   = aws_iam_role.cognito_role.id
 
   policy = jsonencode({
@@ -58,7 +58,7 @@ resource "aws_iam_access_key" "iam_user_access_key" {
 
 # ECS
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "${var.env}-ecs-task-execution-role"
+  name = "ecs-task-execution-role-${var.env}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -74,13 +74,13 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   })
 
   tags = {
-    Name = "${var.env}-ecs-task-execution-role"
+    Name = "ecs-task-execution-role-${var.env}"
     Env  = var.env
   }
 }
 
 resource "aws_iam_policy" "ecs_task_execution_policy" {
-  name = "${var.env}-ecs-task-execution-policy"
+  name = "ecs-task-execution-policy-${var.env}"
 
   policy = jsonencode({
     Version = "2012-10-17",

@@ -1,3 +1,8 @@
+variable "app_name" {
+  description = "The name of the application"
+  type        = string
+}
+
 variable "region" {
   description = "The AWS region to deploy resources"
   type        = string
@@ -56,11 +61,6 @@ variable "db_publicly_accessible" {
   description = "Whether the RDS instance is publicly accessible"
   type        = bool
   default     = false
-}
-
-variable "vpc_id" {
-  description = "The VPC ID where the security group will be created"
-  type        = string
 }
 
 variable "allow_ips" {

@@ -1,5 +1,5 @@
 resource "aws_security_group" "rds_security_group" {
-  name_prefix = "rds-sg-${var.env}-"
+  name_prefix = "rds-sg-${var.app_name}-${var.env}"
   description = "Security group for RDS instance"
   vpc_id      = var.vpc_id
 
@@ -22,6 +22,7 @@ resource "aws_security_group" "rds_security_group" {
   }
 
   tags = {
-    Name = "rds-sg-${var.env}"
+    Name = "rds-sg-${var.app_name}-${var.env}"
+    Env = var.env
   }
 }

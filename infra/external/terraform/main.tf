@@ -16,11 +16,21 @@ module "cognito" {
   iam_role_arn           = module.iam.cognito_role_arn
 }
 
+module "vpc" {
+  source = "./modules/vpc"
+  cidr_block = "10.0.0.0/16"
+  public_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  private_subnets = ["10.0.3.0/24", "10.0.4.0/24"]
+  availability_zones = ["eu-west-1a", "eu-west-1b"]
+  name = "${var.app_name}-vpc-${var.env}"
+}
+
 module "security_group" {
   source   = "./modules/security_group"
-  vpc_id   = var.vpc_id
+  vpc_id   = module.vpc.vpc_id
   allow_ips = var.allow_ips
   env      = var.env
+  app_name = var.app_name
 }
 
 module "rds" {
@@ -33,37 +43,41 @@ module "rds" {
   env                   = var.env
   publicly_accessible   = var.db_publicly_accessible
   vpc_security_group_ids = [module.security_group.security_group_id]
+  subnet_ids = module.vpc.private_subnets
 }
 
 module "api_repo" {
   source = "./modules/ecr"
-  repository_name = "api_repo"
+  repository_name = "${var.app_name}-api-repo-${var.env}"
   tags = {
     Env = var.env
   }
 }
 
-module "vpc" {
-  source = "./modules/vpc"
-  cidr_block = "10.0.0.0/16"
-  public_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
-  name = "multi-publisher-vpc-${var.env}"
-}
-
 module "ecs" {
   source = "./modules/ecs"
-  cluster_name = "multi-publisher-cluster-${var.env}"
+  cluster_name = "${var.app_name}-cluster-${var.env}"
 }
 
 module "ecs_task" {
   source = "./modules/ecs_task"
-  family = "multi-publisher-task-family"
+  family = "${var.app_name}-task-family-${var.env}"
   cpu = "256"
   memory = "512"
   execution_role_arn = module.iam.ecs_task_execution_role_arn
   ecr_repository_url = module.api_repo.repository_url
   region = var.region
   app_enviropments = var.app_environments
+}
+
+module "ecs_service" {
+  source = "./modules/ecs_service"
+  family = "${var.app_name}-task-family-${var.env}"
+  cluster_id = module.ecs.cluster_id
+  task_definition_arn = module.ecs_task.task_definition_arn
+  desired_count = 1
+  subnets = module.vpc.public_subnets
+  security_group_id = module.security_group.security_group_id
 }
 
 resource "local_file" "credentials" {

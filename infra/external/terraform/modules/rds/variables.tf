@@ -46,3 +46,8 @@ variable "vpc_security_group_ids" {
   description = "The security group IDs to associate with the RDS instance"
   type        = list(string)
 }
+
+variable "subnet_ids" {
+  type = list(string)
+}
+
