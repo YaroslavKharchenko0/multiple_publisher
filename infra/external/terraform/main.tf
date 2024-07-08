@@ -78,37 +78,27 @@ resource "local_file" "credentials" {
       }
     }
     auth = {
-      credentials = {
-        aws_access_key_id     = module.iam.iam_user_access_key_id
-        aws_secret_access_key = module.iam.iam_user_secret_access_key
-        region                = var.region
-        user_pool_id          = module.cognito.user_pool_id
-        user_pool_client_id   = module.cognito.user_pool_client_id
-      }
+      aws_access_key_id     = module.iam.iam_user_access_key_id
+      aws_secret_access_key = module.iam.iam_user_secret_access_key
+      region                = var.region
+      user_pool_id          = module.cognito.user_pool_id
+      user_pool_client_id   = module.cognito.user_pool_client_id
     },
     db = {
-      credentials = {
-        db_instance_endpoint  = module.rds.db_instance_endpoint
-        db_username           = var.db_username
-        db_password           = var.db_password
-        db_connection_string  = "postgres://${var.db_username}:${var.db_password}@${module.rds.db_instance_endpoint}/${var.db_name}"
-      }
+      db_instance_endpoint  = module.rds.db_instance_endpoint
+      db_username           = var.db_username
+      db_password           = var.db_password
+      db_connection_string  = "postgres://${var.db_username}:${var.db_password}@${module.rds.db_instance_endpoint}/${var.db_name}"
     },
     ecr = {
-      credentials = {
-        repository_url = module.api_repo.repository_url
-      }
+      repository_url = module.api_repo.repository_url
     },
     vpc = {
-      credentials = {
-        vpc_id = module.vpc.vpc_id
-      }
+      vpc_id = module.vpc.vpc_id
     },
     ecs = {
-      credentials = {
-        cluster_id = module.ecs.cluster_id
-        cluster_name = module.ecs.cluster_name
-      }
+      cluster_id = module.ecs.cluster_id
+      cluster_name = module.ecs.cluster_name
     }
   })
 }
