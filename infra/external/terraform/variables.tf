@@ -68,3 +68,14 @@ variable "allow_ips" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
+
+variable "app_environments" {
+  description = "Application environment variables"
+  type = map(string)
+  default = {
+    PORT                        = 4000
+    APP_NAME                    = "api"
+    LOG_LEVEL                   = "debug"
+    LOG_JSON                    = "false"
+  }
+}

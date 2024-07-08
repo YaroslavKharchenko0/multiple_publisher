@@ -1,0 +1,37 @@
+resource "aws_ecs_task_definition" "app" {
+  family                   = var.family
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.cpu
+  memory                   = var.memory
+  execution_role_arn       = var.execution_role_arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "app"
+      image     = "${var.ecr_repository_url}:latest"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 3000
+          hostPort      = 3000
+        }
+      ],
+      environment = [
+        for key, value in var.app_enviropments : {
+          name  = key
+          value = value
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/${var.family}"
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+

@@ -55,6 +55,17 @@ module "ecs" {
   cluster_name = "multi-publisher-cluster-${var.env}"
 }
 
+module "ecs_task" {
+  source = "./modules/ecs_task"
+  family = "multi-publisher-task-family"
+  cpu = "256"
+  memory = "512"
+  execution_role_arn = module.iam.ecs_task_execution_role_arn
+  ecr_repository_url = module.api_repo.repository_url
+  region = var.region
+  app_enviropments = var.app_environments
+}
+
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
   content  = jsonencode({
