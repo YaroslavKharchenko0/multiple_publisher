@@ -43,6 +43,13 @@ module "api_repo" {
   }
 }
 
+module "vpc" {
+  source = "./modules/vpc"
+  cidr_block = "10.0.0.0/16"
+  public_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  name = "multi-publisher-vpc-${var.env}"
+}
+
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
   content  = jsonencode({
@@ -68,13 +75,6 @@ resource "local_file" "credentials" {
         repository_url = module.api_repo.repository_url
       }
     },
-    elastic_beanstalk = {
-      credentials = {
-        application_name = module.elastic_beanstalk.application_name
-        environment_name = module.elastic_beanstalk.environment_name
-        url = module.elastic_beanstalk.url
-      }
-    }
   })
 }
 
