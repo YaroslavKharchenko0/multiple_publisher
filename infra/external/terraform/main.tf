@@ -5,7 +5,7 @@ provider "aws" {
 module "iam" {
   source         = "./modules/iam"
   region         = var.region
-  user_pool_name = var.user_pool_name
+  env            = var.env
 }
 
 module "cognito" {
@@ -58,6 +58,14 @@ module "ecs" {
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
   content  = jsonencode({
+    iam = {
+      cognito = {
+        role_arn = module.iam.cognito_role_arn
+      },
+      ecs = {
+        task_execution_role_arn = module.iam.ecs_task_execution_role_arn
+      }
+    }
     auth = {
       credentials = {
         aws_access_key_id     = module.iam.iam_user_access_key_id
