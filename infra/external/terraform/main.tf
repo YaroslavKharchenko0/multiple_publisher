@@ -43,17 +43,6 @@ module "api_repo" {
   }
 }
 
-module "elastic_beanstalk" {
-  source                = "./modules/elastic_beanstalk"
-  application_name      = "api"
-  environment_name      = "api-env"
-  docker_image          = module.api_repo.repository_url
-  solution_stack_name   = "64bit Amazon Linux 2 v3.8.3 running Docker"
-  tags = {
-    Environment = var.env
-  }
-}
-
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
   content  = jsonencode({
