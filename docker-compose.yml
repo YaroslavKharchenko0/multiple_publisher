@@ -1,0 +1,15 @@
+version: '3'
+services:
+  multi_publisher:
+    env_file:
+      - apps/api/.env.development
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/app
+    container_name: api
+    expose:
+      - "6000"
+    ports:
+      - "6000:6000"

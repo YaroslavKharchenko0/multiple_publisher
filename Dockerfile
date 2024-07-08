@@ -43,7 +43,7 @@ RUN yarn nx build api --configuration=production
 ENV NODE_ENV production
 
 # Install only production dependencies
-RUN yarn install --production --frozen-lockfile && yarn cache clean
+RUN yarn install --production --frozen-lockfile
 
 USER node
 
