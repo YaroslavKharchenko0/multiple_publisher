@@ -79,3 +79,8 @@ variable "app_environments" {
     LOG_JSON                    = "false"
   }
 }
+
+variable "vpc_availability_zones" {
+  description = "A list of availability zones"
+  type        = list(string)
+}
