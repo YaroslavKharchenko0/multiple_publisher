@@ -27,7 +27,7 @@ async function bootstrap() {
 
   const port = Number(configService.getOrThrow<string>('PORT'));
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 
   const url = await app.getUrl();
 

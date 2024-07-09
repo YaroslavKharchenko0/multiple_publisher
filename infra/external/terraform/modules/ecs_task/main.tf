@@ -31,6 +31,13 @@ resource "aws_ecs_task_definition" "app" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
+      healthCheck = {
+        command     = ["CMD-SHELL", "curl -f http://127.0.0.1:4000/api/health || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 60
+      }
     }
   ])
 }

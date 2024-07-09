@@ -68,8 +68,8 @@ module "ecs" {
 module "ecs_task" {
   source = "./modules/ecs_task"
   family = "${var.app_name}-task-family-${var.env}"
-  cpu = "256"
-  memory = "512"
+  cpu = "2048"
+  memory = "4096"
   execution_role_arn = module.iam.ecs_task_execution_role_arn
   ecr_repository_url = module.api_repo.repository_url
   region = var.region
@@ -83,7 +83,7 @@ module "ecs_service" {
   task_definition_arn = module.ecs_task.task_definition_arn
   desired_count = 1
   subnets = module.vpc.public_subnets
-  security_group_id = module.security_group.security_group_id
+  security_groups = [module.security_group.security_group_id]
 }
 
 
@@ -129,9 +129,6 @@ resource "local_file" "credentials" {
     ecs = {
       cluster_id = module.ecs.cluster_id
       cluster_name = module.ecs.cluster_name
-    },
-    alb = {
-      alb_dns_name = module.api_alb.alb_dns_name
     }
   })
 }

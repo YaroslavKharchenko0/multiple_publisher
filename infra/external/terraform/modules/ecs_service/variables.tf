@@ -23,7 +23,7 @@ variable "subnets" {
   type        = list(string)
 }
 
-variable "security_group_id" {
-  description = "The security group associated with the ECS service"
-  type        = string
+variable "security_groups" {
+  description = "The security groups associated with the ECS service"
+  type        = list(string)
 }
