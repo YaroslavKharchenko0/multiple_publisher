@@ -37,7 +37,7 @@ export class HealthService {
       const db = this.createStatus(isDbConnected);
 
       return {
-        status: 'ok',
+        status: this.createStatus(true),
         amqp,
         db,
         traceId,
