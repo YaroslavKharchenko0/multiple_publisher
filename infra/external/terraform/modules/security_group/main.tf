@@ -1,3 +1,4 @@
+# Postgres RDS security group
 resource "aws_security_group" "rds_security_group" {
   name_prefix = "rds-sg-${var.app_name}-${var.env}"
   description = "Security group for RDS instance"
@@ -24,5 +25,32 @@ resource "aws_security_group" "rds_security_group" {
   tags = {
     Name = "rds-sg-${var.app_name}-${var.env}"
     Env = var.env
+  }
+}
+
+
+# Load balancer security group
+resource "aws_security_group" "alb_sg" {
+  name        = "alb-sg-${var.app_name}-${var.env}"
+  description = "Security group for ALB"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "alb-sg-${var.app_name}-${var.env}"
+    Env  = var.env
   }
 }

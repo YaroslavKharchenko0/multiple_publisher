@@ -86,6 +86,16 @@ module "ecs_service" {
   security_group_id = module.security_group.security_group_id
 }
 
+
+module "api_alb" {
+  source          = "./modules/alb"
+  name            = "api-alb-${var.env}"
+  vpc_id          = module.vpc.vpc_id
+  public_subnets  = module.vpc.public_subnets
+  security_groups = [module.security_group.alb_sc_group_id]
+  env             = var.env
+}
+
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
   content  = jsonencode({
@@ -119,9 +129,13 @@ resource "local_file" "credentials" {
     ecs = {
       cluster_id = module.ecs.cluster_id
       cluster_name = module.ecs.cluster_name
+    },
+    alb = {
+      alb_dns_name = module.api_alb.alb_dns_name
     }
   })
 }
+
 
 output "credentials_file" {
   description = "The path to the generated credentials file"
