@@ -2,6 +2,11 @@ provider "aws" {
   region = var.region
 }
 
+module "cloudwatch_logs" {
+  source            = "./modules/cloudwatch_logs"
+  retention_in_days = var.log_retention_in_days
+}
+
 module "iam" {
   source         = "./modules/iam"
   region         = var.region

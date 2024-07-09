@@ -84,3 +84,9 @@ variable "vpc_availability_zones" {
   description = "A list of availability zones"
   type        = list(string)
 }
+
+variable "log_retention_in_days" {
+  description = "The number of days to retain logs in CloudWatch"
+  type        = number
+  default     = 7
+}
