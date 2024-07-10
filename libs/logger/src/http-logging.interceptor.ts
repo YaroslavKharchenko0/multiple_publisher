@@ -15,7 +15,8 @@ export class HTTPLoggingInterceptor implements NestInterceptor {
     }
 
     const now = Date.now();
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<FastifyRequest>();
+
     const method = request.method;
     const url = request.originalUrl;
     const traceId = this.executeTraceId(request);

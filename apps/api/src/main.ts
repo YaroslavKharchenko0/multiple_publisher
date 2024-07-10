@@ -6,7 +6,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { ConfigService } from '@nestjs/config';
 import { HTTPLoggingInterceptor, RMQLoggingInterceptor, TraceInterceptor, createLogger } from '@app/logger';
 import { TransformInterceptor } from '@app/response'
-import { RmqErrorInterceptor } from '@app/errors';
+import { HttpErrorFilter, RmqErrorInterceptor } from '@app/errors';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -24,6 +24,8 @@ async function bootstrap() {
   app.useLogger(logger);
 
   app.useGlobalInterceptors(new TraceInterceptor(), new TransformInterceptor(), new RmqErrorInterceptor(), new HTTPLoggingInterceptor(), new RMQLoggingInterceptor())
+
+  app.useGlobalFilters(new HttpErrorFilter())
 
   const port = Number(configService.getOrThrow<string>('PORT'));
 
