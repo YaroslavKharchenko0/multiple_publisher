@@ -2,16 +2,16 @@ resource "aws_ecs_task_definition" "this" {
   family                   = var.family
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = "512"
+  memory                   = "1024"
   execution_role_arn       = var.execution_role_arn
   task_role_arn            = var.task_role_arn
 
   container_definitions    = jsonencode([{
     name                  = "api"
     image                 = "${var.ecr_repository_url}:latest"
-    memory                = 512
-    cpu                   = 256
+    memory                = 1024
+    cpu                   = 512
     essential             = true
     portMappings          = [{
       containerPort        = 4000
