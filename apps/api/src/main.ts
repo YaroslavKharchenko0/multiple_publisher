@@ -34,4 +34,6 @@ async function bootstrap() {
   Logger.log(`🚀 Application is running on: ${url}`);
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  Logger.error(err);
+});

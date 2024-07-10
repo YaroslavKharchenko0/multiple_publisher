@@ -21,7 +21,7 @@ resource "aws_lb_target_group" "app_tg" {
 
   health_check {
     interval            = 30
-    path                = "/"
+    path                = "/api/health"
     protocol            = "HTTP"
     timeout             = 5
     healthy_threshold   = 2
