@@ -39,6 +39,7 @@ module "security_group" {
   app_name = var.app_name
 }
 
+
 module "rds" {
   source                = "./modules/rds"
   allocated_storage     = var.db_allocated_storage
@@ -60,41 +61,6 @@ module "api_repo" {
   }
 }
 
-module "ecs" {
-  source = "./modules/ecs"
-  cluster_name = "${var.app_name}-cluster-${var.env}"
-}
-
-module "ecs_task" {
-  source = "./modules/ecs_task"
-  family = "${var.app_name}-task-family-${var.env}"
-  cpu = "1024"
-  memory = "2048"
-  execution_role_arn = module.iam.ecs_task_execution_role_arn
-  ecr_repository_url = module.api_repo.repository_url
-  region = var.region
-  app_enviropments = var.app_environments
-}
-
-module "ecs_service" {
-  source = "./modules/ecs_service"
-  family = "${var.app_name}-task-family-${var.env}"
-  cluster_id = module.ecs.cluster_id
-  task_definition_arn = module.ecs_task.task_definition_arn
-  desired_count = 1
-  subnets = module.vpc.public_subnets
-  security_groups = [module.security_group.security_group_id, module.security_group.ecs_sc_group_id]
-}
-
-
-module "api_alb" {
-  source          = "./modules/alb"
-  name            = "api-alb-${var.env}"
-  vpc_id          = module.vpc.vpc_id
-  public_subnets  = module.vpc.public_subnets
-  security_groups = [module.security_group.alb_sc_group_id]
-  env             = var.env
-}
 
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
@@ -125,10 +91,6 @@ resource "local_file" "credentials" {
     },
     vpc = {
       vpc_id = module.vpc.vpc_id
-    },
-    ecs = {
-      cluster_id = module.ecs.cluster_id
-      cluster_name = module.ecs.cluster_name
     }
   })
 }
