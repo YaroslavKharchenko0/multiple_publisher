@@ -2,16 +2,16 @@ import { RmqModule } from "@app/rmq";
 import { DynamicModule, Module } from "@nestjs/common";
 import { ApiController } from "./controllers/api.controller";
 import { DatabaseModule } from "../../database";
-import { HealthService } from "./services/health.service";
+import { StatusService } from "./services/status.service";
 
 @Module({})
-export class HealthModule {
+export class StatusModule {
   static forRoot(): DynamicModule {
     return {
-      module: HealthModule,
+      module: StatusModule,
       imports: [RmqModule.forRoot(), DatabaseModule.forRoot()],
       controllers: [ApiController],
-      providers: [HealthService],
+      providers: [StatusService],
     };
   }
 }

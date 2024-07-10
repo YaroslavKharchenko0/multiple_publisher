@@ -14,9 +14,6 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-
   const configService = app.get(ConfigService);
 
   const logger = createLogger(configService);
@@ -33,7 +30,7 @@ async function bootstrap() {
 
   const url = await app.getUrl();
 
-  Logger.log(`🚀 Application is running on: ${url}`);
+  Logger.log(`🚀 Application is running on: ${url} 🌟`);
 }
 
 bootstrap().catch((err) => {

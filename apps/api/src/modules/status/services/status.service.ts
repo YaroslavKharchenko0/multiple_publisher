@@ -2,10 +2,11 @@ import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { Database, Orm } from "../../../database";
 import { sql } from "drizzle-orm";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
-export class HealthService {
-  constructor(private readonly amqpConnection: AmqpConnection, @Orm() private readonly db: Database) { }
+export class StatusService {
+  constructor(private readonly amqpConnection: AmqpConnection, @Orm() private readonly db: Database, private readonly configService: ConfigService) { }
 
   private isAmqpConnected() {
     return this.amqpConnection.connected;
@@ -45,6 +46,15 @@ export class HealthService {
     }
     catch (error) {
       throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  async getStatus() {
+    const version = this.configService.getOrThrow<string>('VERSION');
+
+    return {
+      status: this.createStatus(true),
+      version,
     }
   }
 }

@@ -24,6 +24,7 @@ const envValidationSchema = Joi.object({
   BUNNY_STREAM_LIBRARY_ID: Joi.string().required(),
   BUNNY_STREAM_API_KEY: Joi.string().required(),
   BUNNY_STREAM_VIDEO_URL: Joi.string().required(),
+  VERSION: Joi.string().required(),
 })
 
 export { envValidationSchema }
