@@ -75,6 +75,25 @@ module "api_ecs_task" {
   execution_role_arn = module.iam.ecs_task_execution_role_arn
   ecr_repository_url = module.api_repo.repository_url
   app_environments = var.app_environments
+  family = "multi-publisher-task-family-dev"
+}
+
+module "api_alb" {
+  source            = "./modules/alb"
+  env               = var.env
+  public_subnets    = module.vpc.public_subnets
+  security_group_id = module.security_group.alb_sc_group_id
+  vpc_id            = module.vpc.vpc_id
+}
+
+module "api_ecs_service" {
+  source = "./modules/ecs_service"
+  env =  var.env
+  cluster_id = module.api_ecs_cluster.ecs_cluster_id
+  subnets = module.vpc.public_subnets
+  security_group_id = module.security_group.ecs_sc_group_id
+  target_group_arn = module.api_alb.target_group_arn
+  task_definition_arn = module.api_ecs_task.task_definition_arn
 }
 
 

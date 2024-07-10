@@ -12,3 +12,4 @@ output "ecs_cluster_log_group_name" {
   description = "The ECS Cluster log group name"
   value       = aws_cloudwatch_log_group.ecs_cluster_logs.name
 }
+

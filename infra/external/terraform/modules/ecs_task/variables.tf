@@ -28,3 +28,9 @@ variable "app_environments" {
   type        = map(string)
   default     = {}
 }
+
+variable "family" {
+  description = "The family of the ECS task definition"
+  type        = string
+
+}
