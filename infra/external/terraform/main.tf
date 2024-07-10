@@ -61,6 +61,22 @@ module "api_repo" {
   }
 }
 
+module "api_ecs_cluster" {
+  source = "./modules/ecs_cluster"
+  env = var.env
+  log_retention_in_days = 7
+}
+
+module "api_ecs_task" {
+  source = "./modules/ecs_task"
+  env = var.env
+  region = var.region
+  task_role_arn = module.iam.ecs_task_role_arn
+  execution_role_arn = module.iam.ecs_task_execution_role_arn
+  ecr_repository_url = module.api_repo.repository_url
+  app_environments = var.app_environments
+}
+
 
 resource "local_file" "credentials" {
   filename = "${path.module}/${var.env}.credentials.json"
