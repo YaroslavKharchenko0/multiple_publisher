@@ -5,16 +5,22 @@ resource "aws_cognito_user_pool" "user_pool" {
 
   schema {
     attribute_data_type = "String"
+    developer_only_attribute = false
     name                = "role"
     mutable             = true
     required            = false
+
+    string_attribute_constraints {}
   }
 
   schema {
     attribute_data_type = "String"
     name                = "app_id"
+    developer_only_attribute = false
     mutable             = true
     required            = false
+
+    string_attribute_constraints {}
   }
 
   verification_message_template {

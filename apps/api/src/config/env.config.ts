@@ -8,7 +8,10 @@ const envValidationSchema = Joi.object({
   LOG_LEVEL: Joi.string().allow(...allowLevels).default('info'),
   LOG_JSON: Joi.boolean().default(true),
   RMQ_URI: Joi.string().required(),
-  DATABASE_URL: Joi.string().required(),
+  DATABASE_HOST: Joi.string().required(),
+  DATABASE_PORT: Joi.number().required(),
+  DATABASE_USER: Joi.string().required(),
+  DATABASE_NAME: Joi.string().required(),
   DATABASE_SSL: Joi.boolean().default(false),
   COGNITO_USER_POOL_ID: Joi.string().required(),
   COGNITO_CLIENT_ID: Joi.string().required(),
@@ -21,6 +24,9 @@ const envValidationSchema = Joi.object({
   BUNNY_STREAM_LIBRARY_ID: Joi.string().required(),
   BUNNY_STREAM_API_KEY: Joi.string().required(),
   BUNNY_STREAM_VIDEO_URL: Joi.string().required(),
+  VERSION: Joi.string().required(),
+  COGNITO_ACCESS_KEY_ID: Joi.string().required(),
+  COGNITO_SECRET_ACCESS_KEY: Joi.string().required(),
 })
 
 export { envValidationSchema }

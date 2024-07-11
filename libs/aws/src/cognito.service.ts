@@ -15,6 +15,10 @@ export class CognitoService {
     this.config = config;
     this.cognitoISP = new CognitoIdentityProvider({
       region: config.region,
+      credentials: {
+        accessKeyId: config?.accessKeyId,
+        secretAccessKey: config?.secretAccessKey,
+      }
     });
   }
 
