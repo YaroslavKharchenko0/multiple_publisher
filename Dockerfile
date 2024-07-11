@@ -62,5 +62,7 @@ COPY cert cert
 
 EXPOSE $PORT
 
+HEALTHCHECK --interval=30s --timeout=10s --retries=5 CMD /usr/app/healthcheck.sh
+
 # Start the server using the production build
 CMD [ "node", "dist/apps/api/main.js" ]

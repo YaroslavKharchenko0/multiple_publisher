@@ -9,7 +9,5 @@ services:
     volumes:
       - ./:/usr/app
     container_name: api
-    expose:
-      - "4000"
     ports:
       - "4000:4000"
