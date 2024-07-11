@@ -8,13 +8,13 @@ FROM node:18.18-alpine As development
 WORKDIR /usr/src/app
 
 # Copy the main application dependency manifests to the container image.
-COPY package*.json yarn.lock ./
+COPY --chown=node:node package*.json yarn.lock ./
 
 # Install app dependencies using the `yarn install` command
 RUN yarn install --frozen-lockfile
 
 # Bundle app source
-COPY . .
+COPY --chown=node:node . .
 
 # Use the node user from the image (instead of the root user)
 USER node
@@ -27,14 +27,11 @@ FROM node:18.18-alpine As build
 
 WORKDIR /usr/src/app
 
-# Copy the necessary files for the build
-COPY package*.json yarn.lock ./
+# Copy the main application dependency manifests to the container image.
+COPY --chown=node:node package*.json yarn.lock ./
 
-# Copy over the node_modules directory from the development stage
-COPY --from=development /usr/src/app/node_modules ./node_modules
-
-# Copy the rest of the necessary files
-COPY . .
+# Copy over the source files and dependencies
+COPY --chown=node:node --from=development /usr/src/app ./
 
 # Run the build command which creates the production bundle
 RUN yarn nx build api --configuration=production
@@ -43,7 +40,7 @@ RUN yarn nx build api --configuration=production
 ENV NODE_ENV production
 
 # Install only production dependencies
-RUN yarn install --production --frozen-lockfile
+RUN yarn install --production --frozen-lockfile && yarn cache clean
 
 USER node
 
@@ -55,14 +52,16 @@ FROM node:18.18-alpine As production
 
 WORKDIR /usr/src/app
 
-# Copy only the production dependencies and the built code
-COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist ./dist
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
+# Copy the bundled code from the build stage to the production image
+COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+
 COPY cert cert
 
-EXPOSE $PORT
-
-HEALTHCHECK --interval=30s --timeout=10s --retries=5 CMD /usr/app/healthcheck.sh
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://127.0.0.1:4000 || exit 1
 
 # Start the server using the production build
 CMD [ "node", "dist/apps/api/main.js" ]

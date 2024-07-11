@@ -1,4 +1,4 @@
-resource "aws_ecs_task_definition" "this" {
+  resource "aws_ecs_task_definition" "this" {
   family                   = var.family
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
