@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { serial, text, timestamp, pgTable, uuid, varchar, integer } from "drizzle-orm/pg-core";
-import { FileType, Role, UploadStatus, WorkspaceRole } from '@app/types';
+import { AccountStatus, AccountTokenType, FileType, ProviderKey, Role, UploadStatus, WorkspaceRole } from '@app/types';
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -60,11 +60,35 @@ export const fileMetadata = pgTable("file_metadata", {
   value: text("value").notNull(),
 });
 
+
+export const accountProviders = pgTable("account_providers", {
+  id: serial("id").primaryKey(),
+  key: varchar("key", { length: 50 }).$type<ProviderKey>().notNull().unique(),
+});
+
+export const accounts = pgTable("accounts", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  providerId: integer("provider_id").notNull().references(() => accountProviders.id, { onDelete: 'cascade' }),
+  createdAt: timestamp("created_at").defaultNow(),
+  status: varchar("status", { length: 10 }).$type<AccountStatus>().notNull(),
+});
+
+export const accountTokens = pgTable("account_tokens", {
+  id: serial("id").primaryKey(),
+  accountId: integer("account_id").notNull().references(() => accounts.id, { onDelete: 'cascade' }),
+  token: text("token").notNull(),
+  type: varchar("type", { length: 10 }).$type<AccountTokenType>().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
   workspaceUsers: many(workspaceUsers),
   files: many(files),
+  accounts: many(accounts),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
@@ -115,5 +139,28 @@ export const fileMetadataRelations = relations(fileMetadata, ({ one }) => ({
   file: one(files, {
     fields: [fileMetadata.fileId],
     references: [files.id],
+  }),
+}));
+
+export const accountProvidersRelations = relations(accountProviders, ({ many }) => ({
+  accounts: many(accounts),
+}));
+
+export const accountsRelations = relations(accounts, ({ one, many }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+  provider: one(accountProviders, {
+    fields: [accounts.providerId],
+    references: [accountProviders.id],
+  }),
+  accountTokens: many(accountTokens),
+}));
+
+export const accountTokensRelations = relations(accountTokens, ({ one }) => ({
+  account: one(accounts, {
+    fields: [accountTokens.accountId],
+    references: [accounts.id],
   }),
 }));
