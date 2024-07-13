@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Database, Orm, schema } from "../../../database";
 import { eq } from "drizzle-orm";
 import { ProviderKey } from "@app/types";
+import { Pagination } from "@app/validation";
 
 export type InsertAccountProvider = typeof schema.accountProviders.$inferInsert
 export type SelectAccountProvider = typeof schema.accountProviders.$inferSelect
@@ -22,6 +23,15 @@ export class AccountProviderRepository {
     const result = await this.db.query.accountProviders.findFirst({
       where
     })
+
+    return result;
+  }
+
+  async find(pagination: Pagination) {
+    const result = await this.db.query.accountProviders.findMany({
+      limit: pagination?.limit,
+      offset: pagination?.offset
+    });
 
     return result;
   }

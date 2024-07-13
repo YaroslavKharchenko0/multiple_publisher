@@ -5,9 +5,16 @@ import { Inject } from "@nestjs/common";
 import { AccountProviderRepository } from "../repositories/account-provider.repostiory";
 import { ACCOUNT_PROVIDER_REPOSITORY } from "../providers/account-provider.providers";
 import { RmqErrorService } from "@app/errors";
+import { Pagination } from "@app/validation";
 
 export class AccountProviderService implements Service {
   constructor(@Inject(ACCOUNT_PROVIDER_REPOSITORY) private readonly repository: AccountProviderRepository, private readonly rmqErrorService: RmqErrorService) { }
+
+  async findAccountProviders(pagination: Pagination): Promise<AccountProviderModel[]> {
+    const entities = await this.repository.find(pagination);
+
+    return entities.map(AccountProviderModel.fromEntity);
+  }
 
   async createAccountProvider(params: CreateAccountProviderParams): Promise<AccountProviderModel> {
     const entities = await this.repository.createOne(params);
