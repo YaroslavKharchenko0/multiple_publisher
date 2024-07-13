@@ -1,86 +1,126 @@
-import { relations } from "drizzle-orm";
-import { serial, text, timestamp, pgTable, uuid, varchar, integer } from "drizzle-orm/pg-core";
-import { AccountStatus, AccountTokenType, FileType, ProviderKey, Role, UploadStatus, WorkspaceRole } from '@app/types';
+import { relations } from 'drizzle-orm';
+import {
+  serial,
+  text,
+  timestamp,
+  pgTable,
+  uuid,
+  varchar,
+  integer,
+} from 'drizzle-orm/pg-core';
+import {
+  AccountStatus,
+  AccountTokenType,
+  FileType,
+  ProviderKey,
+  Role,
+  UploadStatus,
+  WorkspaceRole,
+} from '@app/types';
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  email: text("email").unique().notNull(),
-  providerId: uuid("provider_id").unique().notNull(),
-  name: varchar("name", { length: 100 }).notNull().default("Anonymous"),
-  birthDate: timestamp("birth_date").notNull().defaultNow(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  email: text('email').unique().notNull(),
+  providerId: uuid('provider_id').unique().notNull(),
+  name: varchar('name', { length: 100 }).notNull().default('Anonymous'),
+  birthDate: timestamp('birth_date').notNull().defaultNow(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-export const roles = pgTable("roles", {
-  id: serial("id").primaryKey(),
-  role: varchar("role", { length: 50 }).$type<Role>().unique().notNull(),
+export const roles = pgTable('roles', {
+  id: serial('id').primaryKey(),
+  role: varchar('role', { length: 50 }).$type<Role>().unique().notNull(),
 });
 
-export const userRoles = pgTable("user_roles", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  roleId: integer("role_id").notNull().references(() => roles.id, { onDelete: 'cascade' }),
+export const userRoles = pgTable('user_roles', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  roleId: integer('role_id')
+    .notNull()
+    .references(() => roles.id, { onDelete: 'cascade' }),
 });
 
-export const workspaces = pgTable("workspaces", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 100 }).notNull(),
-  userId: integer("user_id").references(() => users.id, { onDelete: 'set null' }),
-  createdAt: timestamp("created_at").defaultNow(),
+export const workspaces = pgTable('workspaces', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 100 }).notNull(),
+  userId: integer('user_id').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const workspaceRoles = pgTable("workspace_roles", {
-  id: serial("id").primaryKey(),
-  role: varchar("role", { length: 50 }).$type<WorkspaceRole>().unique().notNull(),
+export const workspaceRoles = pgTable('workspace_roles', {
+  id: serial('id').primaryKey(),
+  role: varchar('role', { length: 50 })
+    .$type<WorkspaceRole>()
+    .unique()
+    .notNull(),
 });
 
-export const workspaceUsers = pgTable("workspace_users", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  workspaceId: integer("workspace_id").notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
-  roleId: integer("role_id").notNull().references(() => workspaceRoles.id, { onDelete: 'cascade' }),
-  joinedAt: timestamp("joined_at").defaultNow(),
+export const workspaceUsers = pgTable('workspace_users', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  workspaceId: integer('workspace_id')
+    .notNull()
+    .references(() => workspaces.id, { onDelete: 'cascade' }),
+  roleId: integer('role_id')
+    .notNull()
+    .references(() => workspaceRoles.id, { onDelete: 'cascade' }),
+  joinedAt: timestamp('joined_at').defaultNow(),
 });
 
-export const files = pgTable("files", {
-  id: serial("id").primaryKey(),
-  providerId: uuid("provider_id").unique(),
-  path: varchar("path", { length: 255 }),
-  type: varchar("type", { length: 10 }).$type<FileType>().notNull(),
-  uploadStatus: varchar("uploadStatus", { length: 50 }).$type<UploadStatus>(),
-  authorId: integer("author_id").notNull().references(() => users.id, { onDelete: 'set null' }),
-  createdAt: timestamp("created_at").defaultNow(),
+export const files = pgTable('files', {
+  id: serial('id').primaryKey(),
+  providerId: uuid('provider_id').unique(),
+  path: varchar('path', { length: 255 }),
+  type: varchar('type', { length: 10 }).$type<FileType>().notNull(),
+  uploadStatus: varchar('uploadStatus', { length: 50 }).$type<UploadStatus>(),
+  authorId: integer('author_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const fileMetadata = pgTable("file_metadata", {
-  id: serial("id").primaryKey(),
-  fileId: integer("file_id").notNull().references(() => files.id, { onDelete: 'cascade' }),
-  key: varchar("key", { length: 255 }).notNull(),
-  value: text("value").notNull(),
+export const fileMetadata = pgTable('file_metadata', {
+  id: serial('id').primaryKey(),
+  fileId: integer('file_id')
+    .notNull()
+    .references(() => files.id, { onDelete: 'cascade' }),
+  key: varchar('key', { length: 255 }).notNull(),
+  value: text('value').notNull(),
 });
 
-
-export const accountProviders = pgTable("account_providers", {
-  id: serial("id").primaryKey(),
-  key: varchar("key", { length: 50 }).$type<ProviderKey>().notNull().unique(),
+export const accountProviders = pgTable('account_providers', {
+  id: serial('id').primaryKey(),
+  key: varchar('key', { length: 50 }).$type<ProviderKey>().notNull().unique(),
 });
 
-export const accounts = pgTable("accounts", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 100 }).notNull(),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  providerId: integer("provider_id").notNull().references(() => accountProviders.id, { onDelete: 'cascade' }),
-  createdAt: timestamp("created_at").defaultNow(),
-  status: varchar("status", { length: 10 }).$type<AccountStatus>().notNull(),
+export const accounts = pgTable('accounts', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 100 }).notNull(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  providerId: integer('provider_id')
+    .notNull()
+    .references(() => accountProviders.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow(),
+  status: varchar('status', { length: 10 }).$type<AccountStatus>().notNull(),
 });
 
-export const accountTokens = pgTable("account_tokens", {
-  id: serial("id").primaryKey(),
-  accountId: integer("account_id").notNull().references(() => accounts.id, { onDelete: 'cascade' }),
-  token: text("token").notNull(),
-  type: varchar("type", { length: 10 }).$type<AccountTokenType>().notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+export const accountTokens = pgTable('account_tokens', {
+  id: serial('id').primaryKey(),
+  accountId: integer('account_id')
+    .notNull()
+    .references(() => accounts.id, { onDelete: 'cascade' }),
+  token: text('token').notNull(),
+  type: varchar('type', { length: 10 }).$type<AccountTokenType>().notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -108,9 +148,12 @@ export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
   workspaceUsers: many(workspaceUsers),
 }));
 
-export const workspaceRolesRelations = relations(workspaceRoles, ({ many }) => ({
-  workspaceUsers: many(workspaceUsers),
-}));
+export const workspaceRolesRelations = relations(
+  workspaceRoles,
+  ({ many }) => ({
+    workspaceUsers: many(workspaceUsers),
+  }),
+);
 
 export const workspaceUsersRelations = relations(workspaceUsers, ({ one }) => ({
   user: one(users, {
@@ -142,9 +185,12 @@ export const fileMetadataRelations = relations(fileMetadata, ({ one }) => ({
   }),
 }));
 
-export const accountProvidersRelations = relations(accountProviders, ({ many }) => ({
-  accounts: many(accounts),
-}));
+export const accountProvidersRelations = relations(
+  accountProviders,
+  ({ many }) => ({
+    accounts: many(accounts),
+  }),
+);
 
 export const accountsRelations = relations(accounts, ({ one, many }) => ({
   user: one(users, {

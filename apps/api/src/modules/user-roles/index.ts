@@ -1,1 +1,1 @@
-export { UserRoleModule } from './user-role.module'
+export { UserRoleModule } from './user-role.module';

@@ -1,1 +1,1 @@
-export { AccountProviderModule } from './account-provider.module'
+export { AccountProviderModule } from './account-provider.module';

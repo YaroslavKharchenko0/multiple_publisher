@@ -1,4 +1,4 @@
-import { InsertUser } from '../repositories/user.repository'
+import { InsertUser } from '../repositories/user.repository';
 export class UserModel {
   id: number;
   email: string;

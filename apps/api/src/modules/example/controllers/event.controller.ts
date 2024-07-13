@@ -1,11 +1,9 @@
-import { EventEvent } from "@app/contracts";
-import { RabbitPayload, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
+import { EventEvent } from '@app/contracts';
+import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { Controller } from '@nestjs/common';
 
 @Controller()
 export class EventController {
-  constructor() { }
-
   @RabbitSubscribe({
     exchange: EventEvent.exchange,
     routingKey: EventEvent.routingKey,
@@ -15,4 +13,3 @@ export class EventController {
     console.log('Event', message);
   }
 }
-

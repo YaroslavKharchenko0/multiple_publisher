@@ -1,4 +1,4 @@
-import { ProviderKey } from "@app/types";
+import { ProviderKey } from '@app/types';
 
 export class AccountProviderModel {
   id: number;

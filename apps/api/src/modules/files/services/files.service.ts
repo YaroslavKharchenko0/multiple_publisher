@@ -1,21 +1,40 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { CreateFileInput, GenerateVideoSignatureParams, GenerateVideoSignatureReturn, Service, UploadFileInput, Options as ServiceOptions, OnWebhook } from "./files.service.interface";
-import { FileModel } from "../models/file.model";
-import { FILE_REPOSITORY } from "../providers/file.providers";
-import { FileRepository } from "../repositories/files.repository";
-import { Pagination } from "@app/validation";
-import { BunnyStorage, BunnyStorageService, BunnyStream, BunnyStreamService } from "@app/bunny";
-import { format } from "date-fns";
-import { FileType, UploadStatus } from "@app/types";
-import { randomUUID } from "crypto";
-import { RmqErrorService } from "@app/errors";
-import { FileFacade } from "@app/utils";
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  CreateFileInput,
+  GenerateVideoSignatureParams,
+  GenerateVideoSignatureReturn,
+  Service,
+  UploadFileInput,
+  Options as ServiceOptions,
+  OnWebhook,
+} from './files.service.interface';
+import { FileModel } from '../models/file.model';
+import { FILE_REPOSITORY } from '../providers/file.providers';
+import { FileRepository } from '../repositories/files.repository';
+import { Pagination } from '@app/validation';
+import {
+  BunnyStorage,
+  BunnyStorageService,
+  BunnyStream,
+  BunnyStreamService,
+} from '@app/bunny';
+import { format } from 'date-fns';
+import { FileType, UploadStatus } from '@app/types';
+import { randomUUID } from 'crypto';
+import { RmqErrorService } from '@app/errors';
+import { FileFacade } from '@app/utils';
 
 @Injectable()
 export class FileService implements Service {
-  constructor(@Inject(FILE_REPOSITORY) private readonly repository: FileRepository, @BunnyStorage() private readonly storage: BunnyStorageService, @BunnyStream() private readonly stream: BunnyStreamService, private readonly exceptionService: RmqErrorService, private readonly fileFacade: FileFacade) { }
+  constructor(
+    @Inject(FILE_REPOSITORY) private readonly repository: FileRepository,
+    @BunnyStorage() private readonly storage: BunnyStorageService,
+    @BunnyStream() private readonly stream: BunnyStreamService,
+    private readonly exceptionService: RmqErrorService,
+    private readonly fileFacade: FileFacade,
+  ) {}
   private generateVideoTitle(): string {
-    return randomUUID()
+    return randomUUID();
   }
 
   async onWebhook(params: OnWebhook): Promise<void> {
@@ -29,18 +48,21 @@ export class FileService implements Service {
 
     await this.updateByProviderId(VideoGuid, {
       uploadStatus: status,
-    })
+    });
   }
 
-  async generateVideoSignature(params: GenerateVideoSignatureParams, options?: ServiceOptions): Promise<GenerateVideoSignatureReturn> {
+  async generateVideoSignature(
+    params: GenerateVideoSignatureParams,
+    options?: ServiceOptions,
+  ): Promise<GenerateVideoSignatureReturn> {
     const { userId } = params;
 
     const video = await this.stream.createVideo({
-      title: this.generateVideoTitle()
-    })
+      title: this.generateVideoTitle(),
+    });
 
     if (!video.guid) {
-      throw this.exceptionService.forbidden()
+      throw this.exceptionService.forbidden();
     }
 
     const signature = await this.stream.generateSignature({
@@ -53,20 +75,20 @@ export class FileService implements Service {
       providerId: video.guid,
       type: FileType.VIDEO,
       uploadStatus: UploadStatus.QUEUED,
-    })
+    });
 
     const metadata: Record<string, string> = {
       title: video.title,
       storage_size: video?.storageSize?.toString(),
       library_id: video?.videoLibraryId?.toString(),
-    }
+    };
 
-    await this.fileFacade.addMetadata(file.id, metadata, options?.traceId)
+    await this.fileFacade.addMetadata(file.id, metadata, options?.traceId);
 
     return {
       file,
       metadata: signature,
-    }
+    };
   }
 
   private createFilePath(userId: number, originalname: string): string {
@@ -81,7 +103,11 @@ export class FileService implements Service {
     return `users/${userId}/${dayMonthYear}/${time}-${name}`;
   }
 
-  async uploadImage(userId: number, input: UploadFileInput, options?: ServiceOptions): Promise<FileModel> {
+  async uploadImage(
+    userId: number,
+    input: UploadFileInput,
+    options?: ServiceOptions,
+  ): Promise<FileModel> {
     const { buffer, originalname, mimetype, size } = input;
 
     const filePath = this.createFilePath(userId, originalname);
@@ -91,7 +117,7 @@ export class FileService implements Service {
     const metadata: Record<string, string> = {
       mimetype,
       size: size.toString(),
-    }
+    };
 
     const file = await this.createOne({
       authorId: userId,
@@ -99,11 +125,11 @@ export class FileService implements Service {
       path: filePath,
       type: FileType.IMAGE,
       uploadStatus: null,
-    })
+    });
 
-    await this.fileFacade.addMetadata(file.id, metadata, options?.traceId)
+    await this.fileFacade.addMetadata(file.id, metadata, options?.traceId);
 
-    return file
+    return file;
   }
 
   async createOne(input: CreateFileInput): Promise<FileModel> {
@@ -135,7 +161,10 @@ export class FileService implements Service {
 
     return FileModel.fromEntity(entity);
   }
-  async findUserFiles(authorId: number, pagination: Pagination): Promise<FileModel[]> {
+  async findUserFiles(
+    authorId: number,
+    pagination: Pagination,
+  ): Promise<FileModel[]> {
     const entities = await this.repository.findUserFiles(authorId, pagination);
 
     return entities.map(FileModel.fromEntity);
@@ -145,8 +174,14 @@ export class FileService implements Service {
 
     return FileModel.fromEntity(entity);
   }
-  async updateByProviderId(providerId: string, input: Partial<FileModel>): Promise<FileModel> {
-    const entities = await this.repository.updateByProviderId(providerId, input);
+  async updateByProviderId(
+    providerId: string,
+    input: Partial<FileModel>,
+  ): Promise<FileModel> {
+    const entities = await this.repository.updateByProviderId(
+      providerId,
+      input,
+    );
 
     const [entity] = entities;
 

@@ -1,4 +1,3 @@
-
 export interface SignUpParams {
   email: string;
   password: string;
@@ -24,8 +23,8 @@ export interface VerifyEmailParams {
 }
 
 export type Options = {
-  traceId: string
-}
+  traceId: string;
+};
 
 export interface Service {
   signUp(payload: SignUpParams, options?: Options): Promise<void>;

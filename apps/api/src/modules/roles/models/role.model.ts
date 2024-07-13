@@ -1,4 +1,4 @@
-import { Role } from "@app/types";
+import { Role } from '@app/types';
 
 export class RoleModel {
   id: number;

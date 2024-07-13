@@ -1,4 +1,4 @@
-import { FileType, UploadStatus } from "@app/types";
+import { FileType, UploadStatus } from '@app/types';
 
 export class FileModel {
   id: number;

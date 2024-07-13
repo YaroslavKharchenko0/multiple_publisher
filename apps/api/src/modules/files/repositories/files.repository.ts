@@ -1,14 +1,14 @@
-import { Injectable } from "@nestjs/common";
-import { Database, Orm, schema } from "../../../database";
-import { and, eq } from "drizzle-orm";
-import { Pagination } from "@app/validation";
+import { Injectable } from '@nestjs/common';
+import { Database, Orm, schema } from '../../../database';
+import { and, eq } from 'drizzle-orm';
+import { Pagination } from '@app/validation';
 
-export type InsertFile = typeof schema.files.$inferInsert
-export type SelectFile = typeof schema.files.$inferSelect
+export type InsertFile = typeof schema.files.$inferInsert;
+export type SelectFile = typeof schema.files.$inferSelect;
 
 @Injectable()
 export class FileRepository {
-  constructor(@Orm() private readonly db: Database) { }
+  constructor(@Orm() private readonly db: Database) {}
 
   private files = schema.files;
 
@@ -20,8 +20,8 @@ export class FileRepository {
     const where = eq(this.files.id, id);
 
     const result = await this.db.query.files.findFirst({
-      where
-    })
+      where,
+    });
 
     return result;
   }
@@ -31,8 +31,8 @@ export class FileRepository {
 
     const result = await this.db.query.files.findMany({
       where,
-      ...pagination
-    })
+      ...pagination,
+    });
 
     return result;
   }
@@ -41,8 +41,8 @@ export class FileRepository {
     const where = eq(this.files.providerId, providerId);
 
     const result = await this.db.query.files.findFirst({
-      where
-    })
+      where,
+    });
 
     return result;
   }
@@ -50,7 +50,12 @@ export class FileRepository {
   async updateById(id: number, input: Partial<InsertFile>) {
     const where = eq(this.files.id, id);
 
-    const result = await this.db.update(this.files).set(input).where(where).returning().execute();
+    const result = await this.db
+      .update(this.files)
+      .set(input)
+      .where(where)
+      .returning()
+      .execute();
 
     return result;
   }
@@ -58,7 +63,12 @@ export class FileRepository {
   async updateByProviderId(providerId: string, input: Partial<InsertFile>) {
     const where = eq(this.files.providerId, providerId);
 
-    const result = await this.db.update(this.files).set(input).where(where).returning().execute();
+    const result = await this.db
+      .update(this.files)
+      .set(input)
+      .where(where)
+      .returning()
+      .execute();
 
     return result;
   }
@@ -70,7 +80,11 @@ export class FileRepository {
       where = and(where, eq(this.files.authorId, userId));
     }
 
-    const result = await this.db.delete(this.files).where(where).returning().execute();
+    const result = await this.db
+      .delete(this.files)
+      .where(where)
+      .returning()
+      .execute();
 
     return result;
   }

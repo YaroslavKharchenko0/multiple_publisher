@@ -1,4 +1,4 @@
-import { WorkspaceRole } from "@app/types";
+import { WorkspaceRole } from '@app/types';
 
 export class WorkspaceRoleModel {
   id: number;

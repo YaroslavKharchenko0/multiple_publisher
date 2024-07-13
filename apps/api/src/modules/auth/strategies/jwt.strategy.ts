@@ -6,7 +6,6 @@ import { ConfigService } from '@nestjs/config';
 import { CognitoJWTUser } from '@app/aws';
 import { JWTUser } from '@app/utils';
 
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
@@ -22,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         jwksRequestsPerMinute: 5,
         jwksUri: configService.getOrThrow('COGNITO_JWKS_URI'),
       }),
-    }
+    };
 
     super(config);
   }
@@ -30,6 +29,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   public async validate(payload: CognitoJWTUser) {
     const jwtUser = JWTUser.fromCognito(payload);
 
-    return jwtUser
+    return jwtUser;
   }
 }
