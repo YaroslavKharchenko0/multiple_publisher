@@ -23,7 +23,7 @@ export class AccountTokenRepository {
   async findByAccountId(accountId: number) {
     const where = eq(this.accountTokens.accountId, accountId);
 
-    const result = await this.db.query.accountTokens.findFirst({
+    const result = await this.db.query.accountTokens.findMany({
       where,
     });
 
