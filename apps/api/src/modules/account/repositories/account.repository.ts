@@ -39,12 +39,17 @@ export class AccountRepository {
     return result;
   }
 
-  async updateByKey(id: number, input: Partial<InsertAccount>) {
+  async updateById(id: number, input: Partial<InsertAccount>) {
     const where = eq(this.accounts.id, id);
+
+    const set = {
+      ...input,
+      updatedAt: new Date(),
+    }
 
     const result = await this.db
       .update(this.accounts)
-      .set(input)
+      .set(set)
       .where(where)
       .returning()
       .execute();
@@ -52,7 +57,7 @@ export class AccountRepository {
     return result;
   }
 
-  async deleteByKey(id: number) {
+  async deleteById(id: number) {
     const where = eq(this.accounts.id, id);
 
     const result = await this.db

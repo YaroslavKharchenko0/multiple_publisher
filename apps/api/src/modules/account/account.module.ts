@@ -4,6 +4,7 @@ import { ApiController } from './controllers/api.controller';
 import { CommandController } from './controllers/command.controller';
 import { QueryController } from './controllers/query.controller';
 import { EventController } from './controllers/event.controller';
+import { ACCOUNT_REPOSITORY, ACCOUNT_SERVICE, accountRepositoryProvider, accountServiceProvider } from './providers/account.providers';
 
 @Module({})
 export class AccountModule {
@@ -17,6 +18,8 @@ export class AccountModule {
         QueryController,
         EventController,
       ],
+      providers: [accountRepositoryProvider, accountServiceProvider],
+      exports: [ACCOUNT_SERVICE, ACCOUNT_REPOSITORY]
     };
   }
 }
