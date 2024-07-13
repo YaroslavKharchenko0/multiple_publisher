@@ -15,6 +15,7 @@ import { FileMetadataModule } from '../modules/file-metadata';
 import { FacadeModule } from '@app/utils';
 import { StatusModule } from '../modules/status';
 import { AccountProviderModule } from '../modules/account-provider';
+import { AccountModule } from '../modules/account';
 
 @Module({})
 export class AppModule {
@@ -38,6 +39,7 @@ export class AppModule {
         FacadeModule.forRoot(),
         StatusModule.forRoot(),
         AccountProviderModule.forRoot(),
+        AccountModule.forRoot(),
       ],
     };
   }
