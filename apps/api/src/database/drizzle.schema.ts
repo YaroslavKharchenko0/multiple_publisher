@@ -104,12 +104,12 @@ export const accounts = pgTable('accounts', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
   userId: integer('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'set null' }),
   providerId: integer('provider_id')
     .notNull()
     .references(() => accountProviders.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
   status: varchar('status', { length: 10 }).$type<AccountStatus>().notNull(),
 });
 
