@@ -3,10 +3,11 @@ import { AccountStatus } from "@app/types";
 export class AccountModel {
   id: number;
   providerId: number;
-  createdAt: Date;
-  name: string | null;
+  name: string;
   userId: number | null;
   status: AccountStatus;
+  createdAt: Date;
+  updatedAt: Date;
 
   setFields(input: Partial<AccountModel>) {
     this.id = input.id ?? this.id;
@@ -15,6 +16,7 @@ export class AccountModel {
     this.createdAt = input.createdAt ?? this.createdAt;
     this.userId = input.userId ?? this.userId;
     this.status = input.status ?? this.status;
+    this.updatedAt = input.updatedAt ?? this.updatedAt;
 
     return this;
   }
