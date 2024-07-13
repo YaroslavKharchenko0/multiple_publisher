@@ -1,24 +1,22 @@
-import { QueryQuery, createSuccessResponse } from '@app/contracts';
+import { FindAccountQuery, QueryQuery, createSuccessResponse } from '@app/contracts';
 import { internalServerError } from '@app/errors';
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
+import { ACCOUNT_SERVICE } from '../providers/account.providers';
+import { AccountService } from '../services/account.service';
 
 @Controller()
 export class QueryController {
-  @RabbitRPC({
-    exchange: QueryQuery.exchange,
-    routingKey: QueryQuery.routingKey,
-    queue: QueryQuery.queue,
-  })
-  command(@RabbitPayload() message: QueryQuery.Request): QueryQuery.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`,
-      });
+  constructor(@Inject(ACCOUNT_SERVICE) private readonly service: AccountService) { }
 
-      return payload;
-    } catch (error) {
-      return internalServerError;
-    }
+  @RabbitRPC({
+    exchange: FindAccountQuery.exchange,
+    routingKey: FindAccountQuery.routingKey,
+    queue: FindAccountQuery.queue,
+  })
+  async findOne(@RabbitPayload() message: FindAccountQuery.Request): Promise<FindAccountQuery.Response> {
+    const payload = await this.service.findAccountById(message.id);
+
+    return createSuccessResponse(payload);
   }
 }

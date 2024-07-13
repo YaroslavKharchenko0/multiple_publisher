@@ -1,5 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import {
   CommandCommand,
   CommandErrorCommand,
@@ -10,12 +10,12 @@ import { TraceId } from '@app/logger';
 import { Auth, Roles } from '@app/utils';
 import { Role } from '@app/types';
 
-@Controller('account')
+@Controller('accounts')
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/command')
-  command(@TraceId() traceId: string | undefined) {
+  @Post('/')
+  create(@TraceId() traceId: string | undefined) {
     const payload: CommandCommand.Request = {
       message: 'Hello World',
     };

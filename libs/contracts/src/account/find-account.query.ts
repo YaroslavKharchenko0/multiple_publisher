@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { FindAccountRequest, FindAccountResponse } from '@app/validation'
 
-export namespace FindAccountCommand {
+export namespace FindAccountQuery {
   export const exchange = 'account';
 
   export const routingKey = 'find-account';

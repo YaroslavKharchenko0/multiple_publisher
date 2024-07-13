@@ -5,7 +5,7 @@ export interface CreateAccountParams {
   provider: ProviderKey;
   name: string;
   userId: number | null;
-  status: AccountStatus.INACTIVE;
+  status: AccountStatus;
 }
 
 export interface Service {
