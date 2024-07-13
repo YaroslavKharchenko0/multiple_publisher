@@ -1,96 +1,44 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Controller, Get } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, EventEvent, QueryQuery } from '@app/contracts'
+import { Controller, Get, Param, Query } from "@nestjs/common";
+import { FindAccountProviderQuery, FindAccountProvidersQuery } from '@app/contracts'
 import { TraceId } from "@app/logger";
-import { Auth, Roles } from "@app/utils";
-import { Role } from "@app/types";
+import { Auth, IsEnumPipe } from "@app/utils";
+import { FindAccountProvidersBodyDto } from "@app/validation";
+import { ProviderKey } from "@app/types";
 
-@Controller('accounts')
+@Controller('accounts/providers')
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/command')
-  command(@TraceId() traceId: string | undefined) {
-    const payload: CommandCommand.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.request<CommandCommand.Response>({
-      exchange: CommandCommand.exchange,
-      routingKey: CommandCommand.routingKey,
-      payload,
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Get('/event')
-  event(@TraceId() traceId: string | undefined) {
-    const payload: EventEvent.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.publish<EventEvent.Request>(EventEvent.exchange, EventEvent.routingKey, payload, {
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Get('/query')
-  query(@TraceId() traceId: string | undefined) {
-    const payload: QueryQuery.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.request<QueryQuery.Response>({
-      exchange: QueryQuery.exchange,
-      routingKey: QueryQuery.routingKey,
-      payload,
-      headers: {
-        traceId
-      }
-    });
-  }
-
-  @Get('/error')
-  error(@TraceId() traceId: string | undefined) {
-    const payload: CommandErrorCommand.Request = {
-      message: 'Hello World'
-    }
-
-    return this.amqpConnection.request<CommandErrorCommand.Response>({
-      exchange: CommandErrorCommand.exchange,
-      routingKey: CommandErrorCommand.routingKey,
-      payload,
-      headers: {
-        traceId
-      }
-    });
-  }
-
+  @Get('/')
   @Auth()
-  @Get('/auth')
-  auth() {
-    return 'Auth';
+  findMany(@TraceId() traceId: string | undefined, @Query() query: FindAccountProvidersBodyDto) {
+    const payload: FindAccountProvidersQuery.Request = query
+
+    return this.amqpConnection.request<FindAccountProvidersQuery.Response>({
+      exchange: FindAccountProvidersQuery.exchange,
+      routingKey: FindAccountProvidersQuery.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
   }
 
-  @Roles(Role.ADMIN)
-  @Get('/admin')
-  getAdmin() {
-    return 'Admin';
-  }
+  @Get('/:key')
+  @Auth()
+  findOne(@TraceId() traceId: string | undefined, @Param('key', new IsEnumPipe(ProviderKey)) key: ProviderKey) {
+    const payload: FindAccountProviderQuery.Request = {
+      key
+    }
 
-  @Roles(Role.USER)
-  @Get('/user')
-  getUser() {
-    return 'User';
-  }
-
-  @Roles(Role.ADMIN, Role.USER)
-  @Get('/both')
-  getBoth() {
-    return 'Both';
+    return this.amqpConnection.request<FindAccountProviderQuery.Response>({
+      exchange: FindAccountProviderQuery.exchange,
+      routingKey: FindAccountProviderQuery.routingKey,
+      payload,
+      headers: {
+        traceId
+      }
+    });
   }
 }

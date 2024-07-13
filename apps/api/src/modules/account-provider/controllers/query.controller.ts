@@ -1,28 +1,33 @@
-import { QueryQuery, createSuccessResponse } from "@app/contracts";
-import { internalServerError } from "@app/errors";
+import { FindAccountProviderQuery, FindAccountProvidersQuery, createSuccessResponse } from "@app/contracts";
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
+import { ACCOUNT_PROVIDER_SERVICE } from "../providers/account-provider.providers";
+import { AccountProviderService } from "../services/account-provider.service";
 
 @Controller()
 export class QueryController {
-  constructor() { }
+  constructor(@Inject(ACCOUNT_PROVIDER_SERVICE) private readonly service: AccountProviderService) { }
 
   @RabbitRPC({
-    exchange: QueryQuery.exchange,
-    routingKey: QueryQuery.routingKey,
-    queue: QueryQuery.queue,
+    exchange: FindAccountProviderQuery.exchange,
+    routingKey: FindAccountProviderQuery.routingKey,
+    queue: FindAccountProviderQuery.queue,
   })
-  command(@RabbitPayload() message: QueryQuery.Request): QueryQuery.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      })
+  async findOne(@RabbitPayload() message: FindAccountProviderQuery.Request): Promise<FindAccountProviderQuery.Response> {
+    const payload = await this.service.findAccountProvider(message.key)
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(payload)
+  }
+
+  @RabbitRPC({
+    exchange: FindAccountProvidersQuery.exchange,
+    routingKey: FindAccountProvidersQuery.routingKey,
+    queue: FindAccountProvidersQuery.queue,
+  })
+  async findMany(@RabbitPayload() message: FindAccountProvidersQuery.Request): Promise<FindAccountProvidersQuery.Response> {
+    const payload = await this.service.findAccountProviders(message.pagination)
+
+    return createSuccessResponse(payload)
   }
 }
 

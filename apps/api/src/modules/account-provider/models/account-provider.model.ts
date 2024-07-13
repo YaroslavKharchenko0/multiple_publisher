@@ -1,7 +1,8 @@
+import { ProviderKey } from "@app/types";
 
 export class AccountProviderModel {
   id: number;
-  key: string;
+  key: ProviderKey;
 
   setFields(input: Partial<AccountProviderModel>) {
     this.id = input.id ?? this.id;

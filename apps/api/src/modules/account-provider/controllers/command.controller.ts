@@ -1,37 +1,35 @@
 import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller } from "@nestjs/common";
-import { CommandCommand, CommandErrorCommand, createSuccessResponse } from "@app/contracts";
-import { RmqErrorService, internalServerError } from '@app/errors'
+import { Controller, Inject } from "@nestjs/common";
+import { CreateAccountProviderCommand, createSuccessResponse, DeleteAccountProviderCommand } from "@app/contracts";
+import { ACCOUNT_PROVIDER_SERVICE } from "../providers/account-provider.providers";
+import { AccountProviderService } from "../services/account-provider.service";
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) { }
+  constructor(@Inject(ACCOUNT_PROVIDER_SERVICE) private readonly service: AccountProviderService) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: CreateAccountProviderCommand.exchange,
+    routingKey: CreateAccountProviderCommand.routingKey,
+    queue: CreateAccountProviderCommand.queue,
   })
-  command(@RabbitPayload() message: CommandCommand.Request): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`
-      });
+  async create(@RabbitPayload() message: CreateAccountProviderCommand.Request): Promise<CreateAccountProviderCommand.Response> {
+    const payload = await this.service.createAccountProvider({
+      key: message.key,
+    })
 
-      return payload;
-    }
-    catch (error) {
-      return internalServerError
-    }
+    return createSuccessResponse(payload)
   }
 
   @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
+    exchange: DeleteAccountProviderCommand.exchange,
+    routingKey: DeleteAccountProviderCommand.routingKey,
+    queue: DeleteAccountProviderCommand.queue,
   })
-  error(@RabbitPayload() _message: CommandErrorCommand.Request): CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound()
+  async delete(@RabbitPayload() message: DeleteAccountProviderCommand.Request): Promise<DeleteAccountProviderCommand.Response> {
+    const payload = await this.service.deleteAccountProvider(message.key)
+
+    return createSuccessResponse(payload)
   }
 }
 
