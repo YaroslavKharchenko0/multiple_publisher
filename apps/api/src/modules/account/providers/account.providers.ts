@@ -3,6 +3,8 @@ import { AccountRepository } from '../repositories/account.repository';
 import { AccountService } from '../services/account.service';
 import { RmqErrorService } from '@app/errors';
 import { AccountFacade } from '@app/utils';
+import { ConfigService } from '@nestjs/config';
+import { createGoogleAuthConfig } from '../configs/google.config';
 
 export const ACCOUNT_REPOSITORY = 'ACCOUNT_REPOSITORY';
 
@@ -24,3 +26,15 @@ export const accountServiceProvider: Provider = {
   },
   inject: [ACCOUNT_REPOSITORY, RmqErrorService, AccountFacade],
 };
+
+export const GOOGLE_AUTH_CREDENTIALS = 'GOOGLE_AUTH_CREDENTIALS';
+
+export const googleAuthProvider: Provider = {
+  provide: GOOGLE_AUTH_CREDENTIALS,
+  useFactory: (configService: ConfigService) => {
+    const config = createGoogleAuthConfig(configService);
+
+    return config;
+  },
+  inject: [ConfigService],
+}
