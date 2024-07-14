@@ -29,6 +29,9 @@ const envValidationSchema = Joi.object({
   VERSION: Joi.string().required(),
   COGNITO_ACCESS_KEY_ID: Joi.string().required(),
   COGNITO_SECRET_ACCESS_KEY: Joi.string().required(),
+  GOOGLE_CLIENT_ID: Joi.string().required(),
+  GOOGLE_CLIENT_SECRET: Joi.string().required(),
+  GOOGLE_REDIRECT_URI: Joi.string().required(),
 });
 
 export { envValidationSchema };

@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { GoogleSingInUrlRequest, GoogleSingInUrlResponse } from '@app/validation'
 
-export namespace GoogleSingInUrlEvent {
+export namespace GoogleSingInUrlCommand {
   export const exchange = 'account';
 
   export const routingKey = 'google-sign-in-url';

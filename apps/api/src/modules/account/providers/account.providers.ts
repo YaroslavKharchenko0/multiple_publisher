@@ -5,6 +5,7 @@ import { RmqErrorService } from '@app/errors';
 import { AccountFacade } from '@app/utils';
 import { ConfigService } from '@nestjs/config';
 import { createGoogleAuthConfig } from '../configs/google.config';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 export const ACCOUNT_REPOSITORY = 'ACCOUNT_REPOSITORY';
 
@@ -21,10 +22,11 @@ export const accountServiceProvider: Provider = {
     repository: AccountRepository,
     rmqErrorService: RmqErrorService,
     accountFacade: AccountFacade,
+    amqpConnection: AmqpConnection,
   ) => {
-    return new AccountService(repository, rmqErrorService, accountFacade);
+    return new AccountService(repository, rmqErrorService, accountFacade, amqpConnection);
   },
-  inject: [ACCOUNT_REPOSITORY, RmqErrorService, AccountFacade],
+  inject: [ACCOUNT_REPOSITORY, RmqErrorService, AccountFacade, AmqpConnection],
 };
 
 export const GOOGLE_AUTH_CREDENTIALS = 'GOOGLE_AUTH_CREDENTIALS';

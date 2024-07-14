@@ -4,16 +4,19 @@ import {
   CreateAccountCommand,
   createSuccessResponse,
   DeleteAccountCommand,
+  GoogleSingInUrlCommand,
   UpdateAccountCommand,
 } from '@app/contracts';
-import { ACCOUNT_SERVICE } from '../providers/account.providers';
+import { ACCOUNT_SERVICE, GOOGLE_AUTH_CREDENTIALS } from '../providers/account.providers';
 import { AccountService } from '../services/account.service';
 import { TraceId } from '@app/logger';
+import { GoogleAuthService } from '../services/google-auth.service';
 
 @Controller()
 export class CommandController {
   constructor(
     @Inject(ACCOUNT_SERVICE) private readonly service: AccountService,
+    @Inject(GOOGLE_AUTH_CREDENTIALS) private readonly googleAuthCredentials: GoogleAuthService,
   ) { }
 
   @RabbitRPC({
@@ -63,5 +66,18 @@ export class CommandController {
     );
 
     return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: GoogleSingInUrlCommand.exchange,
+    routingKey: GoogleSingInUrlCommand.routingKey,
+    queue: GoogleSingInUrlCommand.queue,
+  })
+  async googleSignInUrl(@RabbitPayload() message: GoogleSingInUrlCommand.Request): Promise<GoogleSingInUrlCommand.Response> {
+    const url = this.googleAuthCredentials.generateAuthUrl(message.userId);
+
+    return createSuccessResponse({
+      url,
+    });
   }
 }

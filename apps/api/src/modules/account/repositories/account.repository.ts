@@ -8,7 +8,7 @@ export type SelectAccount = typeof schema.accounts.$inferSelect;
 
 @Injectable()
 export class AccountRepository {
-  constructor(@Orm() private readonly db: Database) {}
+  constructor(@Orm() private readonly db: Database) { }
 
   private accounts = schema.accounts;
 
@@ -61,6 +61,16 @@ export class AccountRepository {
       .where(where)
       .returning()
       .execute();
+
+    return result;
+  }
+
+  async findAccountByInternalId(internalId: string) {
+    const where = eq(this.accounts.internalId, internalId);
+
+    const result = await this.db.query.accounts.findFirst({
+      where,
+    });
 
     return result;
   }

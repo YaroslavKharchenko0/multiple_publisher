@@ -8,7 +8,9 @@ import {
   ACCOUNT_SERVICE,
   accountRepositoryProvider,
   accountServiceProvider,
+  googleAuthProvider,
 } from './providers/account.providers';
+import { EventController } from './controllers/event.controller';
 
 @Module({})
 export class AccountModule {
@@ -16,8 +18,8 @@ export class AccountModule {
     return {
       module: AccountModule,
       imports: [RmqModule.forRoot()],
-      controllers: [ApiController, CommandController, QueryController],
-      providers: [accountRepositoryProvider, accountServiceProvider],
+      controllers: [ApiController, CommandController, QueryController, EventController],
+      providers: [accountRepositoryProvider, accountServiceProvider, googleAuthProvider],
       exports: [ACCOUNT_SERVICE, ACCOUNT_REPOSITORY],
     };
   }
