@@ -7,8 +7,12 @@ export interface CreateTokenParams {
   type: AccountTokenType;
 }
 
+export interface Options {
+  traceId?: string;
+}
+
 export interface Service {
   createToken(params: CreateTokenParams): Promise<AccountTokenModel>;
-  deleteTokens(accountId: number): Promise<AccountTokenModel[]>;
+  deleteTokens(accountId: number, options?: Options): Promise<AccountTokenModel[]>;
   getTokens(accountId: number): Promise<AccountTokenModel[]>;
 }

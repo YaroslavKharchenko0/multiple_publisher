@@ -7,13 +7,14 @@ import {
 } from '@app/contracts';
 import { ACCOUNT_TOKEN_SERVICE } from '../providers/account-token.providers';
 import { AccountTokenService } from '../services/account-token.service';
+import { TraceId } from '@app/logger';
 
 @Controller()
 export class CommandController {
   constructor(
     @Inject(ACCOUNT_TOKEN_SERVICE)
     private readonly service: AccountTokenService,
-  ) {}
+  ) { }
 
   @RabbitRPC({
     exchange: CreateAccountTokenCommand.exchange,
@@ -39,8 +40,9 @@ export class CommandController {
   })
   async delete(
     @RabbitPayload() message: DeleteAccountTokensCommand.Request,
+    @TraceId() traceId: string | undefined,
   ): Promise<DeleteAccountTokensCommand.Response> {
-    const payload = await this.service.deleteTokens(message.accountId);
+    const payload = await this.service.deleteTokens(message.accountId, { traceId });
 
     return createSuccessResponse(payload);
   }

@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { AccountTokenModel } from '../models/account-token.model';
-import { CreateTokenParams, Service } from './account-token.service.interface';
+import { CreateTokenParams, Options, Service } from './account-token.service.interface';
 import { ACCOUNT_TOKEN_REPOSITORY } from '../providers/account-token.providers';
 import { AccountTokenRepository } from '../repositories/account-token.repository';
 import { RmqErrorService } from '@app/errors';
@@ -13,7 +13,7 @@ export class AccountTokenService implements Service {
     private readonly repository: AccountTokenRepository,
     private readonly rmqErrorService: RmqErrorService,
     private readonly amqpConnection: AmqpConnection,
-  ) {}
+  ) { }
   async createToken(params: CreateTokenParams): Promise<AccountTokenModel> {
     const { accountId, token, type } = params;
 
@@ -31,7 +31,7 @@ export class AccountTokenService implements Service {
 
     return AccountTokenModel.fromEntity(entity);
   }
-  async deleteTokens(accountId: number): Promise<AccountTokenModel[]> {
+  async deleteTokens(accountId: number, options?: Options): Promise<AccountTokenModel[]> {
     const entities = await this.repository.deleteByAccountId(accountId);
 
     await this.amqpConnection.publish<OnDeleteAccountTokensEvent.Request>(
