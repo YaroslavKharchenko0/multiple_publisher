@@ -8,8 +8,12 @@ export interface CreateAccountParams {
   status: AccountStatus;
 }
 
+export interface Options {
+  traceId?: string;
+}
+
 export interface Service {
-  createAccount(params: CreateAccountParams): Promise<AccountModel>;
+  createAccount(params: CreateAccountParams, options?: Options): Promise<AccountModel>;
   findAccountById(id: number): Promise<AccountModel>;
   updateAccountById(
     id: number,

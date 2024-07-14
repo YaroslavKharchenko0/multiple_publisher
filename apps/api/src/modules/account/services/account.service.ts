@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AccountModel } from '../models/account.model';
-import { CreateAccountParams, Service } from './account.service.interface';
+import { CreateAccountParams, Options, Service } from './account.service.interface';
 import { AccountRepository } from '../repositories/account.repository';
 import { ACCOUNT_REPOSITORY } from '../providers/account.providers';
 import { RmqErrorService } from '@app/errors';
@@ -11,12 +11,12 @@ export class AccountService implements Service {
     @Inject(ACCOUNT_REPOSITORY) private readonly repository: AccountRepository,
     private readonly rmqErrorService: RmqErrorService,
     private readonly accountFacade: AccountFacade,
-  ) {}
+  ) { }
 
-  async createAccount(params: CreateAccountParams): Promise<AccountModel> {
+  async createAccount(params: CreateAccountParams, options?: Options): Promise<AccountModel> {
     const { provider, name, userId, status } = params;
 
-    const accountProvider = await this.accountFacade.findByKey(provider);
+    const accountProvider = await this.accountFacade.findByKey(provider, options?.traceId);
 
     if (!accountProvider) {
       throw this.rmqErrorService.badRequest();

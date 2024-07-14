@@ -8,12 +8,13 @@ import {
 } from '@app/contracts';
 import { ACCOUNT_SERVICE } from '../providers/account.providers';
 import { AccountService } from '../services/account.service';
+import { TraceId } from '@app/logger';
 
 @Controller()
 export class CommandController {
   constructor(
     @Inject(ACCOUNT_SERVICE) private readonly service: AccountService,
-  ) {}
+  ) { }
 
   @RabbitRPC({
     exchange: CreateAccountCommand.exchange,
@@ -22,13 +23,14 @@ export class CommandController {
   })
   async create(
     @RabbitPayload() message: CreateAccountCommand.Request,
+    @TraceId() traceId: string | undefined,
   ): Promise<CreateAccountCommand.Response> {
     const payload = await this.service.createAccount({
       name: message.name,
       provider: message.provider,
       status: message.status,
       userId: message.userId,
-    });
+    }, { traceId });
 
     return createSuccessResponse(payload);
   }

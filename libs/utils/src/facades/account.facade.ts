@@ -1,4 +1,4 @@
-import { FindAccountProviderQuery, SuccessResponse } from "@app/contracts";
+import { FindAccountProviderQuery, FindAccountQuery, SuccessResponse } from "@app/contracts";
 import { ProviderKey } from "@app/types";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Injectable } from "@nestjs/common";
@@ -9,7 +9,27 @@ export class AccountFacade {
     private readonly amqpConnection: AmqpConnection
   ) { }
 
-  async findByKey(key: ProviderKey) {
+  async findAccountById(id: number, traceId?: string) {
+    const payload: FindAccountQuery.Request = {
+      id,
+    }
+
+    const accountResponse = await this.amqpConnection.request<FindAccountQuery.Response>({
+      exchange: FindAccountQuery.exchange,
+      routingKey: FindAccountQuery.routingKey,
+      payload,
+    })
+
+    if (accountResponse.isError) {
+      return null;
+    }
+
+    const successResponse = accountResponse as SuccessResponse<FindAccountQuery.ResponsePayload>;
+
+    return successResponse.payload;
+  }
+
+  async findByKey(key: ProviderKey, traceId?: string) {
     const payload: FindAccountProviderQuery.Request = {
       key,
     }
