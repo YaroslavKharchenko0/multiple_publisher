@@ -1,42 +1,47 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import {
   CommandCommand,
   CommandErrorCommand,
+  CreateAccountTokenCommand,
   createSuccessResponse,
+  DeleteAccountTokensCommand,
 } from '@app/contracts';
 import { RmqErrorService, internalServerError } from '@app/errors';
+import { ACCOUNT_TOKEN_SERVICE } from '../providers/account-token.providers';
+import { AccountTokenService } from '../services/account-token.service';
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) {}
+  constructor(@Inject(ACCOUNT_TOKEN_SERVICE) private readonly service: AccountTokenService) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: CreateAccountTokenCommand.exchange,
+    routingKey: CreateAccountTokenCommand.routingKey,
+    queue: CreateAccountTokenCommand.queue,
   })
-  command(
-    @RabbitPayload() message: CommandCommand.Request,
-  ): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`,
-      });
+  async create(
+    @RabbitPayload() message: CreateAccountTokenCommand.Request,
+  ): Promise<CreateAccountTokenCommand.Response> {
+    const payload = await this.service.createToken({
+      accountId: message.accountId,
+      token: message.token,
+      type: message.type,
+    });
 
-      return payload;
-    } catch (error) {
-      return internalServerError;
-    }
+    return createSuccessResponse(payload);
   }
 
   @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
+    exchange: DeleteAccountTokensCommand.exchange,
+    routingKey: DeleteAccountTokensCommand.routingKey,
+    queue: DeleteAccountTokensCommand.queue,
   })
-  error() //@RabbitPayload() _message: CommandErrorCommand.Request,
-  : CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound();
+  async delete(
+    @RabbitPayload() message: DeleteAccountTokensCommand.Request,
+  ): Promise<DeleteAccountTokensCommand.Response> {
+    const payload = await this.service.deleteTokens(message.accountId);
+
+    return createSuccessResponse(payload);
   }
 }

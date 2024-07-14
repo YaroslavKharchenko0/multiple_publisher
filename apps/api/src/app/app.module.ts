@@ -16,6 +16,7 @@ import { FacadeModule } from '@app/utils';
 import { StatusModule } from '../modules/status';
 import { AccountProviderModule } from '../modules/account-provider';
 import { AccountModule } from '../modules/account';
+import { AccountTokenModule } from '../modules/account-token';
 
 @Module({})
 export class AppModule {
@@ -40,6 +41,7 @@ export class AppModule {
         StatusModule.forRoot(),
         AccountProviderModule.forRoot(),
         AccountModule.forRoot(),
+        AccountTokenModule.forRoot(),
       ],
     };
   }

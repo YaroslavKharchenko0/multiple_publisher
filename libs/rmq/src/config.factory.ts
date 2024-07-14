@@ -19,6 +19,7 @@ export const createConfigFactory = async (configService: ConfigService): Promise
       { name: 'file-metadata', type: 'topic' },
       { name: 'account-provider', type: 'topic' },
       { name: 'account', type: 'topic' },
+      { name: 'account-token', type: 'topic' },
     ],
     connectionInitOptions: { wait: true, timeout: 5000 },
     enableControllerDiscovery: true,

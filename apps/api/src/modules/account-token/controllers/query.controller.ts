@@ -1,24 +1,23 @@
-import { QueryQuery, createSuccessResponse } from '@app/contracts';
-import { internalServerError } from '@app/errors';
+import { GetAccountTokensQuery, createSuccessResponse } from '@app/contracts';
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
+import { ACCOUNT_TOKEN_SERVICE } from '../providers/account-token.providers';
+import { AccountTokenService } from '../services/account-token.service';
 
 @Controller()
 export class QueryController {
-  @RabbitRPC({
-    exchange: QueryQuery.exchange,
-    routingKey: QueryQuery.routingKey,
-    queue: QueryQuery.queue,
-  })
-  command(@RabbitPayload() message: QueryQuery.Request): QueryQuery.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`,
-      });
+  constructor(@Inject(ACCOUNT_TOKEN_SERVICE) private readonly service: AccountTokenService) { }
 
-      return payload;
-    } catch (error) {
-      return internalServerError;
-    }
+  @RabbitRPC({
+    exchange: GetAccountTokensQuery.exchange,
+    routingKey: GetAccountTokensQuery.routingKey,
+    queue: GetAccountTokensQuery.queue,
+  })
+  async delete(
+    @RabbitPayload() message: GetAccountTokensQuery.Request,
+  ): Promise<GetAccountTokensQuery.Response> {
+    const payload = await this.service.getTokens(message.accountId);
+
+    return createSuccessResponse(payload);
   }
 }
