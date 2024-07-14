@@ -10,3 +10,4 @@ export * from './file'
 export * from './file-metadata'
 export * from './account-provider';
 export * from './account';
+export * from './account-token';
