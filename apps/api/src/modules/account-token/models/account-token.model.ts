@@ -1,4 +1,4 @@
-import { AccountStatus, AccountTokenType } from "@app/types";
+import { AccountTokenType } from '@app/types';
 
 export class AccountTokenModel {
   id: number;

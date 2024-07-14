@@ -1,4 +1,4 @@
-import { AccountStatus } from "@app/types";
+import { AccountStatus } from '@app/types';
 
 export class AccountModel {
   id: number;

@@ -1,24 +1,23 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import {
-  CommandErrorCommand,
   DeleteAccountCommand,
-  EventEvent,
   FindAccountQuery,
-  QueryQuery,
   UpdateAccountCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { Auth, IsStringNumberPipe, Roles } from '@app/utils';
-import { Role } from '@app/types';
+import { IsStringNumberPipe } from '@app/utils';
 import { UpdateAccountBodyDto } from '@app/validation';
 
 @Controller('accounts')
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) { }
+  constructor(private readonly amqpConnection: AmqpConnection) {}
 
   @Delete('/:accountId')
-  delete(@TraceId() traceId: string | undefined, @Param('accountId', IsStringNumberPipe) accountId: string) {
+  delete(
+    @TraceId() traceId: string | undefined,
+    @Param('accountId', IsStringNumberPipe) accountId: string,
+  ) {
     const payload: DeleteAccountCommand.Request = {
       id: Number(accountId),
     };
@@ -34,7 +33,10 @@ export class ApiController {
   }
 
   @Get('/:accountId')
-  findOne(@TraceId() traceId: string | undefined, @Param('accountId', IsStringNumberPipe) accountId: string) {
+  findOne(
+    @TraceId() traceId: string | undefined,
+    @Param('accountId', IsStringNumberPipe) accountId: string,
+  ) {
     const payload: FindAccountQuery.Request = {
       id: Number(accountId),
     };
@@ -45,12 +47,16 @@ export class ApiController {
       payload,
       headers: {
         traceId,
-      }
+      },
     });
   }
 
   @Patch('/:accountId')
-  update(@TraceId() traceId: string | undefined, @Param('accountId', IsStringNumberPipe) accountId: string, @Body() body: UpdateAccountBodyDto) {
+  update(
+    @TraceId() traceId: string | undefined,
+    @Param('accountId', IsStringNumberPipe) accountId: string,
+    @Body() body: UpdateAccountBodyDto,
+  ) {
     const payload: UpdateAccountCommand.Request = {
       id: Number(accountId),
       payload: body,

@@ -3,7 +3,12 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ApiController } from './controllers/api.controller';
 import { CommandController } from './controllers/command.controller';
 import { QueryController } from './controllers/query.controller';
-import { ACCOUNT_REPOSITORY, ACCOUNT_SERVICE, accountRepositoryProvider, accountServiceProvider } from './providers/account.providers';
+import {
+  ACCOUNT_REPOSITORY,
+  ACCOUNT_SERVICE,
+  accountRepositoryProvider,
+  accountServiceProvider,
+} from './providers/account.providers';
 
 @Module({})
 export class AccountModule {
@@ -11,13 +16,9 @@ export class AccountModule {
     return {
       module: AccountModule,
       imports: [RmqModule.forRoot()],
-      controllers: [
-        ApiController,
-        CommandController,
-        QueryController,
-      ],
+      controllers: [ApiController, CommandController, QueryController],
       providers: [accountRepositoryProvider, accountServiceProvider],
-      exports: [ACCOUNT_SERVICE, ACCOUNT_REPOSITORY]
+      exports: [ACCOUNT_SERVICE, ACCOUNT_REPOSITORY],
     };
   }
 }

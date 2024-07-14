@@ -1,19 +1,19 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { Controller, Inject } from '@nestjs/common';
 import {
-  CommandCommand,
-  CommandErrorCommand,
   CreateAccountTokenCommand,
   createSuccessResponse,
   DeleteAccountTokensCommand,
 } from '@app/contracts';
-import { RmqErrorService, internalServerError } from '@app/errors';
 import { ACCOUNT_TOKEN_SERVICE } from '../providers/account-token.providers';
 import { AccountTokenService } from '../services/account-token.service';
 
 @Controller()
 export class CommandController {
-  constructor(@Inject(ACCOUNT_TOKEN_SERVICE) private readonly service: AccountTokenService) { }
+  constructor(
+    @Inject(ACCOUNT_TOKEN_SERVICE)
+    private readonly service: AccountTokenService,
+  ) {}
 
   @RabbitRPC({
     exchange: CreateAccountTokenCommand.exchange,

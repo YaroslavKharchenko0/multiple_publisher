@@ -8,7 +8,7 @@ export type SelectAccountToken = typeof schema.accountTokens.$inferSelect;
 
 @Injectable()
 export class AccountTokenRepository {
-  constructor(@Orm() private readonly db: Database) { }
+  constructor(@Orm() private readonly db: Database) {}
 
   private accountTokens = schema.accountTokens;
 
@@ -39,13 +39,16 @@ export class AccountTokenRepository {
     return result;
   }
 
-  async updateByAccountId(accountId: number, input: Partial<InsertAccountToken>) {
+  async updateByAccountId(
+    accountId: number,
+    input: Partial<InsertAccountToken>,
+  ) {
     const where = eq(this.accountTokens.accountId, accountId);
 
     const set = {
       ...input,
       updatedAt: new Date(),
-    }
+    };
 
     const result = await this.db
       .update(this.accountTokens)

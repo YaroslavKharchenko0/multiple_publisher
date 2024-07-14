@@ -6,7 +6,10 @@ import { AccountTokenService } from '../services/account-token.service';
 
 @Controller()
 export class QueryController {
-  constructor(@Inject(ACCOUNT_TOKEN_SERVICE) private readonly service: AccountTokenService) { }
+  constructor(
+    @Inject(ACCOUNT_TOKEN_SERVICE)
+    private readonly service: AccountTokenService,
+  ) {}
 
   @RabbitRPC({
     exchange: GetAccountTokensQuery.exchange,

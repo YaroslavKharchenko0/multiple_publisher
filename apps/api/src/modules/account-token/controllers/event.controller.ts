@@ -1,12 +1,19 @@
-import { OnDeleteAccountTokensEvent, UpdateAccountCommand } from '@app/contracts';
-import { AmqpConnection, RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import {
+  OnDeleteAccountTokensEvent,
+  UpdateAccountCommand,
+} from '@app/contracts';
+import {
+  AmqpConnection,
+  RabbitPayload,
+  RabbitSubscribe,
+} from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
 import { AccountStatus } from '@app/types';
 import { TraceId } from '@app/logger';
 
 @Controller()
 export class EventController {
-  constructor(private readonly amqpConnection: AmqpConnection) { }
+  constructor(private readonly amqpConnection: AmqpConnection) {}
 
   @RabbitSubscribe({
     exchange: OnDeleteAccountTokensEvent.exchange,
@@ -20,17 +27,17 @@ export class EventController {
     const payload: UpdateAccountCommand.Request = {
       id: message.accountId,
       payload: {
-        status: AccountStatus.INACTIVE
-      }
-    }
+        status: AccountStatus.INACTIVE,
+      },
+    };
 
     await this.amqpConnection.request({
       exchange: UpdateAccountCommand.exchange,
       routingKey: UpdateAccountCommand.routingKey,
       payload,
       headers: {
-        traceId
-      }
-    })
+        traceId,
+      },
+    });
   }
 }

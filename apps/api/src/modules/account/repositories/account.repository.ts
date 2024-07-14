@@ -8,16 +8,12 @@ export type SelectAccount = typeof schema.accounts.$inferSelect;
 
 @Injectable()
 export class AccountRepository {
-  constructor(@Orm() private readonly db: Database) { }
+  constructor(@Orm() private readonly db: Database) {}
 
   private accounts = schema.accounts;
 
   async createOne(input: InsertAccount) {
-    return this.db
-      .insert(this.accounts)
-      .values(input)
-      .returning()
-      .execute();
+    return this.db.insert(this.accounts).values(input).returning().execute();
   }
 
   async findById(id: number) {
@@ -45,7 +41,7 @@ export class AccountRepository {
     const set = {
       ...input,
       updatedAt: new Date(),
-    }
+    };
 
     const result = await this.db
       .update(this.accounts)

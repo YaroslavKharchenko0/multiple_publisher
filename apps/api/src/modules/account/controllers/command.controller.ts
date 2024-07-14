@@ -11,7 +11,9 @@ import { AccountService } from '../services/account.service';
 
 @Controller()
 export class CommandController {
-  constructor(@Inject(ACCOUNT_SERVICE) private readonly service: AccountService) { }
+  constructor(
+    @Inject(ACCOUNT_SERVICE) private readonly service: AccountService,
+  ) {}
 
   @RabbitRPC({
     exchange: CreateAccountCommand.exchange,
@@ -26,7 +28,7 @@ export class CommandController {
       provider: message.provider,
       status: message.status,
       userId: message.userId,
-    })
+    });
 
     return createSuccessResponse(payload);
   }
@@ -39,7 +41,7 @@ export class CommandController {
   async delete(
     @RabbitPayload() message: DeleteAccountCommand.Request,
   ): Promise<DeleteAccountCommand.Response> {
-    const payload = await this.service.deleteAccountById(message.id)
+    const payload = await this.service.deleteAccountById(message.id);
 
     return createSuccessResponse(payload);
   }
@@ -52,9 +54,11 @@ export class CommandController {
   async update(
     @RabbitPayload() message: UpdateAccountCommand.Request,
   ): Promise<UpdateAccountCommand.Response> {
-    const payload = await this.service.updateAccountById(message.id, message.payload)
+    const payload = await this.service.updateAccountById(
+      message.id,
+      message.payload,
+    );
 
     return createSuccessResponse(payload);
   }
-
 }
