@@ -14,7 +14,7 @@ export class AccountService implements Service {
   ) { }
 
   async createAccount(params: CreateAccountParams, options?: Options): Promise<AccountModel> {
-    const { provider, name, userId, status } = params;
+    const { provider, name, userId, status, internalId } = params;
 
     const accountProvider = await this.accountFacade.findByKey(provider, options?.traceId);
 
@@ -27,6 +27,7 @@ export class AccountService implements Service {
       name,
       userId,
       status,
+      internalId
     });
 
     const [entity] = entities;

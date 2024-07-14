@@ -6,6 +6,7 @@ export interface CreateAccountParams {
   name: string;
   userId: number | null;
   status: AccountStatus;
+  internalId: string;
 }
 
 export interface Options {

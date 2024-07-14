@@ -3,6 +3,7 @@ import { AccountStatus } from '@app/types';
 export class AccountModel {
   id: number;
   providerId: number;
+  internalId: string;
   name: string;
   userId: number | null;
   status: AccountStatus;
