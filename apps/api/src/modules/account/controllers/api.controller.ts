@@ -6,14 +6,16 @@ import {
   UpdateAccountCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe } from '@app/utils';
+import { IsStringNumberPipe, Roles } from '@app/utils';
 import { UpdateAccountBodyDto } from '@app/validation';
+import { Role } from '@app/types';
 
 @Controller('accounts')
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Delete('/:accountId')
+  @Roles(Role.ADMIN, Role.USER)
   delete(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,
@@ -33,6 +35,7 @@ export class ApiController {
   }
 
   @Get('/:accountId')
+  @Roles(Role.ADMIN, Role.USER)
   findOne(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,
@@ -52,6 +55,7 @@ export class ApiController {
   }
 
   @Patch('/:accountId')
+  @Roles(Role.ADMIN, Role.USER)
   update(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,
