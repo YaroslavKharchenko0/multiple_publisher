@@ -4,6 +4,7 @@ import {
   CreateAccountCommand,
   createSuccessResponse,
   DeleteAccountCommand,
+  GoogleCallbackCommand,
   GoogleSingInUrlCommand,
   UpdateAccountCommand,
 } from '@app/contracts';
@@ -11,6 +12,8 @@ import { ACCOUNT_SERVICE } from '../providers/account.providers';
 import { AccountService } from '../services/account.service';
 import { TraceId } from '@app/logger';
 import { GcpAuth, GoogleAuthService } from '@app/gcp';
+import * as jwt from 'jsonwebtoken';
+import { ProviderKey } from '@app/types';
 
 @Controller()
 export class CommandController {
@@ -25,8 +28,8 @@ export class CommandController {
     queue: CreateAccountCommand.queue,
   })
   async create(
-    @RabbitPayload() message: CreateAccountCommand.Request,
     @TraceId() traceId: string | undefined,
+    @RabbitPayload() message: CreateAccountCommand.Request,
   ): Promise<CreateAccountCommand.Response> {
     const payload = await this.service.createAccount(
       {
@@ -84,5 +87,36 @@ export class CommandController {
     return createSuccessResponse({
       url,
     });
+  }
+
+  @RabbitRPC({
+    exchange: GoogleCallbackCommand.exchange,
+    routingKey: GoogleCallbackCommand.routingKey,
+    queue: GoogleCallbackCommand.queue,
+  })
+  async googleCallback(
+    @TraceId() traceId: string | undefined,
+    @RabbitPayload() message: GoogleCallbackCommand.Request,
+  ) {
+    const tokens = await this.googleAuthService.authByCode(message.code);
+
+    const decodedToken = jwt.decode(tokens.id_token);
+
+    const providerId = decodedToken['sub'] as string;
+
+    const accountTokens = {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+    };
+
+    await this.service.onSignIn(
+      {
+        internalId: providerId,
+        accountTokens,
+        provider: ProviderKey.GOOGLE,
+        userId: message.userId,
+      },
+      { traceId },
+    );
   }
 }

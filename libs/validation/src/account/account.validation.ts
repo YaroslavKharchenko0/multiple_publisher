@@ -8,7 +8,7 @@ export const accountId = z.number()
 export const accountName = z.string().max(100)
 export const accountStatus = z.nativeEnum(AccountStatus)
 export const accountUserId = userId.nullable()
-export const accountInternalId = z.string().uuid()
+export const accountInternalId = z.string()
 
 const accountValidationSchema = z.object({
   id: accountId,

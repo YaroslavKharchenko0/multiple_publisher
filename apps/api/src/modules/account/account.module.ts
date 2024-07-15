@@ -9,7 +9,6 @@ import {
   accountRepositoryProvider,
   accountServiceProvider,
 } from './providers/account.providers';
-import { EventController } from './controllers/event.controller';
 import { GcpModule } from '@app/gcp';
 
 @Module({})
@@ -18,12 +17,7 @@ export class AccountModule {
     return {
       module: AccountModule,
       imports: [RmqModule.forRoot(), GcpModule.forRoot()],
-      controllers: [
-        ApiController,
-        CommandController,
-        QueryController,
-        EventController,
-      ],
+      controllers: [ApiController, CommandController, QueryController],
       providers: [accountRepositoryProvider, accountServiceProvider],
       exports: [ACCOUNT_SERVICE, ACCOUNT_REPOSITORY],
     };

@@ -11,7 +11,7 @@ import {
 import {
   DeleteAccountCommand,
   FindAccountQuery,
-  GoogleCallbackEvent,
+  GoogleCallbackCommand,
   GoogleSingInUrlCommand,
   UpdateAccountCommand,
 } from '@app/contracts';
@@ -49,17 +49,23 @@ export class ApiController {
 
   @Get('/auth/google/callback')
   async googleCallback(
-    @Query('code', IsStringNumberPipe) code: string,
+    @Query('code') code: string,
     @Query('state', IsStringNumberPipe) state: string,
+    @TraceId() traceId: string | undefined,
   ) {
-    await this.amqpConnection.publish<GoogleCallbackEvent.Request>(
-      GoogleCallbackEvent.exchange,
-      GoogleCallbackEvent.routingKey,
-      {
-        code,
-        userId: Number(state),
+    const payload: GoogleCallbackCommand.Request = {
+      code,
+      userId: Number(state),
+    };
+
+    return this.amqpConnection.request<GoogleCallbackCommand.Response>({
+      exchange: GoogleCallbackCommand.exchange,
+      routingKey: GoogleCallbackCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
       },
-    );
+    });
   }
 
   @Delete('/:accountId')

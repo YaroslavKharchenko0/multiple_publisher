@@ -1,7 +1,7 @@
 import { RmqResponse } from '../common'
 import { GoogleCallbackRequest, GoogleCallbackResponse } from '@app/validation'
 
-export namespace GoogleCallbackEvent {
+export namespace GoogleCallbackCommand {
   export const exchange = 'account';
 
   export const routingKey = 'google-callback';
@@ -14,4 +14,3 @@ export namespace GoogleCallbackEvent {
 
   export type Response = RmqResponse<GoogleCallbackResponse>
 }
-

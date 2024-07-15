@@ -40,7 +40,7 @@ export interface Service {
     accountTokens: AccountTokens | null,
   ): Promise<void>;
   findAccountById(id: number): Promise<AccountModel>;
-  findAccountByInternalId(internalId: string): Promise<AccountModel>;
+  findAccountByInternalId(internalId: string): Promise<AccountModel | null>;
   updateAccountById(
     id: number,
     params: Partial<AccountModel>,

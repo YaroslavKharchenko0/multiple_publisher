@@ -103,7 +103,7 @@ export const accountProviders = pgTable('account_providers', {
 export const accounts = pgTable('accounts', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
-  internalId: uuid('internal_id').unique().notNull(),
+  internalId: varchar('internal_id', { length: 100 }).unique().notNull(),
   userId: integer('user_id').references(() => users.id, {
     onDelete: 'set null',
   }),

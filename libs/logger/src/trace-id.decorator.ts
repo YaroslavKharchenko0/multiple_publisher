@@ -6,14 +6,15 @@ export const TraceId = createParamDecorator(
     const isRMQ = isRabbitContext(ctx);
 
     if (isRMQ) {
-      const rmqContext = ctx.switchToRpc().getContext()
+      const rmqContext = ctx.switchToRpc().getContext();
 
-      const traceId: string | undefined = rmqContext.properties.headers.traceId
+      const traceId: string | undefined =
+        rmqContext?.properties?.headers?.traceId;
 
       return traceId;
     }
 
     const request = ctx.switchToHttp().getRequest();
-    return request.headers['x-trace-id'] as string | undefined;
+    return request?.headers?.['x-trace-id'] as string | undefined;
   },
 );

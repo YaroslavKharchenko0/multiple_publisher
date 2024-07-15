@@ -3,8 +3,6 @@ import { AccountRepository } from '../repositories/account.repository';
 import { AccountService } from '../services/account.service';
 import { RmqErrorService } from '@app/errors';
 import { AccountFacade } from '@app/utils';
-import { ConfigService } from '@nestjs/config';
-import { createGoogleAuthConfig } from '../configs/google.config';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 export const ACCOUNT_REPOSITORY = 'ACCOUNT_REPOSITORY';

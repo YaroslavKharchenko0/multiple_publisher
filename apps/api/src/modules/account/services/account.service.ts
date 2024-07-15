@@ -43,29 +43,43 @@ export class AccountService implements Service {
       const newAccount = await this.createAccount(createAccountParams, options);
 
       await this.createAccountTokens(newAccount, accountTokens, options);
+
+      return;
     }
 
-    const deleteAccountTokensPayload: DeleteAccountTokensCommand.Request = {
-      accountId: account.id,
+    await this.deleteAccountTokens(account.id, options);
+
+    await this.createAccountTokens(account, accountTokens, options);
+  }
+
+  async findAccountByInternalId(
+    internalId: string,
+  ): Promise<AccountModel | null> {
+    const entity = await this.repository.findAccountByInternalId(internalId);
+
+    if (!entity) {
+      return null;
+    }
+
+    return AccountModel.fromEntity(entity);
+  }
+
+  async deleteAccountTokens(
+    accountId: number,
+    options?: Options,
+  ): Promise<void> {
+    const payload: DeleteAccountTokensCommand.Request = {
+      accountId,
     };
 
     await this.amqpConnection.request<DeleteAccountTokensCommand.Response>({
       exchange: DeleteAccountTokensCommand.exchange,
       routingKey: DeleteAccountTokensCommand.routingKey,
-      payload: deleteAccountTokensPayload,
+      payload,
+      headers: {
+        traceId: options?.traceId,
+      },
     });
-
-    await this.createAccountTokens(account, accountTokens, options);
-  }
-
-  async findAccountByInternalId(internalId: string): Promise<AccountModel> {
-    const entity = await this.repository.findAccountByInternalId(internalId);
-
-    if (!entity) {
-      throw this.rmqErrorService.notFound();
-    }
-
-    return AccountModel.fromEntity(entity);
   }
 
   async createAccountTokens(
