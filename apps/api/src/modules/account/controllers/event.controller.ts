@@ -1,7 +1,10 @@
 import { GoogleCallbackEvent } from '@app/contracts';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Controller, Inject } from '@nestjs/common';
-import { ACCOUNT_SERVICE, GOOGLE_AUTH_CREDENTIALS } from '../providers/account.providers';
+import {
+  ACCOUNT_SERVICE,
+  GOOGLE_AUTH_CREDENTIALS,
+} from '../providers/account.providers';
 import { AccountService } from '../services/account.service';
 import { GoogleAuthService } from '../services/google-auth.service';
 import { TraceId } from '@app/logger';
@@ -13,7 +16,8 @@ import { CreateAccountParams } from '../services/account.service.interface';
 export class EventController {
   constructor(
     @Inject(ACCOUNT_SERVICE) private readonly service: AccountService,
-    @Inject(GOOGLE_AUTH_CREDENTIALS) private readonly googleAuthCredentials: GoogleAuthService,
+    @Inject(GOOGLE_AUTH_CREDENTIALS)
+    private readonly googleAuthCredentials: GoogleAuthService,
   ) { }
 
   @RabbitSubscribe({
@@ -34,28 +38,16 @@ export class EventController {
     const accountTokens = {
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
-    }
+    };
 
-    const account = await this.service.findAccountByInternalId(providerId);
-
-    const isExistAccount = !!account;
-
-    if (isExistAccount) {
-      await this.service.createAccountTokens(account, accountTokens, { traceId });
-
-      return;
-    }
-
-    const payload: CreateAccountParams = {
-      provider: ProviderKey.GOOGLE,
-      userId: message.userId,
-      status: AccountStatus.INACTIVE,
-      internalId: providerId,
-      name: ProviderKey.GOOGLE,
-    }
-
-    const createdAccount = await this.service.createAccount(payload, { traceId });
-
-    await this.service.createAccountTokens(createdAccount, accountTokens, { traceId });
+    await this.service.onSignIn(
+      {
+        internalId: providerId,
+        accountTokens,
+        provider: ProviderKey.GOOGLE,
+        userId: message.userId,
+      },
+      { traceId },
+    );
   }
 }

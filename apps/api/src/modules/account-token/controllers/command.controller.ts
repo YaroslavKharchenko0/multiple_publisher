@@ -42,7 +42,9 @@ export class CommandController {
     @RabbitPayload() message: DeleteAccountTokensCommand.Request,
     @TraceId() traceId: string | undefined,
   ): Promise<DeleteAccountTokensCommand.Response> {
-    const payload = await this.service.deleteTokens(message.accountId, { traceId });
+    const payload = await this.service.deleteTokens(message.accountId, {
+      traceId,
+    });
 
     return createSuccessResponse(payload);
   }

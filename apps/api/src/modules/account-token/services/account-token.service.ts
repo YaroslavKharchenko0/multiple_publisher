@@ -1,6 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { AccountTokenModel } from '../models/account-token.model';
-import { CreateTokenParams, Options, Service } from './account-token.service.interface';
+import {
+  CreateTokenParams,
+  Options,
+  Service,
+} from './account-token.service.interface';
 import { ACCOUNT_TOKEN_REPOSITORY } from '../providers/account-token.providers';
 import { AccountTokenRepository } from '../repositories/account-token.repository';
 import { RmqErrorService } from '@app/errors';
@@ -31,13 +35,17 @@ export class AccountTokenService implements Service {
 
     return AccountTokenModel.fromEntity(entity);
   }
-  async deleteTokens(accountId: number, options?: Options): Promise<AccountTokenModel[]> {
+  async deleteTokens(
+    accountId: number,
+    options?: Options,
+  ): Promise<AccountTokenModel[]> {
     const entities = await this.repository.deleteByAccountId(accountId);
 
     await this.amqpConnection.publish<OnDeleteAccountTokensEvent.Request>(
       OnDeleteAccountTokensEvent.exchange,
       OnDeleteAccountTokensEvent.routingKey,
       { accountId },
+      { headers: { traceId: options?.traceId } },
     );
 
     return entities.map(AccountTokenModel.fromEntity);

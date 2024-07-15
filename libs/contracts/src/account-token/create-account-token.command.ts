@@ -1,5 +1,8 @@
-import { RmqResponse } from '../common'
-import { CreateAccountTokenRequest, CreateAccountTokenResponse } from '@app/validation'
+import { RmqResponse } from '../common';
+import {
+  CreateAccountTokenRequest,
+  CreateAccountTokenResponse,
+} from '@app/validation';
 
 export namespace CreateAccountTokenCommand {
   export const exchange = 'account-token';
@@ -12,6 +15,5 @@ export namespace CreateAccountTokenCommand {
 
   export type ResponsePayload = CreateAccountTokenResponse;
 
-  export type Response = RmqResponse<CreateAccountTokenResponse>
+  export type Response = RmqResponse<CreateAccountTokenResponse>;
 }
-

@@ -1,5 +1,8 @@
-import { RmqResponse } from '../common'
-import { DeleteAccountTokensRequest, DeleteAccountTokensResponse } from '@app/validation'
+import { RmqResponse } from '../common';
+import {
+  DeleteAccountTokensRequest,
+  DeleteAccountTokensResponse,
+} from '@app/validation';
 
 export namespace DeleteAccountTokensCommand {
   export const exchange = 'account-token';
@@ -12,6 +15,5 @@ export namespace DeleteAccountTokensCommand {
 
   export type ResponsePayload = DeleteAccountTokensResponse;
 
-  export type Response = RmqResponse<DeleteAccountTokensResponse>
+  export type Response = RmqResponse<DeleteAccountTokensResponse>;
 }
-
