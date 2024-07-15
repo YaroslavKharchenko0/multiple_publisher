@@ -24,19 +24,12 @@ export const accountServiceProvider: Provider = {
     accountFacade: AccountFacade,
     amqpConnection: AmqpConnection,
   ) => {
-    return new AccountService(repository, rmqErrorService, accountFacade, amqpConnection);
+    return new AccountService(
+      repository,
+      rmqErrorService,
+      accountFacade,
+      amqpConnection,
+    );
   },
   inject: [ACCOUNT_REPOSITORY, RmqErrorService, AccountFacade, AmqpConnection],
 };
-
-export const GOOGLE_AUTH_CREDENTIALS = 'GOOGLE_AUTH_CREDENTIALS';
-
-export const googleAuthProvider: Provider = {
-  provide: GOOGLE_AUTH_CREDENTIALS,
-  useFactory: (configService: ConfigService) => {
-    const config = createGoogleAuthConfig(configService);
-
-    return config;
-  },
-  inject: [ConfigService],
-}

@@ -1,5 +1,13 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Query,
+} from '@nestjs/common';
 import {
   DeleteAccountCommand,
   FindAccountQuery,
@@ -8,7 +16,13 @@ import {
   UpdateAccountCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { AccountAccess, IsStringNumberPipe, JWTUser, Roles, User } from '@app/utils';
+import {
+  AccountAccess,
+  IsStringNumberPipe,
+  JWTUser,
+  Roles,
+  User,
+} from '@app/utils';
 import { UpdateAccountBodyDto } from '@app/validation';
 import { Role } from '@app/types';
 
@@ -21,7 +35,7 @@ export class ApiController {
   googleAuthUrl(@TraceId() traceId: string | undefined, @User() user: JWTUser) {
     const payload: GoogleSingInUrlCommand.Request = {
       userId: user.app_id,
-    }
+    };
 
     return this.amqpConnection.request<string>({
       exchange: GoogleSingInUrlCommand.exchange,
@@ -29,16 +43,23 @@ export class ApiController {
       payload,
       headers: {
         traceId,
-      }
+      },
     });
   }
 
   @Get('/auth/google/callback')
-  async googleCallback(@Query('code', IsStringNumberPipe) code: string, @Query('state', IsStringNumberPipe) state: string) {
-    await this.amqpConnection.publish<GoogleCallbackEvent.Request>(GoogleCallbackEvent.exchange, GoogleCallbackEvent.routingKey, {
-      code,
-      userId: Number(state),
-    })
+  async googleCallback(
+    @Query('code', IsStringNumberPipe) code: string,
+    @Query('state', IsStringNumberPipe) state: string,
+  ) {
+    await this.amqpConnection.publish<GoogleCallbackEvent.Request>(
+      GoogleCallbackEvent.exchange,
+      GoogleCallbackEvent.routingKey,
+      {
+        code,
+        userId: Number(state),
+      },
+    );
   }
 
   @Delete('/:accountId')

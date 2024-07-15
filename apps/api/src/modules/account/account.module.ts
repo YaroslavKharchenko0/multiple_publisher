@@ -8,18 +8,23 @@ import {
   ACCOUNT_SERVICE,
   accountRepositoryProvider,
   accountServiceProvider,
-  googleAuthProvider,
 } from './providers/account.providers';
 import { EventController } from './controllers/event.controller';
+import { GcpModule } from '@app/gcp';
 
 @Module({})
 export class AccountModule {
   static forRoot(): DynamicModule {
     return {
       module: AccountModule,
-      imports: [RmqModule.forRoot()],
-      controllers: [ApiController, CommandController, QueryController, EventController],
-      providers: [accountRepositoryProvider, accountServiceProvider, googleAuthProvider],
+      imports: [RmqModule.forRoot(), GcpModule.forRoot()],
+      controllers: [
+        ApiController,
+        CommandController,
+        QueryController,
+        EventController,
+      ],
+      providers: [accountRepositoryProvider, accountServiceProvider],
       exports: [ACCOUNT_SERVICE, ACCOUNT_REPOSITORY],
     };
   }

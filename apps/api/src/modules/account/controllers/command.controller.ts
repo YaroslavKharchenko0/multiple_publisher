@@ -7,16 +7,16 @@ import {
   GoogleSingInUrlCommand,
   UpdateAccountCommand,
 } from '@app/contracts';
-import { ACCOUNT_SERVICE, GOOGLE_AUTH_CREDENTIALS } from '../providers/account.providers';
+import { ACCOUNT_SERVICE } from '../providers/account.providers';
 import { AccountService } from '../services/account.service';
 import { TraceId } from '@app/logger';
-import { GoogleAuthService } from '../services/google-auth.service';
+import { GcpAuth, GoogleAuthService } from '@app/gcp';
 
 @Controller()
 export class CommandController {
   constructor(
     @Inject(ACCOUNT_SERVICE) private readonly service: AccountService,
-    @Inject(GOOGLE_AUTH_CREDENTIALS) private readonly googleAuthCredentials: GoogleAuthService,
+    @GcpAuth() private readonly googleAuthService: GoogleAuthService,
   ) { }
 
   @RabbitRPC({
@@ -28,13 +28,16 @@ export class CommandController {
     @RabbitPayload() message: CreateAccountCommand.Request,
     @TraceId() traceId: string | undefined,
   ): Promise<CreateAccountCommand.Response> {
-    const payload = await this.service.createAccount({
-      name: message.name,
-      provider: message.provider,
-      status: message.status,
-      userId: message.userId,
-      internalId: message.internalId,
-    }, { traceId });
+    const payload = await this.service.createAccount(
+      {
+        name: message.name,
+        provider: message.provider,
+        status: message.status,
+        userId: message.userId,
+        internalId: message.internalId,
+      },
+      { traceId },
+    );
 
     return createSuccessResponse(payload);
   }
@@ -73,8 +76,10 @@ export class CommandController {
     routingKey: GoogleSingInUrlCommand.routingKey,
     queue: GoogleSingInUrlCommand.queue,
   })
-  async googleSignInUrl(@RabbitPayload() message: GoogleSingInUrlCommand.Request): Promise<GoogleSingInUrlCommand.Response> {
-    const url = this.googleAuthCredentials.generateAuthUrl(message.userId);
+  async googleSignInUrl(
+    @RabbitPayload() message: GoogleSingInUrlCommand.Request,
+  ): Promise<GoogleSingInUrlCommand.Response> {
+    const url = this.googleAuthService.generateAuthUrl(message.userId);
 
     return createSuccessResponse({
       url,
