@@ -23,12 +23,16 @@ export class CommandController {
   })
   async create(
     @RabbitPayload() message: CreateAccountTokenCommand.Request,
+    @TraceId() traceId: string | undefined,
   ): Promise<CreateAccountTokenCommand.Response> {
-    const payload = await this.service.createToken({
-      accountId: message.accountId,
-      token: message.token,
-      type: message.type,
-    });
+    const payload = await this.service.createToken(
+      {
+        accountId: message.accountId,
+        token: message.token,
+        type: message.type,
+      },
+      { traceId },
+    );
 
     return createSuccessResponse(payload);
   }

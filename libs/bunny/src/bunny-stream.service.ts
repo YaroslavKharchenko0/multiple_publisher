@@ -1,22 +1,29 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { BUNNY_CONFIG_KEY } from "./bunny.constants";
-import { BunnyConfig, BunnyCreateVideoResponse, BunnyDeleteVideoResponse, CreateVideoParams, DeleteVideoFileParams, GenerateSignatureParams } from "./bunny.types";
-import { addHours } from "date-fns";
-import { createHash } from "crypto";
-import { toUnixTimestamp } from "@app/utils";
-import { HttpService } from "@nestjs/axios";
-import { UploadStatus } from "@app/types";
+import { Inject, Injectable } from '@nestjs/common';
+import { BUNNY_CONFIG_KEY } from './bunny.constants';
+import {
+  BunnyConfig,
+  BunnyCreateVideoResponse,
+  BunnyDeleteVideoResponse,
+  CreateVideoParams,
+  DeleteVideoFileParams,
+  GenerateSignatureParams,
+} from './bunny.types';
+import { addHours } from 'date-fns';
+import { createHash } from 'crypto';
+import { toUnixTimestamp } from '@app/utils';
+import { HttpService } from '@nestjs/axios';
+import { UploadStatus } from '@app/types';
 
 @Injectable()
 export class BunnyStreamService {
   private readonly client;
 
-  private readonly baseUrl: string
+  private readonly baseUrl: string;
 
   private readonly baseHeaders: Record<string, string> = {
-    'accept': 'application/json',
+    accept: 'application/json',
     'content-type': 'application/*+json',
-  }
+  };
 
   readonly statusMap = {
     0: UploadStatus.QUEUED,
@@ -30,12 +37,15 @@ export class BunnyStreamService {
     8: UploadStatus.PRESIGNED_UPLOAD_FAILED,
     9: UploadStatus.CAPTIONS_GENERATED,
     10: UploadStatus.TITLE_OR_DESCRIPTION_GENERATED,
-  }
+  };
 
-  constructor(private readonly httpService: HttpService, @Inject(BUNNY_CONFIG_KEY) private readonly config: BunnyConfig) {
+  constructor(
+    private readonly httpService: HttpService,
+    @Inject(BUNNY_CONFIG_KEY) private readonly config: BunnyConfig,
+  ) {
     const client = this.httpService.axiosRef;
 
-    const baseUrl = this.config.stream.videoUrl
+    const baseUrl = this.config.stream.videoUrl;
 
     this.baseUrl = baseUrl;
 
@@ -71,15 +81,21 @@ export class BunnyStreamService {
     };
   }
 
-  async createVideo(params: CreateVideoParams): Promise<BunnyCreateVideoResponse | null> {
+  async createVideo(
+    params: CreateVideoParams,
+  ): Promise<BunnyCreateVideoResponse | null> {
     const { title, thumbnailTime = 1 } = params;
     const libraryId = this.config.stream.libraryId;
     const path = `library/${libraryId}/videos`;
 
-    const url = `${this.baseUrl}/${path}`
+    const url = `${this.baseUrl}/${path}`;
 
     try {
-      const response = await this.client.post(url, { title, thumbnailTime }, { headers: this.baseHeaders });
+      const response = await this.client.post(
+        url,
+        { title, thumbnailTime },
+        { headers: this.baseHeaders },
+      );
       if (response.status === 200) {
         return response.data as BunnyCreateVideoResponse;
       }
@@ -89,22 +105,25 @@ export class BunnyStreamService {
     }
   }
 
-  async deleteVideoFile(params: DeleteVideoFileParams): Promise<BunnyDeleteVideoResponse | null> {
+  async deleteVideoFile(
+    params: DeleteVideoFileParams,
+  ): Promise<BunnyDeleteVideoResponse | null> {
     const { videoId } = params;
     const libraryId = this.config.stream.libraryId;
 
     const path = `library/${libraryId}/videos/${videoId}`;
 
-    const url = `${this.baseUrl}/${path}`
+    const url = `${this.baseUrl}/${path}`;
 
     try {
-      const response = await this.client.delete(url, { headers: this.baseHeaders });
+      const response = await this.client.delete(url, {
+        headers: this.baseHeaders,
+      });
       if (response.status === 200) {
         return response.data as BunnyDeleteVideoResponse;
       }
       return null;
     } catch (error) {
-      console.log(error);
       throw new Error('Error deleting video in provider');
     }
   }
