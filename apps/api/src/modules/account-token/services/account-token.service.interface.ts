@@ -12,7 +12,13 @@ export interface Options {
 }
 
 export interface Service {
-  createToken(params: CreateTokenParams): Promise<AccountTokenModel>;
-  deleteTokens(accountId: number, options?: Options): Promise<AccountTokenModel[]>;
+  createToken(
+    params: CreateTokenParams,
+    options?: Options,
+  ): Promise<AccountTokenModel>;
+  deleteTokens(
+    accountId: number,
+    options?: Options,
+  ): Promise<AccountTokenModel[]>;
   getTokens(accountId: number): Promise<AccountTokenModel[]>;
 }

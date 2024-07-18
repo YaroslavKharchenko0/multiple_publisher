@@ -1,4 +1,5 @@
 import {
+  OnCreateAccountTokenEvent,
   OnDeleteAccountTokensEvent,
   UpdateAccountCommand,
 } from '@app/contracts';
@@ -8,12 +9,12 @@ import {
   RabbitSubscribe,
 } from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
-import { AccountStatus } from '@app/types';
+import { AccountStatus, AccountTokenType } from '@app/types';
 import { TraceId } from '@app/logger';
 
 @Controller()
 export class EventController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @RabbitSubscribe({
     exchange: OnDeleteAccountTokensEvent.exchange,
@@ -39,5 +40,41 @@ export class EventController {
         traceId,
       },
     });
+  }
+
+  @RabbitSubscribe({
+    exchange: OnCreateAccountTokenEvent.exchange,
+    routingKey: OnCreateAccountTokenEvent.routingKey,
+    queue: OnCreateAccountTokenEvent.queue,
+  })
+  async onCreate(
+    @TraceId() traceId: string | undefined,
+    @RabbitPayload() message: OnCreateAccountTokenEvent.Request,
+  ) {
+    const isAccessToken = message.type === AccountTokenType.ACCESS;
+
+    if (isAccessToken) {
+      const updateAccountPayload: UpdateAccountCommand.Request = {
+        id: message.accountId,
+        payload: {
+          status: AccountStatus.ACTIVE,
+        },
+      };
+
+      await this.amqpConnection.request<UpdateAccountCommand.Response>({
+        exchange: UpdateAccountCommand.exchange,
+        routingKey: UpdateAccountCommand.routingKey,
+        payload: updateAccountPayload,
+        headers: {
+          traceId,
+        },
+      });
+    }
+
+    const isRefreshToken = message.type === AccountTokenType.REFRESH;
+
+    if (isRefreshToken) {
+      // TODO: add job for refresh token
+    }
   }
 }

@@ -9,7 +9,10 @@ import { ACCOUNT_TOKEN_REPOSITORY } from '../providers/account-token.providers';
 import { AccountTokenRepository } from '../repositories/account-token.repository';
 import { RmqErrorService } from '@app/errors';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { OnDeleteAccountTokensEvent } from '@app/contracts';
+import {
+  OnCreateAccountTokenEvent,
+  OnDeleteAccountTokensEvent,
+} from '@app/contracts';
 
 export class AccountTokenService implements Service {
   constructor(
@@ -18,7 +21,11 @@ export class AccountTokenService implements Service {
     private readonly rmqErrorService: RmqErrorService,
     private readonly amqpConnection: AmqpConnection,
   ) { }
-  async createToken(params: CreateTokenParams): Promise<AccountTokenModel> {
+
+  async createToken(
+    params: CreateTokenParams,
+    options?: Options,
+  ): Promise<AccountTokenModel> {
     const { accountId, token, type } = params;
 
     const entities = await this.repository.createOne({
@@ -32,6 +39,15 @@ export class AccountTokenService implements Service {
     if (!entity) {
       throw this.rmqErrorService.notFound();
     }
+
+    const onCreatePayload: OnCreateAccountTokenEvent.Request = entity;
+
+    await this.amqpConnection.publish<OnCreateAccountTokenEvent.Request>(
+      OnCreateAccountTokenEvent.exchange,
+      OnCreateAccountTokenEvent.routingKey,
+      onCreatePayload,
+      { headers: { traceId: options?.traceId } },
+    );
 
     return AccountTokenModel.fromEntity(entity);
   }
