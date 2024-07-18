@@ -1,5 +1,8 @@
-import { RmqResponse } from '../common'
-import { OnDeleteAccountTokensRequest, OnDeleteAccountTokensResponse } from '@app/validation'
+import { RmqResponse } from '../common';
+import {
+  OnDeleteAccountTokensRequest,
+  OnDeleteAccountTokensResponse,
+} from '@app/validation';
 
 export namespace OnDeleteAccountTokensEvent {
   export const exchange = 'account-token';
@@ -12,6 +15,5 @@ export namespace OnDeleteAccountTokensEvent {
 
   export type ResponsePayload = OnDeleteAccountTokensResponse;
 
-  export type Response = RmqResponse<OnDeleteAccountTokensResponse>
+  export type Response = RmqResponse<OnDeleteAccountTokensResponse>;
 }
-
