@@ -26,19 +26,10 @@ export interface OnSignInParams {
 }
 
 export interface Service {
-  createAccountTokens(
-    account: AccountModel,
-    accountTokens: AccountTokens | null,
-    options?: Options,
-  ): Promise<void>;
   createAccount(
     params: CreateAccountParams,
     options?: Options,
   ): Promise<AccountModel>;
-  createAccountTokens(
-    account: AccountModel,
-    accountTokens: AccountTokens | null,
-  ): Promise<void>;
   findAccountById(id: number): Promise<AccountModel>;
   findAccountByInternalId(internalId: string): Promise<AccountModel | null>;
   updateAccountById(

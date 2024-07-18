@@ -5,16 +5,18 @@ export const createBullMqConfig = (): SharedBullAsyncConfiguration => {
   return {
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => {
-      return {
+      const config = {
         connection: {
           host: configService.getOrThrow('REDIS_HOST'),
-          port: configService.getOrThrow('REDIS_PORT'),
+          port: parseInt(configService.getOrThrow('REDIS_PORT')),
           username: configService.get('REDIS_USERNAME'),
           password: configService.get('REDIS_PASSWORD'),
-          db: configService.get('REDIS_DB', 0),
+          db: 0,
         },
         prefix: configService.get('REDIS_PREFIX', 'bullmq'),
       };
+
+      return config;
     },
   };
 };

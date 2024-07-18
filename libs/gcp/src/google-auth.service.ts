@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { OAuth2Client } from 'google-auth-library';
 import { GOOGLE_AUTH_CREDENTIALS } from './gcp.providers';
 import { GoogleAuthConfig } from './google.config';
+import { RefreshTokensParams } from './google-auth.types';
 
 @Injectable()
 export class GoogleAuthService {
@@ -44,6 +45,27 @@ export class GoogleAuthService {
       return tokens;
     } catch (error) {
       throw Error('Failed to authenticate');
+    }
+  }
+
+  async refreshTokens(params: RefreshTokensParams) {
+    try {
+      const { accessToken, refreshToken } = params;
+
+      this.client.setCredentials({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+
+      const { credentials, res } = await this.client.refreshAccessToken();
+
+      if (res?.status !== 200) {
+        throw Error('Failed to authenticate');
+      }
+
+      return credentials;
+    } catch (error) {
+      throw Error('Failed to refresh token');
     }
   }
 }

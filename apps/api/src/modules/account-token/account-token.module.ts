@@ -9,15 +9,34 @@ import {
   accountTokenRepositoryProvider,
   accountTokenServiceProvider,
 } from './providers/account-token.providers';
+import { BullMQModule } from '@app/bull-mq';
+import { AccountTokenQueue } from '@app/jobs';
+import { RefreshTokenProcessor } from './processors';
+import { EventController } from './controllers/event.controller';
+import { GcpModule } from '@app/gcp';
 
 @Module({})
 export class AccountTokenModule {
   static forRoot(): DynamicModule {
     return {
       module: AccountTokenModule,
-      imports: [RmqModule.forRoot()],
-      controllers: [ApiController, CommandController, QueryController],
-      providers: [accountTokenRepositoryProvider, accountTokenServiceProvider],
+      imports: [
+        RmqModule.forRoot(),
+        GcpModule.forRoot(),
+        BullMQModule.forRoot(),
+        BullMQModule.registerQueues(AccountTokenQueue.queueName),
+      ],
+      controllers: [
+        ApiController,
+        CommandController,
+        QueryController,
+        EventController,
+      ],
+      providers: [
+        accountTokenRepositoryProvider,
+        accountTokenServiceProvider,
+        RefreshTokenProcessor,
+      ],
       exports: [ACCOUNT_TOKEN_REPOSITORY, ACCOUNT_TOKEN_SERVICE],
     };
   }

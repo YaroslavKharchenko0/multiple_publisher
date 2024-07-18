@@ -11,10 +11,17 @@ import {
 import { Controller } from '@nestjs/common';
 import { AccountStatus, AccountTokenType } from '@app/types';
 import { TraceId } from '@app/logger';
+import { InjectQueue } from '@nestjs/bullmq';
+import { AccountTokenQueue, RefreshTokensJob } from '@app/jobs';
+import { Queue } from 'bullmq';
 
 @Controller()
 export class EventController {
-  constructor(private readonly amqpConnection: AmqpConnection) { }
+  constructor(
+    private readonly amqpConnection: AmqpConnection,
+    @InjectQueue(AccountTokenQueue.queueName)
+    private readonly accountTokenQueue: Queue,
+  ) { }
 
   @RabbitSubscribe({
     exchange: OnDeleteAccountTokensEvent.exchange,
@@ -74,7 +81,13 @@ export class EventController {
     const isRefreshToken = message.type === AccountTokenType.REFRESH;
 
     if (isRefreshToken) {
-      // TODO: add job for refresh token
+      const payload: typeof RefreshTokensJob.request = message;
+
+      await this.accountTokenQueue.add(
+        RefreshTokensJob.name,
+        payload,
+        RefreshTokensJob.options,
+      );
     }
   }
 }

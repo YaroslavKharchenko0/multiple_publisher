@@ -1,11 +1,21 @@
 import {
+  CreateAccountTokenCommand,
+  DeleteAccountTokensCommand,
   FindAccountProviderQuery,
   FindAccountQuery,
   SuccessResponse,
 } from '@app/contracts';
-import { ProviderKey } from '@app/types';
+import { AccountTokenType, ProviderKey } from '@app/types';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
+
+interface Options {
+  traceId?: string;
+}
+export interface AccountTokens {
+  accessToken?: string;
+  refreshToken?: string;
+}
 
 @Injectable()
 export class AccountFacade {
@@ -59,5 +69,60 @@ export class AccountFacade {
       accountResponse as SuccessResponse<FindAccountProviderQuery.ResponsePayload>;
 
     return successResponse.payload;
+  }
+
+  async deleteAccountTokens(
+    accountId: number,
+    options?: Options,
+  ): Promise<void> {
+    const payload: DeleteAccountTokensCommand.Request = {
+      accountId,
+    };
+
+    await this.amqpConnection.request<DeleteAccountTokensCommand.Response>({
+      exchange: DeleteAccountTokensCommand.exchange,
+      routingKey: DeleteAccountTokensCommand.routingKey,
+      payload,
+      headers: {
+        traceId: options?.traceId,
+      },
+    });
+  }
+
+  async createAccountTokens(
+    accountId: number,
+    accountTokens: AccountTokens | null,
+    options?: Options,
+  ) {
+    const tokens = [];
+
+    if (accountTokens?.accessToken) {
+      tokens.push({
+        accountId,
+        token: accountTokens.accessToken,
+        type: AccountTokenType.ACCESS,
+      });
+    }
+
+    if (accountTokens?.refreshToken) {
+      tokens.push({
+        accountId,
+        token: accountTokens.refreshToken,
+        type: AccountTokenType.REFRESH,
+      });
+    }
+
+    const promises = tokens.map((payload) => {
+      return this.amqpConnection.request<CreateAccountTokenCommand.Response>({
+        exchange: CreateAccountTokenCommand.exchange,
+        routingKey: CreateAccountTokenCommand.routingKey,
+        payload,
+        headers: {
+          traceId: options?.traceId,
+        },
+      });
+    });
+
+    await Promise.all(promises);
   }
 }

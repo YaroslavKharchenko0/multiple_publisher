@@ -1,3 +1,3 @@
-export class AccessTokenQueue {
-  public static readonly queueName = 'access-token';
+export class AccountTokenQueue {
+  public static readonly queueName = 'account-token';
 }

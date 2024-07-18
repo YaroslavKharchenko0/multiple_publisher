@@ -20,14 +20,8 @@ export const accountServiceProvider: Provider = {
     repository: AccountRepository,
     rmqErrorService: RmqErrorService,
     accountFacade: AccountFacade,
-    amqpConnection: AmqpConnection,
   ) => {
-    return new AccountService(
-      repository,
-      rmqErrorService,
-      accountFacade,
-      amqpConnection,
-    );
+    return new AccountService(repository, rmqErrorService, accountFacade);
   },
   inject: [ACCOUNT_REPOSITORY, RmqErrorService, AccountFacade, AmqpConnection],
 };

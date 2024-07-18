@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AccountModel } from '../models/account.model';
 import {
-  AccountTokens,
   CreateAccountParams,
   OnSignInParams,
   Options,
@@ -11,19 +10,13 @@ import { AccountRepository } from '../repositories/account.repository';
 import { ACCOUNT_REPOSITORY } from '../providers/account.providers';
 import { RmqErrorService } from '@app/errors';
 import { AccountFacade } from '@app/utils';
-import {
-  CreateAccountTokenCommand,
-  DeleteAccountTokensCommand,
-} from '@app/contracts';
-import { AccountStatus, AccountTokenType, ProviderKey } from '@app/types';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { AccountStatus, ProviderKey } from '@app/types';
 @Injectable()
 export class AccountService implements Service {
   constructor(
     @Inject(ACCOUNT_REPOSITORY) private readonly repository: AccountRepository,
     private readonly rmqErrorService: RmqErrorService,
     private readonly accountFacade: AccountFacade,
-    private readonly amqpConnection: AmqpConnection,
   ) { }
 
   async onSignIn(params: OnSignInParams, options?: Options): Promise<void> {
@@ -42,14 +35,22 @@ export class AccountService implements Service {
 
       const newAccount = await this.createAccount(createAccountParams, options);
 
-      await this.createAccountTokens(newAccount, accountTokens, options);
+      await this.accountFacade.createAccountTokens(
+        newAccount.id,
+        accountTokens,
+        options,
+      );
 
       return;
     }
 
-    await this.deleteAccountTokens(account.id, options);
+    await this.accountFacade.deleteAccountTokens(account.id, options);
 
-    await this.createAccountTokens(account, accountTokens, options);
+    await this.accountFacade.createAccountTokens(
+      account.id,
+      accountTokens,
+      options,
+    );
   }
 
   async findAccountByInternalId(
@@ -62,61 +63,6 @@ export class AccountService implements Service {
     }
 
     return AccountModel.fromEntity(entity);
-  }
-
-  async deleteAccountTokens(
-    accountId: number,
-    options?: Options,
-  ): Promise<void> {
-    const payload: DeleteAccountTokensCommand.Request = {
-      accountId,
-    };
-
-    await this.amqpConnection.request<DeleteAccountTokensCommand.Response>({
-      exchange: DeleteAccountTokensCommand.exchange,
-      routingKey: DeleteAccountTokensCommand.routingKey,
-      payload,
-      headers: {
-        traceId: options?.traceId,
-      },
-    });
-  }
-
-  async createAccountTokens(
-    account: AccountModel,
-    accountTokens: AccountTokens | null,
-    options?: Options,
-  ) {
-    const tokens = [];
-
-    if (accountTokens?.accessToken) {
-      tokens.push({
-        accountId: account.id,
-        token: accountTokens.accessToken,
-        type: AccountTokenType.ACCESS,
-      });
-    }
-
-    if (accountTokens?.refreshToken) {
-      tokens.push({
-        accountId: account.id,
-        token: accountTokens.refreshToken,
-        type: AccountTokenType.REFRESH,
-      });
-    }
-
-    const promises = tokens.map((payload) => {
-      return this.amqpConnection.request<CreateAccountTokenCommand.Response>({
-        exchange: CreateAccountTokenCommand.exchange,
-        routingKey: CreateAccountTokenCommand.routingKey,
-        payload,
-        headers: {
-          traceId: options?.traceId,
-        },
-      });
-    });
-
-    await Promise.all(promises);
   }
 
   async createAccount(
