@@ -9,6 +9,8 @@ export abstract class RefreshTokensJob extends AccountTokenQueue {
   public static response: null;
 
   public static options = {
-    delay: 1 * 60 * 1000,
+    delay: 45 * 60 * 1000,
+    removeOnComplete: true,
+    attempts: 3,
   };
 }
