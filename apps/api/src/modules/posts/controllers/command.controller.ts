@@ -42,7 +42,7 @@ export class CommandController {
     @RabbitPayload() message: UpdatePostCommand.Request,
   ): Promise<UpdatePostCommand.Response> {
     const payload = await this.postService.updatePost(
-      message.userId,
+      message.postId,
       message.payload,
     );
 
