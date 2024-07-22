@@ -24,13 +24,14 @@ import {
   FindUserPostsBodyDto,
   UpdatePostBodyDto,
 } from '@app/validation';
-import { IsStringNumberPipe, JWTUser, User } from '@app/utils';
+import { IsStringNumberPipe, JWTUser, PostAccess, User } from '@app/utils';
 
 @Controller()
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Get('posts/:postId')
+  @PostAccess({ isAuthor: true })
   findPostById(
     @TraceId() traceId: string | undefined,
     @Param('postId', IsStringNumberPipe) postId: string,
@@ -50,6 +51,7 @@ export class ApiController {
   }
 
   @Get('posts/')
+  @PostAccess({ isAuthor: true })
   findPosts(
     @TraceId() traceId: string | undefined,
     @Query('pagination') pagination: FindPostsBodyDto,
@@ -69,6 +71,7 @@ export class ApiController {
   }
 
   @Get('users/:userId/posts')
+  @PostAccess({ isAuthor: true })
   findUserPosts(
     @TraceId() traceId: string | undefined,
     @Query('pagination') pagination: FindUserPostsBodyDto,
@@ -90,6 +93,7 @@ export class ApiController {
   }
 
   @Post('posts/')
+  @PostAccess({ isAuthor: true })
   create(
     @TraceId() traceId: string | undefined,
     @Body() body: CreatePostBodyDto,
@@ -111,6 +115,7 @@ export class ApiController {
   }
 
   @Delete('posts/:postId')
+  @PostAccess({ isAuthor: true })
   delete(
     @TraceId() traceId: string | undefined,
     @Param('postId', IsStringNumberPipe) postId: string,
@@ -130,6 +135,7 @@ export class ApiController {
   }
 
   @Patch('posts/:postId')
+  @PostAccess({ isAuthor: true })
   update(
     @TraceId() traceId: string | undefined,
     @Param('postId', IsStringNumberPipe) postId: string,
