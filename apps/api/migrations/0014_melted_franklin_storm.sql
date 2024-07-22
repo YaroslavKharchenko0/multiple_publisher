@@ -1,0 +1,1 @@
+ALTER TABLE "accounts" ALTER COLUMN "internal_id" SET DATA TYPE varchar(100);

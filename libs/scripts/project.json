@@ -1,0 +1,35 @@
+{
+  "name": "scripts",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/scripts/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project scripts --web",
+  "targets": {
+    "generate-jwe-secret": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "yarn ts-node libs/scripts/src/jwe/generate-jwe-secret.ts"
+          }
+        ],
+        "parallel": false
+      }
+    },
+    "generate-jwt-keys": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "openssl genpkey -algorithm RSA -out libs/scripts/src/jwt/private.pem"
+          },
+          {
+            "command": "openssl rsa -pubout -in libs/scripts/src/jwt/private.pem -out libs/scripts/src/jwt/public.pem"
+          }
+        ],
+        "parallel": false
+      }
+    }
+  }
+}

@@ -1,12 +1,17 @@
-import { RmqModule } from "@app/rmq";
-import { DynamicModule, Module } from "@nestjs/common";
-import { ApiController } from "./controllers/api.controller";
-import { QueryController } from "./controllers/query.controller";
-import { CommandController } from "./controllers/command.controller";
-import { AdminApiController } from "./controllers/admin-api.controller";
-import { EventController } from "./controllers/event.controller";
-import { USER_REPOSITORY, USER_SERVICE, userRepositoryProvider, userServiceProvider } from "./providers/user.service.provider";
-import { DatabaseModule } from "../../database";
+import { RmqModule } from '@app/rmq';
+import { DynamicModule, Module } from '@nestjs/common';
+import { ApiController } from './controllers/api.controller';
+import { QueryController } from './controllers/query.controller';
+import { CommandController } from './controllers/command.controller';
+import { AdminApiController } from './controllers/admin-api.controller';
+import { EventController } from './controllers/event.controller';
+import {
+  USER_REPOSITORY,
+  USER_SERVICE,
+  userRepositoryProvider,
+  userServiceProvider,
+} from './providers/user.service.provider';
+import { DatabaseModule } from '../../database';
 
 @Module({})
 export class UserModule {
@@ -14,12 +19,15 @@ export class UserModule {
     return {
       module: UserModule,
       imports: [RmqModule.forRoot(), DatabaseModule.forRoot()],
-      controllers: [ApiController, AdminApiController, QueryController, CommandController, EventController],
-      providers: [
-        userRepositoryProvider,
-        userServiceProvider,
+      controllers: [
+        ApiController,
+        AdminApiController,
+        QueryController,
+        CommandController,
+        EventController,
       ],
-      exports: [USER_REPOSITORY, USER_SERVICE]
+      providers: [userRepositoryProvider, userServiceProvider],
+      exports: [USER_REPOSITORY, USER_SERVICE],
     };
   }
 }

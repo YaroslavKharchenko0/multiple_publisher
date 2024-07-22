@@ -1,13 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { Database, Orm, schema } from "../../../database";
-import { eq } from "drizzle-orm";
+import { Injectable } from '@nestjs/common';
+import { Database, Orm, schema } from '../../../database';
+import { eq } from 'drizzle-orm';
 
-export type InsertUser = typeof schema.users.$inferInsert
-export type SelectUser = typeof schema.users.$inferSelect
+export type InsertUser = typeof schema.users.$inferInsert;
+export type SelectUser = typeof schema.users.$inferSelect;
 
 @Injectable()
 export class UserRepository {
-  constructor(@Orm() private readonly db: Database) { }
+  constructor(@Orm() private readonly db: Database) {}
 
   private users = schema.users;
 
@@ -19,8 +19,8 @@ export class UserRepository {
     const where = eq(this.users.id, id);
 
     const result = await this.db.query.users.findFirst({
-      where
-    })
+      where,
+    });
 
     return result;
   }
@@ -29,8 +29,8 @@ export class UserRepository {
     const where = eq(this.users.email, email);
 
     const result = await this.db.query.users.findFirst({
-      where
-    })
+      where,
+    });
 
     return result;
   }
@@ -39,8 +39,8 @@ export class UserRepository {
     const where = eq(this.users.providerId, providerId);
 
     const result = await this.db.query.users.findFirst({
-      where
-    })
+      where,
+    });
 
     return result;
   }
@@ -48,7 +48,12 @@ export class UserRepository {
   async updateById(id: number, input: Partial<InsertUser>) {
     const where = eq(this.users.id, id);
 
-    const result = await this.db.update(this.users).set(input).where(where).returning({ id: this.users.id, email: this.users.email }).execute();
+    const result = await this.db
+      .update(this.users)
+      .set(input)
+      .where(where)
+      .returning({ id: this.users.id, email: this.users.email })
+      .execute();
 
     return result;
   }
@@ -56,7 +61,11 @@ export class UserRepository {
   async deleteById(id: number) {
     const where = eq(this.users.id, id);
 
-    const result = await this.db.delete(this.users).where(where).returning({ email: this.users.email }).execute();
+    const result = await this.db
+      .delete(this.users)
+      .where(where)
+      .returning({ email: this.users.email })
+      .execute();
 
     return result;
   }

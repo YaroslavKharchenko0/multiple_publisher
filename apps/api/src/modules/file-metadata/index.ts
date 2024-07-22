@@ -1,1 +1,1 @@
-export { FileMetadataModule } from './file-metadata.module'
+export { FileMetadataModule } from './file-metadata.module';

@@ -1,8 +1,8 @@
-import { RmqModule } from "@app/rmq";
-import { DynamicModule, Module } from "@nestjs/common";
-import { ApiController } from "./controllers/api.controller";
-import { DatabaseModule } from "../../database";
-import { StatusService } from "./services/status.service";
+import { RmqModule } from '@app/rmq';
+import { DynamicModule, Module } from '@nestjs/common';
+import { ApiController } from './controllers/api.controller';
+import { DatabaseModule } from '../../database';
+import { StatusService } from './services/status.service';
 
 @Module({})
 export class StatusModule {

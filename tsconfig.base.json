@@ -16,12 +16,17 @@
     "baseUrl": ".",
     "paths": {
       "@app/aws": ["libs/aws/src/index.ts"],
+      "@app/bull-mq": ["libs/bull-mq/src/index.ts"],
       "@app/bunny": ["libs/bunny/src/index.ts"],
       "@app/contracts": ["libs/contracts/src/index.ts"],
+      "@app/crypto": ["libs/crypto/src/index.ts"],
       "@app/errors": ["libs/errors/src/index.ts"],
+      "@app/gcp": ["libs/gcp/src/index.ts"],
+      "@app/jobs": ["libs/jobs/src/index.ts"],
       "@app/logger": ["libs/logger/src/index.ts"],
       "@app/response": ["libs/response/src/index.ts"],
       "@app/rmq": ["libs/rmq/src/index.ts"],
+      "@app/scripts": ["libs/scripts/src/index.ts"],
       "@app/types": ["libs/types/src/index.ts"],
       "@app/utils": ["libs/utils/src/index.ts"],
       "@app/validation": ["libs/validation/src/index.ts"]

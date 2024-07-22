@@ -20,6 +20,13 @@ services:
     env_file:
       - .env.rabbitmq
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env.redis
+
 
 volumes:
   postgres_data:

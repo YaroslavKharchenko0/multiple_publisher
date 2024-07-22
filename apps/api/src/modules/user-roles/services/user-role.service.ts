@@ -1,31 +1,43 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { CreateUserRoleByRoleNameParams, CreateUserRoleParams, Options, Service } from "./user-role.service.interface";
-import { UserRoleModel } from "../models/user-role.model";
-import { UserRoleRepository } from "../repositories/user-roles.repository";
-import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { FindRoleQuery, FindUserByIdQuery } from "@app/contracts";
-import { RmqErrorService, RmqResponseService } from "@app/errors";
-import { Role } from "@app/types";
-import { USER_ROLE_REPOSITORY } from "../providers/user-role.providers";
-import { Cognito, CognitoService } from "@app/aws";
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  CreateUserRoleByRoleNameParams,
+  CreateUserRoleParams,
+  Options,
+  Service,
+} from './user-role.service.interface';
+import { UserRoleModel } from '../models/user-role.model';
+import { UserRoleRepository } from '../repositories/user-roles.repository';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { FindRoleQuery, FindUserByIdQuery } from '@app/contracts';
+import { RmqErrorService, RmqResponseService } from '@app/errors';
+import { Role } from '@app/types';
+import { USER_ROLE_REPOSITORY } from '../providers/user-role.providers';
+import { Cognito, CognitoService } from '@app/aws';
 
 @Injectable()
 export class UserRoleService implements Service {
   private readonly userClaimsKeys = ['role'];
 
-  constructor(@Inject(USER_ROLE_REPOSITORY) private readonly repository: UserRoleRepository, private readonly amqpConnection: AmqpConnection, private readonly rmqResponseService: RmqResponseService, @Cognito() private readonly cognitoService: CognitoService, private readonly rmqErrorService: RmqErrorService) { }
+  constructor(
+    @Inject(USER_ROLE_REPOSITORY)
+    private readonly repository: UserRoleRepository,
+    private readonly amqpConnection: AmqpConnection,
+    private readonly rmqResponseService: RmqResponseService,
+    @Cognito() private readonly cognitoService: CognitoService,
+    private readonly rmqErrorService: RmqErrorService,
+  ) {}
 
   private async findRole(role: Role, traceId?: string) {
     const requestPayload: FindRoleQuery.Request = {
       role,
-    }
+    };
 
     const response = await this.amqpConnection.request<FindRoleQuery.Response>({
       exchange: FindRoleQuery.exchange,
       routingKey: FindRoleQuery.routingKey,
       payload: requestPayload,
-      headers: { traceId }
-    })
+      headers: { traceId },
+    });
 
     const roleModel = this.rmqResponseService.handleResponse(response);
 
@@ -35,14 +47,15 @@ export class UserRoleService implements Service {
   private async findUserById(userId: number, traceId?: string) {
     const requestPayload: FindUserByIdQuery.Request = {
       id: userId,
-    }
+    };
 
-    const response = await this.amqpConnection.request<FindUserByIdQuery.Response>({
-      exchange: FindUserByIdQuery.exchange,
-      routingKey: FindUserByIdQuery.routingKey,
-      payload: requestPayload,
-      headers: { traceId }
-    })
+    const response =
+      await this.amqpConnection.request<FindUserByIdQuery.Response>({
+        exchange: FindUserByIdQuery.exchange,
+        routingKey: FindUserByIdQuery.routingKey,
+        payload: requestPayload,
+        headers: { traceId },
+      });
 
     const userModel = this.rmqResponseService.handleResponse(response);
 
@@ -52,21 +65,24 @@ export class UserRoleService implements Service {
   createUserClaims(role: Role) {
     const userClaims: Record<string, string> = {
       role,
-    }
+    };
 
     return userClaims;
   }
 
-  async createUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel> {
+  async createUserRoleByRoleName(
+    params: CreateUserRoleByRoleNameParams,
+    options?: Options,
+  ): Promise<UserRoleModel> {
     const { userId, role } = params;
 
-    const roleModel = await this.findRole(role, options?.traceId)
+    const roleModel = await this.findRole(role, options?.traceId);
 
     if (!roleModel) {
       throw this.rmqErrorService.notFound();
     }
 
-    const userModel = await this.findUserById(userId, options?.traceId)
+    const userModel = await this.findUserById(userId, options?.traceId);
 
     if (!userModel) {
       throw this.rmqErrorService.notFound();
@@ -74,24 +90,29 @@ export class UserRoleService implements Service {
 
     const userClaims = this.createUserClaims(role);
 
-    await this.cognitoService.setCustomClaims({ claims: userClaims, email: userModel.email })
+    await this.cognitoService.setCustomClaims({
+      claims: userClaims,
+      email: userModel.email,
+    });
 
     return this.createUserRole({
       userId,
-      roleId: roleModel.id
-    })
+      roleId: roleModel.id,
+    });
   }
 
-  private async createUserRole(params: CreateUserRoleParams): Promise<UserRoleModel> {
+  private async createUserRole(
+    params: CreateUserRoleParams,
+  ): Promise<UserRoleModel> {
     const userRoleEntities = await this.repository.createOne({
       userId: params.userId,
-      roleId: params.roleId
-    })
+      roleId: params.roleId,
+    });
 
     const [userRoleEntity] = userRoleEntities;
 
     if (!userRoleEntity) {
-      throw this.rmqErrorService.notFound()
+      throw this.rmqErrorService.notFound();
     }
 
     return UserRoleModel.fromEntity(userRoleEntity);
@@ -102,7 +123,7 @@ export class UserRoleService implements Service {
     return UserRoleModel.fromEntity(userRoleEntity);
   }
   async deleteUserRole(userId: number, options?: Options): Promise<void> {
-    const userModel = await this.findUserById(userId, options?.traceId)
+    const userModel = await this.findUserById(userId, options?.traceId);
 
     if (!userModel) {
       throw this.rmqErrorService.notFound();
@@ -115,16 +136,19 @@ export class UserRoleService implements Service {
 
     return this.repository.deleteByUserId(userId);
   }
-  async updateUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel> {
+  async updateUserRoleByRoleName(
+    params: CreateUserRoleByRoleNameParams,
+    options?: Options,
+  ): Promise<UserRoleModel> {
     const { userId, role } = params;
 
-    const roleModel = await this.findRole(role, options?.traceId)
+    const roleModel = await this.findRole(role, options?.traceId);
 
     if (!roleModel) {
       throw this.rmqErrorService.notFound();
     }
 
-    const userModel = await this.findUserById(userId, options?.traceId)
+    const userModel = await this.findUserById(userId, options?.traceId);
 
     if (!userModel) {
       throw this.rmqErrorService.notFound();
@@ -132,23 +156,31 @@ export class UserRoleService implements Service {
 
     const userClaims = this.createUserClaims(role);
 
-    await this.cognitoService.setCustomClaims({ claims: userClaims, email: userModel.email })
+    await this.cognitoService.setCustomClaims({
+      claims: userClaims,
+      email: userModel.email,
+    });
 
     return this.updateUserRole({
       userId,
-      roleId: roleModel.id
-    })
+      roleId: roleModel.id,
+    });
   }
-  private async updateUserRole(params: CreateUserRoleParams): Promise<UserRoleModel> {
-    const userRoleEntities = await this.repository.updateByUserId(params.userId, {
-      userId: params.userId,
-      roleId: params.roleId
-    })
+  private async updateUserRole(
+    params: CreateUserRoleParams,
+  ): Promise<UserRoleModel> {
+    const userRoleEntities = await this.repository.updateByUserId(
+      params.userId,
+      {
+        userId: params.userId,
+        roleId: params.roleId,
+      },
+    );
 
     const [userRoleEntity] = userRoleEntities;
 
     if (!userRoleEntity) {
-      throw this.rmqErrorService.notFound()
+      throw this.rmqErrorService.notFound();
     }
 
     return UserRoleModel.fromEntity(userRoleEntity);

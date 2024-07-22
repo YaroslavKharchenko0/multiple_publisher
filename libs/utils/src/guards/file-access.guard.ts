@@ -60,6 +60,10 @@ export class FileAccessGuard implements CanActivate {
       return false;
     }
 
+    if (jwtUser.isAdmin()) {
+      return true;
+    }
+
     const params = request.params;
 
     const file = await this.findFile(options, params);

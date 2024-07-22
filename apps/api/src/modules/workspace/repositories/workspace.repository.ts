@@ -1,13 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { Database, Orm, schema } from "../../../database";
-import { eq } from "drizzle-orm";
+import { Injectable } from '@nestjs/common';
+import { Database, Orm, schema } from '../../../database';
+import { eq } from 'drizzle-orm';
 
-export type InsertWorkspace = typeof schema.workspaces.$inferInsert
-export type SelectWorkspace = typeof schema.workspaces.$inferSelect
+export type InsertWorkspace = typeof schema.workspaces.$inferInsert;
+export type SelectWorkspace = typeof schema.workspaces.$inferSelect;
 
 @Injectable()
 export class WorkspaceRepository {
-  constructor(@Orm() private readonly db: Database) { }
+  constructor(@Orm() private readonly db: Database) {}
 
   private workspaces = schema.workspaces;
 
@@ -19,8 +19,8 @@ export class WorkspaceRepository {
     const where = eq(this.workspaces.id, id);
 
     const result = await this.db.query.workspaces.findFirst({
-      where
-    })
+      where,
+    });
 
     return result;
   }
@@ -36,7 +36,12 @@ export class WorkspaceRepository {
   async updateById(id: number, input: InsertWorkspace) {
     const where = eq(this.workspaces.id, id);
 
-    const result = await this.db.update(this.workspaces).set(input).where(where).returning({ id: this.workspaces.id }).execute();
+    const result = await this.db
+      .update(this.workspaces)
+      .set(input)
+      .where(where)
+      .returning({ id: this.workspaces.id })
+      .execute();
 
     return result;
   }

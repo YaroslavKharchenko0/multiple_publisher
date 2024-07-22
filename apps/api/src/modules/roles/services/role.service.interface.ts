@@ -1,6 +1,6 @@
-import { Role } from "@app/types";
-import { RoleModel } from "../models/role.model";
-import { Pagination } from "@app/validation";
+import { Role } from '@app/types';
+import { RoleModel } from '../models/role.model';
+import { Pagination } from '@app/validation';
 
 export interface Service {
   createRole(role: Role): Promise<RoleModel>;

@@ -21,7 +21,7 @@ export class JWTUser {
     return roles.includes(this.role);
   }
 
-  isMe(id: number) {
+  isMe(id: number | null) {
     return this.app_id === id;
   }
 

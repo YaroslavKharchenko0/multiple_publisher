@@ -1,0 +1,9 @@
+{
+  "name": "bull-mq",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/bull-mq/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project bull-mq --web",
+  "targets": {}
+}

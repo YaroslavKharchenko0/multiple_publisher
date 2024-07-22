@@ -1,1 +1,1 @@
-export { StatusModule } from './status.module'
+export { StatusModule } from './status.module';

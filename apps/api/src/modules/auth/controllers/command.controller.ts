@@ -1,23 +1,41 @@
-import { RabbitPayload, RabbitRPC } from "@golevelup/nestjs-rabbitmq";
-import { Controller, Inject } from "@nestjs/common";
-import { SignInCommand, SignUpCommand, VerifyEmailCommand, createSuccessResponse } from "@app/contracts";
-import { AuthService } from "../services/auth.service";
-import { AUTH_SERVICE } from "../constants";
-import { TraceId } from "@app/logger";
+import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
+import { Controller, Inject } from '@nestjs/common';
+import {
+  SignInCommand,
+  SignUpCommand,
+  VerifyEmailCommand,
+  createSuccessResponse,
+} from '@app/contracts';
+import { AuthService } from '../services/auth.service';
+import { AUTH_SERVICE } from '../constants';
+import { TraceId } from '@app/logger';
 
 @Controller()
 export class CommandController {
-  constructor(@Inject(AUTH_SERVICE) private readonly authService: AuthService) { }
+  constructor(
+    @Inject(AUTH_SERVICE) private readonly authService: AuthService,
+  ) {}
 
   @RabbitRPC({
     exchange: SignUpCommand.exchange,
     routingKey: SignUpCommand.routingKey,
     queue: SignUpCommand.queue,
   })
-  async signUp(@RabbitPayload() message: SignUpCommand.Request, @TraceId() traceId: string): Promise<SignUpCommand.Response> {
-    await this.authService.signUp({ email: message.email, password: message.password, birthDate: message?.birthDate, name: message?.name }, { traceId })
+  async signUp(
+    @RabbitPayload() message: SignUpCommand.Request,
+    @TraceId() traceId: string,
+  ): Promise<SignUpCommand.Response> {
+    await this.authService.signUp(
+      {
+        email: message.email,
+        password: message.password,
+        birthDate: message?.birthDate,
+        name: message?.name,
+      },
+      { traceId },
+    );
 
-    return createSuccessResponse(null)
+    return createSuccessResponse(null);
   }
 
   @RabbitRPC({
@@ -25,10 +43,15 @@ export class CommandController {
     routingKey: SignInCommand.routingKey,
     queue: SignInCommand.queue,
   })
-  async signIn(@RabbitPayload() message: SignInCommand.Request): Promise<SignInCommand.Response> {
-    const payload = await this.authService.signIn({ email: message.email, password: message.password })
+  async signIn(
+    @RabbitPayload() message: SignInCommand.Request,
+  ): Promise<SignInCommand.Response> {
+    const payload = await this.authService.signIn({
+      email: message.email,
+      password: message.password,
+    });
 
-    return createSuccessResponse(payload)
+    return createSuccessResponse(payload);
   }
 
   @RabbitRPC({
@@ -36,10 +59,14 @@ export class CommandController {
     routingKey: VerifyEmailCommand.routingKey,
     queue: VerifyEmailCommand.queue,
   })
-  async verifyEmail(@RabbitPayload() message: VerifyEmailCommand.Request): Promise<VerifyEmailCommand.Response> {
-    await this.authService.verifyEmail({ email: message.email, code: message.code })
+  async verifyEmail(
+    @RabbitPayload() message: VerifyEmailCommand.Request,
+  ): Promise<VerifyEmailCommand.Response> {
+    await this.authService.verifyEmail({
+      email: message.email,
+      code: message.code,
+    });
 
-    return createSuccessResponse(null)
+    return createSuccessResponse(null);
   }
 }
-

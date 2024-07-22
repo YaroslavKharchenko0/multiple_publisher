@@ -1,17 +1,16 @@
-
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { FILE_ACCESS_KEY, JWTUser } from "../decorators";
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { FILE_ACCESS_KEY, JWTUser } from '../decorators';
 
 @Injectable()
 export class UserAccessGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isEnable = this.reflector.getAllAndOverride<boolean>(FILE_ACCESS_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const isEnable = this.reflector.getAllAndOverride<boolean>(
+      FILE_ACCESS_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     if (!isEnable) {
       return true;
@@ -20,7 +19,6 @@ export class UserAccessGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const jwtUser: JWTUser | undefined | null = request?.user;
-
     if (!jwtUser) {
       return false;
     }
@@ -37,5 +35,4 @@ export class UserAccessGuard implements CanActivate {
 
     return false;
   }
-
 }

@@ -1,4 +1,4 @@
-import { WorkspaceModel } from "../models/workspace.model";
+import { WorkspaceModel } from '../models/workspace.model';
 
 export interface CreateWorkspaceParams {
   name: string;
@@ -6,12 +6,18 @@ export interface CreateWorkspaceParams {
 }
 
 export interface Options {
-  traceId: string
+  traceId: string;
 }
 
 export interface Service {
-  createWorkspaceByUser(userId: number, options?: Options): Promise<WorkspaceModel>;
-  createWorkspace(input: CreateWorkspaceParams, options?: Options): Promise<WorkspaceModel>;
+  createWorkspaceByUser(
+    userId: number,
+    options?: Options,
+  ): Promise<WorkspaceModel>;
+  createWorkspace(
+    input: CreateWorkspaceParams,
+    options?: Options,
+  ): Promise<WorkspaceModel>;
   deleteWorkspace(id: number): Promise<void>;
-  findWorkspace(id: number): Promise<WorkspaceModel>
+  findWorkspace(id: number): Promise<WorkspaceModel>;
 }

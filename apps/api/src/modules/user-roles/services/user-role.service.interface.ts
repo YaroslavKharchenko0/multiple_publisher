@@ -1,5 +1,5 @@
-import { Role } from "@app/types";
-import { UserRoleModel } from "../models/user-role.model";
+import { Role } from '@app/types';
+import { UserRoleModel } from '../models/user-role.model';
 
 export interface CreateUserRoleParams {
   userId: number;
@@ -25,10 +25,15 @@ export interface Options {
   traceId: string;
 }
 
-
 export interface Service {
-  createUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel>;
+  createUserRoleByRoleName(
+    params: CreateUserRoleByRoleNameParams,
+    options?: Options,
+  ): Promise<UserRoleModel>;
   findUserRole(userId: number): Promise<UserRoleModel | null>;
   deleteUserRole(userId: number, options?: Options): Promise<void>;
-  updateUserRoleByRoleName(params: CreateUserRoleByRoleNameParams, options?: Options): Promise<UserRoleModel>;
+  updateUserRoleByRoleName(
+    params: CreateUserRoleByRoleNameParams,
+    options?: Options,
+  ): Promise<UserRoleModel>;
 }

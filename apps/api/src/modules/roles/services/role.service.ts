@@ -1,20 +1,22 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { Service } from "./role.service.interface";
-import { Role } from "@app/types";
-import { RoleRepository } from "../repositories/roles.repository";
-import { RoleModel } from "../models/role.model";
-import { ROLE_REPOSITORY } from "../providers/role.providers";
-import { Pagination } from "@app/validation";
-import { RmqErrorService } from "@app/errors";
-
+import { Inject, Injectable } from '@nestjs/common';
+import { Service } from './role.service.interface';
+import { Role } from '@app/types';
+import { RoleRepository } from '../repositories/roles.repository';
+import { RoleModel } from '../models/role.model';
+import { ROLE_REPOSITORY } from '../providers/role.providers';
+import { Pagination } from '@app/validation';
+import { RmqErrorService } from '@app/errors';
 
 @Injectable()
 export class RoleService implements Service {
-  constructor(@Inject(ROLE_REPOSITORY) private readonly repository: RoleRepository, private readonly exceptionService: RmqErrorService) { }
+  constructor(
+    @Inject(ROLE_REPOSITORY) private readonly repository: RoleRepository,
+    private readonly exceptionService: RmqErrorService,
+  ) {}
   async findRoles(pagination: Pagination): Promise<RoleModel[]> {
     const roleEntities = await this.repository.findRoles(pagination);
 
-    const roles = roleEntities.map(role => RoleModel.fromEntity(role));
+    const roles = roleEntities.map((role) => RoleModel.fromEntity(role));
 
     return roles;
   }

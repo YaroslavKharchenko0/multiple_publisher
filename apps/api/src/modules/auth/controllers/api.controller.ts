@@ -1,13 +1,20 @@
-import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Body, Controller, Post, Put } from "@nestjs/common";
-import { SignInCommand, SignUpCommand, VerifyEmailCommand } from '@app/contracts'
-import { TraceId } from "@app/logger";
-import { SignInBodyDto, SignUpBodyDto, VerifyEmailBodyDto } from "@app/validation";
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { Body, Controller, Post, Put } from '@nestjs/common';
+import {
+  SignInCommand,
+  SignUpCommand,
+  VerifyEmailCommand,
+} from '@app/contracts';
+import { TraceId } from '@app/logger';
+import {
+  SignInBodyDto,
+  SignUpBodyDto,
+  VerifyEmailBodyDto,
+} from '@app/validation';
 
 @Controller('auth')
-
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) { }
+  constructor(private readonly amqpConnection: AmqpConnection) {}
 
   @Post('/sign-up')
   signUp(@TraceId() traceId: string | undefined, @Body() body: SignUpBodyDto) {
@@ -18,8 +25,8 @@ export class ApiController {
       routingKey: SignUpCommand.routingKey,
       payload,
       headers: {
-        traceId
-      }
+        traceId,
+      },
     });
   }
 
@@ -32,13 +39,16 @@ export class ApiController {
       routingKey: SignInCommand.routingKey,
       payload,
       headers: {
-        traceId
-      }
+        traceId,
+      },
     });
   }
 
   @Put('/email/verify')
-  verifyEmail(@TraceId() traceId: string | undefined, @Body() body: VerifyEmailBodyDto) {
+  verifyEmail(
+    @TraceId() traceId: string | undefined,
+    @Body() body: VerifyEmailBodyDto,
+  ) {
     const payload: VerifyEmailCommand.Request = body;
 
     return this.amqpConnection.request<VerifyEmailCommand.Response>({
@@ -46,8 +56,8 @@ export class ApiController {
       routingKey: VerifyEmailCommand.routingKey,
       payload,
       headers: {
-        traceId
-      }
+        traceId,
+      },
     });
   }
 }

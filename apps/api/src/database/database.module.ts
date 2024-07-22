@@ -23,16 +23,23 @@ export class DatabaseModule {
             const database = configService.get<string>('DATABASE_NAME');
             const user = configService.get<string>('DATABASE_USER');
 
-            const isEnableSSL = configService.get<boolean>('DATABASE_SSL', false);
+            const isEnableSSL = configService.get<boolean>(
+              'DATABASE_SSL',
+              false,
+            );
 
-            const rdsCaPath = configService.get<string>('RDS_COMBINED_CA_BUNDLE');
+            const rdsCaPath = configService.get<string>(
+              'RDS_COMBINED_CA_BUNDLE',
+            );
 
             const ca = await fs.promises.readFile(rdsCaPath).toString();
 
-            const ssl = isEnableSSL ? {
-              rejectUnauthorized: false,
-              ca,
-            } : false
+            const ssl = isEnableSSL
+              ? {
+                  rejectUnauthorized: false,
+                  ca,
+                }
+              : false;
 
             const pool = new Pool({
               host,

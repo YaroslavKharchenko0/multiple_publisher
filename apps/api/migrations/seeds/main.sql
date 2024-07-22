@@ -20,3 +20,5 @@ CREATE TRIGGER before_workspace_delete
   EXECUTE FUNCTION check_workspace_deletion();
 
 INSERT INTO workspace_roles (role) VALUES ('admin'), ('editor'), ('viewer') ON CONFLICT DO NOTHING;
+
+INSERT INTO account_providers (key) VALUES ('google') ON CONFLICT DO NOTHING;

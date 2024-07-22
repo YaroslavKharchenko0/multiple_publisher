@@ -1,9 +1,14 @@
-import { RmqModule } from "@app/rmq";
-import { Module } from "@nestjs/common";
-import { AdminApiController } from "./controllers/admin-api.controller";
-import { CommandController } from "./controllers/command.controller";
-import { QueryController } from "./controllers/query.controller";
-import { roleServiceProvider, roleRepositoryProvider, ROLE_REPOSITORY, ROLE_SERVICE } from "./providers/role.providers";
+import { RmqModule } from '@app/rmq';
+import { Module } from '@nestjs/common';
+import { AdminApiController } from './controllers/admin-api.controller';
+import { CommandController } from './controllers/command.controller';
+import { QueryController } from './controllers/query.controller';
+import {
+  roleServiceProvider,
+  roleRepositoryProvider,
+  ROLE_REPOSITORY,
+  ROLE_SERVICE,
+} from './providers/role.providers';
 
 @Module({})
 export class RolesModule {

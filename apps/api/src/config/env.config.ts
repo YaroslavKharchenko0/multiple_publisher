@@ -1,11 +1,13 @@
-import * as Joi from 'joi'
+import * as Joi from 'joi';
 
-const allowLevels = ['info', 'debug', 'warn', 'error', 'verbose', 'silly']
+const allowLevels = ['info', 'debug', 'warn', 'error', 'verbose', 'silly'];
 
 const envValidationSchema = Joi.object({
   PORT: Joi.number().default(3000),
   APP_NAME: Joi.string().default('api'),
-  LOG_LEVEL: Joi.string().allow(...allowLevels).default('info'),
+  LOG_LEVEL: Joi.string()
+    .allow(...allowLevels)
+    .default('info'),
   LOG_JSON: Joi.boolean().default(true),
   RMQ_URI: Joi.string().required(),
   DATABASE_HOST: Joi.string().required(),
@@ -27,6 +29,13 @@ const envValidationSchema = Joi.object({
   VERSION: Joi.string().required(),
   COGNITO_ACCESS_KEY_ID: Joi.string().required(),
   COGNITO_SECRET_ACCESS_KEY: Joi.string().required(),
-})
+  GOOGLE_CLIENT_ID: Joi.string().required(),
+  GOOGLE_CLIENT_SECRET: Joi.string().required(),
+  GOOGLE_REDIRECT_URI: Joi.string().required(),
+  JWT_EXPIRES_IN: Joi.string().default('1h'),
+  JWT_PRIVATE: Joi.string().optional(),
+  JWT_PUBLIC: Joi.string().optional(),
+  JWE_SECRET: Joi.string().required(),
+});
 
-export { envValidationSchema }
+export { envValidationSchema };
