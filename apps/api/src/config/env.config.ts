@@ -32,6 +32,10 @@ const envValidationSchema = Joi.object({
   GOOGLE_CLIENT_ID: Joi.string().required(),
   GOOGLE_CLIENT_SECRET: Joi.string().required(),
   GOOGLE_REDIRECT_URI: Joi.string().required(),
+  JWT_EXPIRES_IN: Joi.string().default('1h'),
+  JWT_PRIVATE: Joi.string().optional(),
+  JWT_PUBLIC: Joi.string().optional(),
+  JWE_SECRET: Joi.string().required(),
 });
 
 export { envValidationSchema };

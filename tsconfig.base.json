@@ -19,6 +19,7 @@
       "@app/bull-mq": ["libs/bull-mq/src/index.ts"],
       "@app/bunny": ["libs/bunny/src/index.ts"],
       "@app/contracts": ["libs/contracts/src/index.ts"],
+      "@app/crypto": ["libs/crypto/src/index.ts"],
       "@app/errors": ["libs/errors/src/index.ts"],
       "@app/gcp": ["libs/gcp/src/index.ts"],
       "@app/jobs": ["libs/jobs/src/index.ts"],
