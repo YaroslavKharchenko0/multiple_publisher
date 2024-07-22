@@ -3,16 +3,16 @@ import { Database, Orm, schema } from '../../../database';
 import { eq } from 'drizzle-orm';
 import { Pagination } from '@app/validation';
 
-export type InsertRole = typeof schema.posts.$inferInsert;
-export type SelectRole = typeof schema.posts.$inferSelect;
+export type InsertPost = typeof schema.posts.$inferInsert;
+export type SelectPost = typeof schema.posts.$inferSelect;
 
 @Injectable()
-export class RoleRepository {
+export class PostRepository {
   constructor(@Orm() private readonly db: Database) { }
 
   private posts = schema.posts;
 
-  async createOne(input: InsertRole) {
+  async createOne(input: InsertPost) {
     return this.db
       .insert(this.posts)
       .values(input)
@@ -51,7 +51,7 @@ export class RoleRepository {
     return result;
   }
 
-  async updateById(id: number, input: Partial<InsertRole>) {
+  async updateById(id: number, input: Partial<InsertPost>) {
     const where = eq(this.posts.id, id);
 
     const result = await this.db

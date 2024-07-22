@@ -1,0 +1,25 @@
+import { PostType } from '@app/types';
+import { PostModel } from '../models/post.model';
+import { Pagination } from '@app/validation';
+
+export interface CreatePostInput {
+  userId: number;
+  type: PostType;
+  title: string;
+  description: string;
+}
+
+export interface UpdatePostInput {
+  type?: PostType;
+  title?: string;
+  description?: string;
+}
+
+export interface Service {
+  createPost(input: CreatePostInput): Promise<PostModel>;
+  updatePost(id: number, input: UpdatePostInput): Promise<PostModel>;
+  deletePost(id: number): Promise<void>;
+  getPostById(id: number): Promise<PostModel>;
+  getUserPosts(userId: number, pagination: Pagination): Promise<PostModel[]>;
+  getPosts(pagination: Pagination): Promise<PostModel[]>;
+}
