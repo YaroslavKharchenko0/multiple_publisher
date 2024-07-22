@@ -24,11 +24,11 @@ export class GoogleAuthService {
     return client;
   }
 
-  generateAuthUrl(userId: number) {
+  generateAuthUrl(state: string) {
     const url = this.client.generateAuthUrl({
       access_type: 'offline',
       scope: this.config.scopes,
-      state: String(userId),
+      state,
     });
 
     return url;

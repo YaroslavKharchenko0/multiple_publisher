@@ -7,7 +7,9 @@ export class JweService {
   private key?: JWK.Key;
   private readonly logger = new Logger(JweService.name);
 
-  constructor(private readonly jwkSecretData: string) { }
+  constructor(private readonly jwkSecretData: string) {
+    this.onInit();
+  }
 
   async onInit(): Promise<void> {
     this.key = await JWK.asKey(this.jwkSecretData, 'json');

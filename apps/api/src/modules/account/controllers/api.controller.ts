@@ -55,7 +55,7 @@ export class ApiController {
   ) {
     const payload: GoogleCallbackCommand.Request = {
       code,
-      userId: Number(state),
+      state,
     };
 
     return this.amqpConnection.request<GoogleCallbackCommand.Response>({

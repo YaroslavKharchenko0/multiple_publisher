@@ -10,13 +10,18 @@ import {
   accountServiceProvider,
 } from './providers/account.providers';
 import { GcpModule } from '@app/gcp';
+import { CryptoModule } from '@app/crypto';
 
 @Module({})
 export class AccountModule {
   static forRoot(): DynamicModule {
     return {
       module: AccountModule,
-      imports: [RmqModule.forRoot(), GcpModule.forRoot()],
+      imports: [
+        RmqModule.forRoot(),
+        GcpModule.forRoot(),
+        CryptoModule.forRoot(),
+      ],
       controllers: [ApiController, CommandController, QueryController],
       providers: [accountRepositoryProvider, accountServiceProvider],
       exports: [ACCOUNT_SERVICE, ACCOUNT_REPOSITORY],

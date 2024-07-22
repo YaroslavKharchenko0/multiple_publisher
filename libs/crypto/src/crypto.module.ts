@@ -19,6 +19,13 @@ export class CryptoModule {
         jwtServiceConfigProvider,
         jweServiceConfigProvider,
       ],
+      exports: [
+        hashServiceProvider,
+        jwtServiceProvider,
+        jweServiceProvider,
+        jwtServiceConfigProvider,
+        jweServiceConfigProvider,
+      ],
     };
   }
 }

@@ -14,12 +14,15 @@ import { TraceId } from '@app/logger';
 import { GcpAuth, GoogleAuthService } from '@app/gcp';
 import * as jwt from 'jsonwebtoken';
 import { ProviderKey } from '@app/types';
+import { CryptoJwt, JwtService, CryptoJwe, JweService } from '@app/crypto';
 
 @Controller()
 export class CommandController {
   constructor(
     @Inject(ACCOUNT_SERVICE) private readonly service: AccountService,
     @GcpAuth() private readonly googleAuthService: GoogleAuthService,
+    @CryptoJwt() private readonly jwtService: JwtService,
+    @CryptoJwe() private readonly jweService: JweService,
   ) { }
 
   @RabbitRPC({
@@ -82,7 +85,11 @@ export class CommandController {
   async googleSignInUrl(
     @RabbitPayload() message: GoogleSingInUrlCommand.Request,
   ): Promise<GoogleSingInUrlCommand.Response> {
-    const url = this.googleAuthService.generateAuthUrl(message.userId);
+    const jwtSign = this.jwtService.sign(String(message.userId));
+
+    const state = await this.jweService.encryptJWE(jwtSign);
+
+    const url = this.googleAuthService.generateAuthUrl(state);
 
     return createSuccessResponse({
       url,
@@ -109,12 +116,16 @@ export class CommandController {
       refreshToken: tokens.refresh_token,
     };
 
+    const jwtSign = await this.jweService.decryptJWE<string>(message.state);
+
+    const { data } = this.jwtService.verify(jwtSign);
+
     await this.service.onSignIn(
       {
         internalId: providerId,
         accountTokens,
         provider: ProviderKey.GOOGLE,
-        userId: message.userId,
+        userId: Number(data),
       },
       { traceId },
     );
