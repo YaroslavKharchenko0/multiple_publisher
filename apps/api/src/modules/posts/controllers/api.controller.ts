@@ -1,28 +1,47 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Controller, Get } from '@nestjs/common';
 import {
-  CommandCommand,
-  CommandErrorCommand,
-  EventEvent,
-  QueryQuery,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  CreatePostCommand,
+  DeletePostCommand,
+  FindPostByIdQuery,
+  FindPostsQuery,
+  FindUserPostsQuery,
+  UpdatePostCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { Auth, Roles } from '@app/utils';
-import { Role } from '@app/types';
+import {
+  CreatePostBodyDto,
+  FindPostsBodyDto,
+  FindUserPostsBodyDto,
+  UpdatePostBodyDto,
+} from '@app/validation';
+import { IsStringNumberPipe, JWTUser, User } from '@app/utils';
 
-@Controller('posts')
+@Controller()
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/command')
-  command(@TraceId() traceId: string | undefined) {
-    const payload: CommandCommand.Request = {
-      message: 'Hello World',
+  @Get('posts/:postId')
+  findPostById(
+    @TraceId() traceId: string | undefined,
+    @Param('postId', IsStringNumberPipe) postId: string,
+  ) {
+    const payload: FindPostByIdQuery.Request = {
+      id: Number(postId),
     };
 
-    return this.amqpConnection.request<CommandCommand.Response>({
-      exchange: CommandCommand.exchange,
-      routingKey: CommandCommand.routingKey,
+    return this.amqpConnection.request<FindPostByIdQuery.Response>({
+      exchange: FindPostByIdQuery.exchange,
+      routingKey: FindPostByIdQuery.routingKey,
       payload,
       headers: {
         traceId,
@@ -30,33 +49,18 @@ export class ApiController {
     });
   }
 
-  @Get('/event')
-  event(@TraceId() traceId: string | undefined) {
-    const payload: EventEvent.Request = {
-      message: 'Hello World',
+  @Get('posts/')
+  findPosts(
+    @TraceId() traceId: string | undefined,
+    @Query('pagination') pagination: FindPostsBodyDto,
+  ) {
+    const payload: FindPostsQuery.Request = {
+      pagination,
     };
 
-    return this.amqpConnection.publish<EventEvent.Request>(
-      EventEvent.exchange,
-      EventEvent.routingKey,
-      payload,
-      {
-        headers: {
-          traceId,
-        },
-      },
-    );
-  }
-
-  @Get('/query')
-  query(@TraceId() traceId: string | undefined) {
-    const payload: QueryQuery.Request = {
-      message: 'Hello World',
-    };
-
-    return this.amqpConnection.request<QueryQuery.Response>({
-      exchange: QueryQuery.exchange,
-      routingKey: QueryQuery.routingKey,
+    return this.amqpConnection.request<FindPostsQuery.Response>({
+      exchange: FindPostsQuery.exchange,
+      routingKey: FindPostsQuery.routingKey,
       payload,
       headers: {
         traceId,
@@ -64,15 +68,20 @@ export class ApiController {
     });
   }
 
-  @Get('/error')
-  error(@TraceId() traceId: string | undefined) {
-    const payload: CommandErrorCommand.Request = {
-      message: 'Hello World',
+  @Get('users/:userId/posts')
+  findUserPosts(
+    @TraceId() traceId: string | undefined,
+    @Query('pagination') pagination: FindUserPostsBodyDto,
+    @Param('userId', IsStringNumberPipe) userId: string,
+  ) {
+    const payload: FindUserPostsQuery.Request = {
+      pagination,
+      userId: Number(userId),
     };
 
-    return this.amqpConnection.request<CommandErrorCommand.Response>({
-      exchange: CommandErrorCommand.exchange,
-      routingKey: CommandErrorCommand.routingKey,
+    return this.amqpConnection.request<FindUserPostsQuery.Response>({
+      exchange: FindUserPostsQuery.exchange,
+      routingKey: FindUserPostsQuery.routingKey,
       payload,
       headers: {
         traceId,
@@ -80,27 +89,64 @@ export class ApiController {
     });
   }
 
-  @Auth()
-  @Get('/auth')
-  auth() {
-    return 'Auth';
+  @Post('posts/')
+  create(
+    @TraceId() traceId: string | undefined,
+    @Body() body: CreatePostBodyDto,
+    @User() user: JWTUser,
+  ) {
+    const payload: CreatePostCommand.Request = {
+      ...body,
+      userId: user?.app_id,
+    };
+
+    return this.amqpConnection.request<CreatePostCommand.Response>({
+      exchange: CreatePostCommand.exchange,
+      routingKey: CreatePostCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
   }
 
-  @Roles(Role.ADMIN)
-  @Get('/admin')
-  getAdmin() {
-    return 'Admin';
+  @Delete('posts/:postId')
+  delete(
+    @TraceId() traceId: string | undefined,
+    @Param('postId', IsStringNumberPipe) postId: string,
+  ) {
+    const payload: DeletePostCommand.Request = {
+      id: Number(postId),
+    };
+
+    return this.amqpConnection.request<DeletePostCommand.Response>({
+      exchange: DeletePostCommand.exchange,
+      routingKey: DeletePostCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
   }
 
-  @Roles(Role.USER)
-  @Get('/user')
-  getUser() {
-    return 'User';
-  }
+  @Patch('posts/:postId')
+  update(
+    @TraceId() traceId: string | undefined,
+    @Param('postId', IsStringNumberPipe) postId: string,
+    @Body() body: UpdatePostBodyDto,
+  ) {
+    const payload: UpdatePostCommand.Request = {
+      ...body,
+      postId: Number(postId),
+    };
 
-  @Roles(Role.ADMIN, Role.USER)
-  @Get('/both')
-  getBoth() {
-    return 'Both';
+    return this.amqpConnection.request<UpdatePostCommand.Response>({
+      exchange: UpdatePostCommand.exchange,
+      routingKey: UpdatePostCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
   }
 }

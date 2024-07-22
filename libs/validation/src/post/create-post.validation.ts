@@ -12,8 +12,12 @@ export const createPostValidationSchema = z.object({
 
 export type CreatePostRequest = z.infer<typeof createPostValidationSchema>;
 
+export const createPostBodyValidationSchema = createPostValidationSchema.omit({
+  userId: true,
+});
+
 export class CreatePostBodyDto extends createZodDto(
-  createPostValidationSchema,
+  createPostBodyValidationSchema,
 ) { }
 
 export type CreatePostResponse = Post;

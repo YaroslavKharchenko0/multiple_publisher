@@ -1,7 +1,12 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'nestjs-zod/z';
-import { userId } from '../user';
-import { Post, postDescription, postTitle, postType } from './post.validation';
+import {
+  Post,
+  postDescription,
+  postId,
+  postTitle,
+  postType,
+} from './post.validation';
 
 export const updatePostPayloadValidationSchema = z.object({
   type: postType,
@@ -10,7 +15,7 @@ export const updatePostPayloadValidationSchema = z.object({
 });
 
 export const updatePostValidationSchema = z.object({
-  userId,
+  postId,
   payload: updatePostPayloadValidationSchema,
 });
 

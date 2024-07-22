@@ -3,7 +3,6 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ApiController } from './controllers/api.controller';
 import { CommandController } from './controllers/command.controller';
 import { QueryController } from './controllers/query.controller';
-import { EventController } from './controllers/event.controller';
 import {
   postRepositoryProvider,
   postServiceProvider,
@@ -15,12 +14,7 @@ export class PostsModule {
     return {
       module: PostsModule,
       imports: [RmqModule.forRoot()],
-      controllers: [
-        ApiController,
-        CommandController,
-        QueryController,
-        EventController,
-      ],
+      controllers: [ApiController, CommandController, QueryController],
       providers: [postRepositoryProvider, postServiceProvider],
     };
   }

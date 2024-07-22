@@ -1,42 +1,64 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import {
-  CommandCommand,
-  CommandErrorCommand,
+  CreatePostCommand,
   createSuccessResponse,
+  DeletePostCommand,
+  UpdatePostCommand,
 } from '@app/contracts';
-import { RmqErrorService, internalServerError } from '@app/errors';
+import { POST_SERVICE } from '../providers/posts.providers';
+import { PostService } from '../services/post.service';
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) {}
+  constructor(
+    @Inject(POST_SERVICE) private readonly postService: PostService,
+  ) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: CreatePostCommand.exchange,
+    routingKey: CreatePostCommand.routingKey,
+    queue: CreatePostCommand.queue,
   })
-  command(
-    @RabbitPayload() message: CommandCommand.Request,
-  ): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`,
-      });
+  async create(
+    @RabbitPayload() message: CreatePostCommand.Request,
+  ): Promise<CreatePostCommand.Response> {
+    const payload = await this.postService.createPost({
+      title: message.title,
+      description: message.description,
+      userId: message.userId,
+      type: message.type,
+    });
 
-      return payload;
-    } catch (error) {
-      return internalServerError;
-    }
+    return createSuccessResponse(payload);
   }
 
   @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
+    exchange: UpdatePostCommand.exchange,
+    routingKey: UpdatePostCommand.routingKey,
+    queue: UpdatePostCommand.queue,
   })
-  error() //@RabbitPayload() _message: CommandErrorCommand.Request,
-  : CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound();
+  async update(
+    @RabbitPayload() message: UpdatePostCommand.Request,
+  ): Promise<UpdatePostCommand.Response> {
+    const payload = await this.postService.updatePost(
+      message.userId,
+      message.payload,
+    );
+
+    return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: DeletePostCommand.exchange,
+    routingKey: DeletePostCommand.routingKey,
+    queue: DeletePostCommand.queue,
+  })
+  async delete(
+    @RabbitPayload() message: DeletePostCommand.Request,
+  ): Promise<DeletePostCommand.Response> {
+    await this.postService.deletePost(message.id);
+
+    return createSuccessResponse(null);
   }
 }
