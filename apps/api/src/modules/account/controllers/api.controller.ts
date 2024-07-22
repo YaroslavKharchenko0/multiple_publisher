@@ -50,7 +50,7 @@ export class ApiController {
   @Get('/auth/google/callback')
   async googleCallback(
     @Query('code') code: string,
-    @Query('state', IsStringNumberPipe) state: string,
+    @Query('state') state: string,
     @TraceId() traceId: string | undefined,
   ) {
     const payload: GoogleCallbackCommand.Request = {

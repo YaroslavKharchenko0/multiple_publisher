@@ -32,6 +32,7 @@ export class JwtService {
     }
 
     const signOptions = { ...this.tokenSignOptions };
+
     if (expiresIn) {
       signOptions.expiresIn = expiresIn;
     }

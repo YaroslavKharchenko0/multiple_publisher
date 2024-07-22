@@ -6,7 +6,7 @@ export const createJwtConfig = (
 ): JwtServiceParams => {
   const expiresIn = configService.get<string>('JWT_EXPIRES_IN', '1h');
 
-  const baseAlgorithm = 'HS256';
+  const baseAlgorithm = 'RS256';
 
   return {
     tokenVerifyOptions: {
