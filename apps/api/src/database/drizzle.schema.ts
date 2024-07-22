@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { desc, relations } from 'drizzle-orm';
 import {
   serial,
   text,
@@ -12,6 +12,7 @@ import {
   AccountStatus,
   AccountTokenType,
   FileType,
+  PostType,
   ProviderKey,
   Role,
   UploadStatus,
@@ -125,12 +126,25 @@ export const accountTokens = pgTable('account_tokens', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+export const posts = pgTable('posts', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  type: varchar('type', { length: 10 }).$type<PostType>().notNull(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
   workspaceUsers: many(workspaceUsers),
   files: many(files),
   accounts: many(accounts),
+  posts: many(posts),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
