@@ -4,6 +4,10 @@ import { ApiController } from './controllers/api.controller';
 import { CommandController } from './controllers/command.controller';
 import { QueryController } from './controllers/query.controller';
 import { EventController } from './controllers/event.controller';
+import {
+  postRepositoryProvider,
+  postServiceProvider,
+} from './providers/posts.providers';
 
 @Module({})
 export class PostsModule {
@@ -17,6 +21,7 @@ export class PostsModule {
         QueryController,
         EventController,
       ],
+      providers: [postRepositoryProvider, postServiceProvider],
     };
   }
 }
