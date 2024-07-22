@@ -226,3 +226,10 @@ export const accountTokensRelations = relations(accountTokens, ({ one }) => ({
     references: [accounts.id],
   }),
 }));
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  user: one(users, {
+    fields: [posts.userId],
+    references: [users.id],
+  }),
+}));
