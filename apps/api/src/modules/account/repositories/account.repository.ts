@@ -2,9 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { Database, Orm, schema } from '../../../database';
 import { eq } from 'drizzle-orm';
 import { Pagination } from '@app/validation';
+import { AccountStatus } from '@app/types';
 
 export type InsertAccount = typeof schema.accounts.$inferInsert;
 export type SelectAccount = typeof schema.accounts.$inferSelect;
+
+export interface InsertAccountParams {
+  name: string;
+  internalId: string;
+  providerId: number;
+  status: AccountStatus;
+  userId: number;
+}
 
 @Injectable()
 export class AccountRepository {
@@ -12,7 +21,7 @@ export class AccountRepository {
 
   private accounts = schema.accounts;
 
-  async createOne(input: InsertAccount) {
+  async createOne(input: InsertAccountParams) {
     return this.db.insert(this.accounts).values(input).returning().execute();
   }
 

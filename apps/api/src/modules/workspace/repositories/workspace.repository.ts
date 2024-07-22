@@ -5,13 +5,18 @@ import { eq } from 'drizzle-orm';
 export type InsertWorkspace = typeof schema.workspaces.$inferInsert;
 export type SelectWorkspace = typeof schema.workspaces.$inferSelect;
 
+export interface CreateWorkspaceParams {
+  name: string;
+  userId: number;
+}
+
 @Injectable()
 export class WorkspaceRepository {
-  constructor(@Orm() private readonly db: Database) {}
+  constructor(@Orm() private readonly db: Database) { }
 
   private workspaces = schema.workspaces;
 
-  async createOne(input: InsertWorkspace) {
+  async createOne(input: CreateWorkspaceParams) {
     return this.db.insert(this.workspaces).values(input).returning().execute();
   }
 
