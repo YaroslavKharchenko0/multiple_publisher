@@ -53,7 +53,7 @@
     "drizzle:push": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "drizzle-kit push:pg"
+        "command": "drizzle-kit push"
       },
       "configurations": {
         "development": {
