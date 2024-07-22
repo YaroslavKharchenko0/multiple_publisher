@@ -1,7 +1,9 @@
-import { RabbitMQConfig } from "@golevelup/nestjs-rabbitmq";
-import { ConfigService } from "@nestjs/config";
+import { RabbitMQConfig } from '@golevelup/nestjs-rabbitmq';
+import { ConfigService } from '@nestjs/config';
 
-export const createConfigFactory = async (configService: ConfigService): Promise<RabbitMQConfig> => {
+export const createConfigFactory = async (
+  configService: ConfigService,
+): Promise<RabbitMQConfig> => {
   const uri = configService.getOrThrow('RMQ_URI');
 
   return {
@@ -20,8 +22,9 @@ export const createConfigFactory = async (configService: ConfigService): Promise
       { name: 'account-provider', type: 'topic' },
       { name: 'account', type: 'topic' },
       { name: 'account-token', type: 'topic' },
+      { name: 'post', type: 'topic' },
     ],
     connectionInitOptions: { wait: true, timeout: 5000 },
     enableControllerDiscovery: true,
   };
-}
+};
