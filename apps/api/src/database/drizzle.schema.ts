@@ -1,4 +1,4 @@
-import { desc, relations } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
 import {
   serial,
   text,
@@ -138,6 +138,16 @@ export const posts = pgTable('posts', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+export const postFiles = pgTable('post_files', {
+  id: serial('id').primaryKey(),
+  postId: integer('post_id')
+    .notNull()
+    .references(() => posts.id, { onDelete: 'cascade' }),
+  fileId: integer('file_id')
+    .notNull()
+    .references(() => files.id, { onDelete: 'cascade' }),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
@@ -192,6 +202,7 @@ export const filesRelations = relations(files, ({ many, one }) => ({
     fields: [files.authorId],
     references: [users.id],
   }),
+  postFiles: many(postFiles),
 }));
 
 export const fileMetadataRelations = relations(fileMetadata, ({ one }) => ({
@@ -227,9 +238,10 @@ export const accountTokensRelations = relations(accountTokens, ({ one }) => ({
   }),
 }));
 
-export const postsRelations = relations(posts, ({ one }) => ({
+export const postsRelations = relations(posts, ({ one, many }) => ({
   user: one(users, {
     fields: [posts.userId],
     references: [users.id],
   }),
+  postFiles: many(postFiles),
 }));
