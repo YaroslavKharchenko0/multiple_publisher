@@ -14,6 +14,7 @@ import {
   FileType,
   PostType,
   ProviderKey,
+  PublicationStatus,
   Role,
   UploadStatus,
   WorkspaceRole,
@@ -148,6 +149,23 @@ export const postFiles = pgTable('post_files', {
     .references(() => files.id, { onDelete: 'cascade' }),
 });
 
+export const publications = pgTable('publications', {
+  id: serial('id').primaryKey(),
+  postId: integer('post_id').references(() => posts.id, {
+    onDelete: 'set null',
+  }),
+  accountId: integer('account_id')
+    .notNull()
+    .references(() => accounts.id),
+  status: varchar('status', { length: 10 })
+    .$type<PublicationStatus>()
+    .notNull(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
@@ -229,6 +247,7 @@ export const accountsRelations = relations(accounts, ({ one, many }) => ({
     references: [accountProviders.id],
   }),
   accountTokens: many(accountTokens),
+  publications: many(publications),
 }));
 
 export const accountTokensRelations = relations(accountTokens, ({ one }) => ({
@@ -244,4 +263,16 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
     references: [users.id],
   }),
   postFiles: many(postFiles),
+  publications: many(publications),
+}));
+
+export const publicationRelations = relations(publications, ({ one }) => ({
+  post: one(posts, {
+    fields: [publications.postId],
+    references: [posts.id],
+  }),
+  account: one(accounts, {
+    fields: [publications.accountId],
+    references: [accounts.id],
+  }),
 }));

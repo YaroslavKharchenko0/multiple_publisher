@@ -6,3 +6,4 @@ export * from './account';
 export * from './account-token';
 export * from './providers';
 export * from './post';
+export * from './publication';
