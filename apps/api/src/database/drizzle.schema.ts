@@ -12,6 +12,7 @@ import {
   AccountStatus,
   AccountTokenType,
   FileType,
+  PostType,
   ProviderKey,
   Role,
   UploadStatus,
@@ -125,12 +126,35 @@ export const accountTokens = pgTable('account_tokens', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+export const posts = pgTable('posts', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  type: varchar('type', { length: 10 }).$type<PostType>().notNull(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const postFiles = pgTable('post_files', {
+  id: serial('id').primaryKey(),
+  postId: integer('post_id')
+    .notNull()
+    .references(() => posts.id, { onDelete: 'cascade' }),
+  fileId: integer('file_id')
+    .notNull()
+    .references(() => files.id, { onDelete: 'cascade' }),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
   workspaceUsers: many(workspaceUsers),
   files: many(files),
   accounts: many(accounts),
+  posts: many(posts),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
@@ -178,6 +202,7 @@ export const filesRelations = relations(files, ({ many, one }) => ({
     fields: [files.authorId],
     references: [users.id],
   }),
+  postFiles: many(postFiles),
 }));
 
 export const fileMetadataRelations = relations(fileMetadata, ({ one }) => ({
@@ -211,4 +236,12 @@ export const accountTokensRelations = relations(accountTokens, ({ one }) => ({
     fields: [accountTokens.accountId],
     references: [accounts.id],
   }),
+}));
+
+export const postsRelations = relations(posts, ({ one, many }) => ({
+  user: one(users, {
+    fields: [posts.userId],
+    references: [users.id],
+  }),
+  postFiles: many(postFiles),
 }));

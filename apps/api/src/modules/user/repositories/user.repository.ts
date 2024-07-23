@@ -7,7 +7,7 @@ export type SelectUser = typeof schema.users.$inferSelect;
 
 @Injectable()
 export class UserRepository {
-  constructor(@Orm() private readonly db: Database) {}
+  constructor(@Orm() private readonly db: Database) { }
 
   private users = schema.users;
 
@@ -45,7 +45,7 @@ export class UserRepository {
     return result;
   }
 
-  async updateById(id: number, input: Partial<InsertUser>) {
+  async updateById(id: number, input: Partial<SelectUser>) {
     const where = eq(this.users.id, id);
 
     const result = await this.db

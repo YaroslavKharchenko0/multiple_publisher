@@ -1,8 +1,14 @@
-import { AccountStatus } from '@app/types'
-import { z } from 'nestjs-zod/z'
-import { accountProviderKey } from '../account-provider'
-import { Account, accountInternalId, accountName, accountStatus, accountUserId } from './account.validation'
-import { createZodDto } from 'nestjs-zod'
+import { AccountStatus } from '@app/types';
+import { z } from 'nestjs-zod/z';
+import { accountProviderKey } from '../account-provider';
+import {
+  Account,
+  accountInternalId,
+  accountName,
+  accountStatus,
+  accountUserId,
+} from './account.validation';
+import { createZodDto } from 'nestjs-zod';
 
 export const createAccountValidationSchema = z.object({
   provider: accountProviderKey,
@@ -10,10 +16,14 @@ export const createAccountValidationSchema = z.object({
   userId: accountUserId,
   status: accountStatus.default(AccountStatus.INACTIVE),
   internalId: accountInternalId,
-})
+});
 
-export type CreateAccountRequest = z.infer<typeof createAccountValidationSchema>
+export type CreateAccountRequest = z.infer<
+  typeof createAccountValidationSchema
+>;
 
-export class CreateAccountBodyDto extends createZodDto(createAccountValidationSchema) { }
+export class CreateAccountBodyDto extends createZodDto(
+  createAccountValidationSchema,
+) { }
 
-export type CreateAccountResponse = Account
+export type CreateAccountResponse = Account;
