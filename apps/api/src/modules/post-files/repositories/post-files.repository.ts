@@ -23,8 +23,8 @@ export class PostFileRepository {
     });
   }
 
-  deleteByFileId(fileId: number) {
-    const where = eq(this.postFiles.fileId, fileId);
+  deleteByPostId(postId: number) {
+    const where = eq(this.postFiles.postId, postId);
 
     return this.db.delete(this.postFiles).where(where).returning().execute();
   }
