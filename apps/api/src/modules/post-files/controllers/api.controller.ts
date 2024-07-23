@@ -1,28 +1,30 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
-  CommandCommand,
-  CommandErrorCommand,
-  EventEvent,
-  QueryQuery,
+  CreatePostFilesCommand,
+  DeletePostFilesCommand,
+  FindPostFilesQuery,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { Auth, Roles } from '@app/utils';
-import { Role } from '@app/types';
+import { IsStringNumberPipe } from '@app/utils';
+import { CreatePostFilesDto } from '@app/validation';
 
-@Controller('post-file')
+@Controller('posts/:postId/files')
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/command')
-  command(@TraceId() traceId: string | undefined) {
-    const payload: CommandCommand.Request = {
-      message: 'Hello World',
+  @Get()
+  findPostFiles(
+    @TraceId() traceId: string | undefined,
+    @Param('postId', IsStringNumberPipe) postId: string,
+  ) {
+    const payload: FindPostFilesQuery.Request = {
+      postId: Number(postId),
     };
 
-    return this.amqpConnection.request<CommandCommand.Response>({
-      exchange: CommandCommand.exchange,
-      routingKey: CommandCommand.routingKey,
+    return this.amqpConnection.request<FindPostFilesQuery.Response>({
+      exchange: FindPostFilesQuery.exchange,
+      routingKey: FindPostFilesQuery.routingKey,
       payload,
       headers: {
         traceId,
@@ -30,33 +32,20 @@ export class ApiController {
     });
   }
 
-  @Get('/event')
-  event(@TraceId() traceId: string | undefined) {
-    const payload: EventEvent.Request = {
-      message: 'Hello World',
+  @Post()
+  createPostFiles(
+    @TraceId() traceId: string | undefined,
+    @Param('postId', IsStringNumberPipe) postId: string,
+    @Body() body: CreatePostFilesDto,
+  ) {
+    const payload: CreatePostFilesCommand.Request = {
+      postId: Number(postId),
+      ...body,
     };
 
-    return this.amqpConnection.publish<EventEvent.Request>(
-      EventEvent.exchange,
-      EventEvent.routingKey,
-      payload,
-      {
-        headers: {
-          traceId,
-        },
-      },
-    );
-  }
-
-  @Get('/query')
-  query(@TraceId() traceId: string | undefined) {
-    const payload: QueryQuery.Request = {
-      message: 'Hello World',
-    };
-
-    return this.amqpConnection.request<QueryQuery.Response>({
-      exchange: QueryQuery.exchange,
-      routingKey: QueryQuery.routingKey,
+    return this.amqpConnection.request<CreatePostFilesCommand.Response>({
+      exchange: CreatePostFilesCommand.exchange,
+      routingKey: CreatePostFilesCommand.routingKey,
       payload,
       headers: {
         traceId,
@@ -64,43 +53,22 @@ export class ApiController {
     });
   }
 
-  @Get('/error')
-  error(@TraceId() traceId: string | undefined) {
-    const payload: CommandErrorCommand.Request = {
-      message: 'Hello World',
+  @Delete()
+  deletePostFiles(
+    @TraceId() traceId: string | undefined,
+    @Param('postId', IsStringNumberPipe) postId: string,
+  ) {
+    const payload: DeletePostFilesCommand.Request = {
+      postId: Number(postId),
     };
 
-    return this.amqpConnection.request<CommandErrorCommand.Response>({
-      exchange: CommandErrorCommand.exchange,
-      routingKey: CommandErrorCommand.routingKey,
+    return this.amqpConnection.request<DeletePostFilesCommand.Response>({
+      exchange: DeletePostFilesCommand.exchange,
+      routingKey: DeletePostFilesCommand.routingKey,
       payload,
       headers: {
         traceId,
       },
     });
-  }
-
-  @Auth()
-  @Get('/auth')
-  auth() {
-    return 'Auth';
-  }
-
-  @Roles(Role.ADMIN)
-  @Get('/admin')
-  getAdmin() {
-    return 'Admin';
-  }
-
-  @Roles(Role.USER)
-  @Get('/user')
-  getUser() {
-    return 'User';
-  }
-
-  @Roles(Role.ADMIN, Role.USER)
-  @Get('/both')
-  getBoth() {
-    return 'Both';
   }
 }

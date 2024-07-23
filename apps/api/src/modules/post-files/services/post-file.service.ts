@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Service } from './post-file.service.interface';
 import { PostFileModel } from '../models/post-file.model';
 import { PostFileRepository } from '../repositories/post-files.repository';
+import { POST_FILE_REPOSITORY } from '../providers/post-file.providers';
 
 @Injectable()
 export class PostFileService implements Service {
-  constructor(private readonly repository: PostFileRepository) { }
+  constructor(
+    @Inject(POST_FILE_REPOSITORY)
+    private readonly repository: PostFileRepository,
+  ) { }
   async createPostFiles(
     postId: number,
     fileIds: number[],
