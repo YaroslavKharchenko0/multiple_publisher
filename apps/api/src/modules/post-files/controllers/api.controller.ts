@@ -6,7 +6,7 @@ import {
   FindPostFilesQuery,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe } from '@app/utils';
+import { IsStringNumberPipe, PostAccess } from '@app/utils';
 import { CreatePostFilesDto } from '@app/validation';
 
 @Controller('posts/:postId/files')
@@ -14,6 +14,7 @@ export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Get()
+  @PostAccess({ isAuthor: true })
   findPostFiles(
     @TraceId() traceId: string | undefined,
     @Param('postId', IsStringNumberPipe) postId: string,
@@ -33,6 +34,7 @@ export class ApiController {
   }
 
   @Post()
+  @PostAccess({ isAuthor: true })
   createPostFiles(
     @TraceId() traceId: string | undefined,
     @Param('postId', IsStringNumberPipe) postId: string,
@@ -54,6 +56,7 @@ export class ApiController {
   }
 
   @Delete()
+  @PostAccess({ isAuthor: true })
   deletePostFiles(
     @TraceId() traceId: string | undefined,
     @Param('postId', IsStringNumberPipe) postId: string,

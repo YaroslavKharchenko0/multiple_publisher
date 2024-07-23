@@ -7,6 +7,7 @@ import {
 } from '@app/contracts';
 import { POST_FILE_SERVICE } from '../providers/post-file.providers';
 import { PostFileService } from '../services/post-file.service';
+import { TraceId } from '@app/logger';
 
 @Controller()
 export class CommandController {
@@ -37,8 +38,11 @@ export class CommandController {
   })
   async delete(
     @RabbitPayload() message: DeletePostFilesCommand.Request,
+    @TraceId() traceId: string | undefined,
   ): Promise<DeletePostFilesCommand.Response> {
-    const payload = await this.service.deletePostFiles(message.postId);
+    const payload = await this.service.deletePostFiles(message.postId, {
+      traceId,
+    });
 
     return createSuccessResponse(payload);
   }
