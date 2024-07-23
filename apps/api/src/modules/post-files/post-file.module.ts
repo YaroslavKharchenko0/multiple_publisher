@@ -4,6 +4,10 @@ import { ApiController } from './controllers/api.controller';
 import { CommandController } from './controllers/command.controller';
 import { QueryController } from './controllers/query.controller';
 import { EventController } from './controllers/event.controller';
+import {
+  postFileRepositoryProvider,
+  postFileServiceProvider,
+} from './providers/post-file.providers';
 
 @Module({})
 export class PostFileModule {
@@ -17,6 +21,8 @@ export class PostFileModule {
         QueryController,
         EventController,
       ],
+      providers: [postFileRepositoryProvider, postFileServiceProvider],
+      exports: [postFileRepositoryProvider, postFileServiceProvider],
     };
   }
 }
