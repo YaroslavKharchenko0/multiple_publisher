@@ -1,24 +1,44 @@
-import { QueryQuery, createSuccessResponse } from '@app/contracts';
-import { internalServerError } from '@app/errors';
+import {
+  FindPostPublicationsQuery,
+  FindPublicationByIdQuery,
+  createSuccessResponse,
+} from '@app/contracts';
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
+import { PublicationService } from '../services/publication.service';
 
 @Controller()
 export class QueryController {
-  @RabbitRPC({
-    exchange: QueryQuery.exchange,
-    routingKey: QueryQuery.routingKey,
-    queue: QueryQuery.queue,
-  })
-  command(@RabbitPayload() message: QueryQuery.Request): QueryQuery.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`,
-      });
+  constructor(private readonly publicationService: PublicationService) { }
 
-      return payload;
-    } catch (error) {
-      return internalServerError;
-    }
+  @RabbitRPC({
+    exchange: FindPublicationByIdQuery.exchange,
+    routingKey: FindPublicationByIdQuery.routingKey,
+    queue: FindPublicationByIdQuery.queue,
+  })
+  async findById(
+    @RabbitPayload() message: FindPublicationByIdQuery.Request,
+  ): Promise<FindPublicationByIdQuery.Response> {
+    const payload = await this.publicationService.findPublicationById(
+      message.id,
+    );
+
+    return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: FindPostPublicationsQuery.exchange,
+    routingKey: FindPostPublicationsQuery.routingKey,
+    queue: FindPostPublicationsQuery.queue,
+  })
+  async findByPostId(
+    @RabbitPayload() message: FindPostPublicationsQuery.Request,
+  ): Promise<FindPostPublicationsQuery.Response> {
+    const payload = await this.publicationService.findPostPublications(
+      message.postId,
+      message.pagination,
+    );
+
+    return createSuccessResponse(payload);
   }
 }
