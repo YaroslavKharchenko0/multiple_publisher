@@ -7,6 +7,7 @@ import {
   uuid,
   varchar,
   integer,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import {
   AccountStatus,
@@ -166,6 +167,17 @@ export const publications = pgTable('publications', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+export const publicationFiles = pgTable('publication_files', {
+  id: serial('id').primaryKey(),
+  publicationId: integer('publication_id')
+    .notNull()
+    .references(() => publications.id, { onDelete: 'cascade' }),
+  fileId: integer('file_id')
+    .notNull()
+    .references(() => files.id, { onDelete: 'cascade' }),
+  isOriginal: boolean('is_original').default(true),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
@@ -266,13 +278,42 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
   publications: many(publications),
 }));
 
-export const publicationRelations = relations(publications, ({ one }) => ({
+export const publicationRelations = relations(
+  publications,
+  ({ one, many }) => ({
+    post: one(posts, {
+      fields: [publications.postId],
+      references: [posts.id],
+    }),
+    account: one(accounts, {
+      fields: [publications.accountId],
+      references: [accounts.id],
+    }),
+    publicationFiles: many(publicationFiles),
+  }),
+);
+
+export const postFilesRelations = relations(postFiles, ({ one }) => ({
   post: one(posts, {
-    fields: [publications.postId],
+    fields: [postFiles.postId],
     references: [posts.id],
   }),
-  account: one(accounts, {
-    fields: [publications.accountId],
-    references: [accounts.id],
+  file: one(files, {
+    fields: [postFiles.fileId],
+    references: [files.id],
   }),
 }));
+
+export const publicationFilesRelations = relations(
+  publicationFiles,
+  ({ one }) => ({
+    publication: one(publications, {
+      fields: [publicationFiles.publicationId],
+      references: [publications.id],
+    }),
+    file: one(files, {
+      fields: [publicationFiles.fileId],
+      references: [files.id],
+    }),
+  }),
+);
