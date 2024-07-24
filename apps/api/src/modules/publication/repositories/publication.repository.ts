@@ -25,7 +25,7 @@ export class PublicationRepository {
     return this.db
       .insert(this.publications)
       .values(input)
-      .returning({ id: this.publications.id })
+      .returning()
       .execute();
   }
 
@@ -39,11 +39,13 @@ export class PublicationRepository {
     return result;
   }
 
-  async findPublicationsByPostId(postId: number) {
+  async findPublicationsByPostId(postId: number, pagination: Pagination) {
     const where = eq(this.publications.postId, postId);
 
     const result = await this.db.query.publications.findMany({
       where,
+      offset: pagination?.offset,
+      limit: pagination?.limit,
     });
 
     return result;
