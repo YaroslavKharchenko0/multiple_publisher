@@ -5,14 +5,15 @@ import {
   createSuccessResponse,
   DeletePublicationFilesCommand,
 } from '@app/contracts';
-import { POST_FILE_SERVICE } from '../providers/publication-file.providers';
+import { PUBLICATION_FILE_SERVICE } from '../providers/publication-file.providers';
 import { PublicationFileService } from '../services/publication-file.service';
 import { TraceId } from '@app/logger';
 
 @Controller()
 export class CommandController {
   constructor(
-    @Inject(POST_FILE_SERVICE) private readonly service: PublicationFileService,
+    @Inject(PUBLICATION_FILE_SERVICE)
+    private readonly service: PublicationFileService,
   ) { }
 
   @RabbitRPC({
@@ -24,8 +25,9 @@ export class CommandController {
     @RabbitPayload() message: CreatePublicationFilesCommand.Request,
   ): Promise<CreatePublicationFilesCommand.Response> {
     const payload = await this.service.createPublicationFiles(
-      message.postId,
+      message.publicationId,
       message.files,
+      message.isOriginal,
     );
 
     return createSuccessResponse(payload);
@@ -40,9 +42,12 @@ export class CommandController {
     @RabbitPayload() message: DeletePublicationFilesCommand.Request,
     @TraceId() traceId: string | undefined,
   ): Promise<DeletePublicationFilesCommand.Response> {
-    const payload = await this.service.deletePublicationFiles(message.postId, {
-      traceId,
-    });
+    const payload = await this.service.deletePublicationFiles(
+      message.publicationId,
+      {
+        traceId,
+      },
+    );
 
     return createSuccessResponse(payload);
   }

@@ -15,7 +15,7 @@ export class QueryController {
     routingKey: FindPostFilesQuery.routingKey,
     queue: FindPostFilesQuery.queue,
   })
-  async create(
+  async find(
     @RabbitPayload() message: FindPostFilesQuery.Request,
   ): Promise<FindPostFilesQuery.Response> {
     const payload = await this.service.findPostFiles(message.postId);

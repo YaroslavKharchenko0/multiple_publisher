@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Service } from './publication-file.service.interface';
 import { PublicationFileModel } from '../models/publication-file.model';
 import { PublicationFileRepository } from '../repositories/publication-file.repository';
-import { POST_FILE_REPOSITORY } from '../providers/publication-file.providers';
+import { PUBLICATION_FILE_REPOSITORY } from '../providers/publication-file.providers';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { DeleteFileCommand } from '@app/contracts';
 import { Options } from '@app/types';
@@ -10,7 +10,7 @@ import { Options } from '@app/types';
 @Injectable()
 export class PublicationFileService implements Service {
   constructor(
-    @Inject(POST_FILE_REPOSITORY)
+    @Inject(PUBLICATION_FILE_REPOSITORY)
     private readonly repository: PublicationFileRepository,
     private readonly amqpConnection: AmqpConnection,
   ) { }
