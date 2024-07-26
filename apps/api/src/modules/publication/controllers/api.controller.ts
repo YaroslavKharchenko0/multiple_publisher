@@ -17,7 +17,7 @@ import {
   UpdatePublicationCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe } from '@app/utils';
+import { IsStringNumberPipe, PostAccess } from '@app/utils';
 import {
   CreatePublicationDto,
   FindPostPublicationsDto,
@@ -29,6 +29,7 @@ export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/')
+  @PostAccess({ isAuthor: true })
   create(
     @TraceId() traceId: string | undefined,
     @Body() body: CreatePublicationDto,
@@ -50,6 +51,7 @@ export class ApiController {
   }
 
   @Patch('/:publicationId')
+  @PostAccess({ isAuthor: true })
   update(
     @TraceId() traceId: string | undefined,
     @Body() body: UpdatePublicationDto,
@@ -75,6 +77,7 @@ export class ApiController {
   }
 
   @Delete('/:publicationId')
+  @PostAccess({ isAuthor: true })
   delete(
     @TraceId() traceId: string | undefined,
     @Param('postId', IsStringNumberPipe) postId: string,
@@ -96,6 +99,7 @@ export class ApiController {
   }
 
   @Get('/:publicationId')
+  @PostAccess({ isAuthor: true })
   findOne(
     @TraceId() traceId: string | undefined,
     @Param('postId', IsStringNumberPipe) postId: string,
@@ -117,6 +121,7 @@ export class ApiController {
   }
 
   @Get('/')
+  @PostAccess({ isAuthor: true })
   findMany(
     @TraceId() traceId: string | undefined,
     @Param('postId', IsStringNumberPipe) postId: string,
