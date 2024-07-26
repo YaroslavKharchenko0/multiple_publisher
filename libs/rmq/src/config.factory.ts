@@ -24,6 +24,7 @@ export const createConfigFactory = async (
       { name: 'account-token', type: 'topic' },
       { name: 'post', type: 'topic' },
       { name: 'post-file', type: 'topic' },
+      { name: 'publication', type: 'topic' },
     ],
     connectionInitOptions: { wait: true, timeout: 5000 },
     enableControllerDiscovery: true,
