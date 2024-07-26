@@ -1,6 +1,7 @@
 import {
   DeletePostCommand,
   FindPostByIdQuery,
+  FindPostFilesQuery,
   SuccessResponse,
 } from '@app/contracts';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
@@ -13,6 +14,31 @@ interface Options {
 @Injectable()
 export class PostFacade {
   constructor(private readonly amqpConnection: AmqpConnection) { }
+
+  async findPostFiles(postId: number, traceId?: string) {
+    const payload: FindPostFilesQuery.Request = {
+      postId,
+    };
+
+    const postResponse =
+      await this.amqpConnection.request<FindPostFilesQuery.Response>({
+        exchange: FindPostFilesQuery.exchange,
+        routingKey: FindPostFilesQuery.routingKey,
+        payload,
+        headers: {
+          traceId,
+        },
+      });
+
+    if (postResponse.isError) {
+      return null;
+    }
+
+    const successResponse =
+      postResponse as SuccessResponse<FindPostFilesQuery.ResponsePayload>;
+
+    return successResponse.payload;
+  }
 
   async findPostById(id: number, traceId?: string) {
     const payload: FindPostByIdQuery.Request = {
