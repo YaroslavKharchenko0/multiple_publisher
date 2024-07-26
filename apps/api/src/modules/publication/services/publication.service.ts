@@ -45,7 +45,7 @@ export class PublicationService implements Service {
     const [entity] = entities;
 
     if (!entity) {
-      this.rmqErrorService.internalServerError();
+      throw this.rmqErrorService.internalServerError();
     }
 
     return PublicationModel.fromEntity(entity);
@@ -54,7 +54,7 @@ export class PublicationService implements Service {
     const entity = await this.repository.findById(id);
 
     if (!entity) {
-      this.rmqErrorService.notFound();
+      throw this.rmqErrorService.notFound();
     }
 
     return PublicationModel.fromEntity(entity);
@@ -63,7 +63,7 @@ export class PublicationService implements Service {
     const entity = await this.repository.findByIdAndPostId(id, postId);
 
     if (!entity) {
-      this.rmqErrorService.notFound();
+      throw this.rmqErrorService.notFound();
     }
 
     return PublicationModel.fromEntity(entity);
@@ -94,7 +94,7 @@ export class PublicationService implements Service {
     const [entity] = entities;
 
     if (!entity) {
-      this.rmqErrorService.notFound();
+      throw this.rmqErrorService.notFound();
     }
 
     return PublicationModel.fromEntity(entity);
@@ -108,7 +108,7 @@ export class PublicationService implements Service {
     const [entity] = entities;
 
     if (!entity) {
-      this.rmqErrorService.notFound();
+      throw this.rmqErrorService.notFound();
     }
 
     return PublicationModel.fromEntity(entity);
