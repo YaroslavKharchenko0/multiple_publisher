@@ -8,12 +8,14 @@ import { postId } from '../post';
 import { accountId } from '../account';
 import { createZodDto } from 'nestjs-zod';
 
-export const createPublicationValidationSchema = z.object({
-  title: publicationTitle.optional(),
-  description: publicationDescription.optional(),
-  postId,
-  accountId,
-});
+export const createPublicationValidationSchema = z
+  .object({
+    title: publicationTitle.optional(),
+    description: publicationDescription.optional(),
+    postId,
+    accountId,
+  })
+  .required();
 
 export type CreatePublicationRequest = z.infer<
   typeof createPublicationValidationSchema

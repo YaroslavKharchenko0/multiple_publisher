@@ -1,6 +1,6 @@
 import { Pagination } from '@app/validation';
 import { PublicationModel } from '../models/publication.model';
-import { PublicationStatus } from '@app/types';
+import { Options, PublicationStatus } from '@app/types';
 
 export interface CreatePublicationParams {
   title?: string;
@@ -16,7 +16,10 @@ export interface UpdatePublicationParams {
 }
 
 export interface Service {
-  createPublication(params: CreatePublicationParams): Promise<PublicationModel>;
+  createPublication(
+    params: CreatePublicationParams,
+    options?: Options,
+  ): Promise<PublicationModel>;
   findPublicationById(id: number): Promise<PublicationModel>;
   findPostPublications(
     postId: number,

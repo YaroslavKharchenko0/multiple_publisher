@@ -8,26 +8,39 @@ import { Pagination } from '@app/validation';
 import { PublicationModel } from '../models/publication.model';
 import { PublicationRepository } from '../repositories/publication.repository';
 import { RmqErrorService } from '@app/errors';
-import { PublicationStatus } from '@app/types';
+import { Options, PublicationStatus } from '@app/types';
+import { PostFacade } from '@app/utils';
 
 @Injectable()
 export class PublicationService implements Service {
   constructor(
     private readonly repository: PublicationRepository,
     private readonly rmqErrorService: RmqErrorService,
+    private readonly postFacade: PostFacade,
   ) { }
+
   async createPublication(
     params: CreatePublicationParams,
+    options?: Options,
   ): Promise<PublicationModel> {
     const defaultParams = {
       status: PublicationStatus.DRAFT,
     };
 
+    const post = await this.postFacade.findPostById(
+      params.postId,
+      options?.traceId,
+    );
+
+    if (!post) {
+      throw this.rmqErrorService.notFound();
+    }
+
     const entities = await this.repository.createOne({
       ...defaultParams,
       ...params,
-      title: '',
-      description: '',
+      title: params?.title || post.title,
+      description: params?.description || post.description,
     });
 
     const [entity] = entities;
