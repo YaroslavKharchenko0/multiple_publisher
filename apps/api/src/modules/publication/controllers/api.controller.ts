@@ -1,28 +1,47 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Controller, Get } from '@nestjs/common';
 import {
-  CommandCommand,
-  CommandErrorCommand,
-  EventEvent,
-  QueryQuery,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  CreatePublicationCommand,
+  DeletePublicationCommand,
+  FindPostPublicationsQuery,
+  FindPublicationQuery,
+  UpdatePublicationCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { Auth, Roles } from '@app/utils';
-import { Role } from '@app/types';
+import { IsStringNumberPipe } from '@app/utils';
+import {
+  CreatePublicationDto,
+  FindPostPublicationsDto,
+  UpdatePublicationDto,
+} from '@app/validation';
 
-@Controller('publication')
+@Controller('posts/:postId/publications')
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/command')
-  command(@TraceId() traceId: string | undefined) {
-    const payload: CommandCommand.Request = {
-      message: 'Hello World',
+  @Post('/')
+  create(
+    @TraceId() traceId: string | undefined,
+    @Body() body: CreatePublicationDto,
+    @Param('postId', IsStringNumberPipe) postId: string,
+  ) {
+    const payload: CreatePublicationCommand.Request = {
+      ...body,
+      postId: Number(postId),
     };
 
-    return this.amqpConnection.request<CommandCommand.Response>({
-      exchange: CommandCommand.exchange,
-      routingKey: CommandCommand.routingKey,
+    return this.amqpConnection.request<CreatePublicationCommand.Response>({
+      exchange: CreatePublicationCommand.exchange,
+      routingKey: CreatePublicationCommand.routingKey,
       payload,
       headers: {
         traceId,
@@ -30,15 +49,22 @@ export class ApiController {
     });
   }
 
-  @Get('/event')
-  event(@TraceId() traceId: string | undefined) {
-    const payload: EventEvent.Request = {
-      message: 'Hello World',
+  @Patch('/:publicationId')
+  update(
+    @TraceId() traceId: string | undefined,
+    @Body() body: UpdatePublicationDto,
+    @Param('postId', IsStringNumberPipe) postId: string,
+    @Param('publicationId', IsStringNumberPipe) publicationId: string,
+  ) {
+    const payload: UpdatePublicationCommand.Request = {
+      payload: body,
+      postId: Number(postId),
+      id: Number(publicationId),
     };
 
-    return this.amqpConnection.publish<EventEvent.Request>(
-      EventEvent.exchange,
-      EventEvent.routingKey,
+    return this.amqpConnection.publish<UpdatePublicationCommand.Request>(
+      UpdatePublicationCommand.exchange,
+      UpdatePublicationCommand.routingKey,
       payload,
       {
         headers: {
@@ -48,15 +74,20 @@ export class ApiController {
     );
   }
 
-  @Get('/query')
-  query(@TraceId() traceId: string | undefined) {
-    const payload: QueryQuery.Request = {
-      message: 'Hello World',
+  @Delete('/:publicationId')
+  delete(
+    @TraceId() traceId: string | undefined,
+    @Param('postId', IsStringNumberPipe) postId: string,
+    @Param('publicationId', IsStringNumberPipe) publicationId: string,
+  ) {
+    const payload: DeletePublicationCommand.Request = {
+      postId: Number(postId),
+      id: Number(publicationId),
     };
 
-    return this.amqpConnection.request<QueryQuery.Response>({
-      exchange: QueryQuery.exchange,
-      routingKey: QueryQuery.routingKey,
+    return this.amqpConnection.request<DeletePublicationCommand.Response>({
+      exchange: DeletePublicationCommand.exchange,
+      routingKey: DeletePublicationCommand.routingKey,
       payload,
       headers: {
         traceId,
@@ -64,15 +95,20 @@ export class ApiController {
     });
   }
 
-  @Get('/error')
-  error(@TraceId() traceId: string | undefined) {
-    const payload: CommandErrorCommand.Request = {
-      message: 'Hello World',
+  @Get('/:publicationId')
+  findOne(
+    @TraceId() traceId: string | undefined,
+    @Param('postId', IsStringNumberPipe) postId: string,
+    @Param('publicationId', IsStringNumberPipe) publicationId: string,
+  ) {
+    const payload: FindPublicationQuery.Request = {
+      postId: Number(postId),
+      id: Number(publicationId),
     };
 
-    return this.amqpConnection.request<CommandErrorCommand.Response>({
-      exchange: CommandErrorCommand.exchange,
-      routingKey: CommandErrorCommand.routingKey,
+    return this.amqpConnection.request<FindPublicationQuery.Response>({
+      exchange: FindPublicationQuery.exchange,
+      routingKey: FindPublicationQuery.routingKey,
       payload,
       headers: {
         traceId,
@@ -80,27 +116,24 @@ export class ApiController {
     });
   }
 
-  @Auth()
-  @Get('/auth')
-  auth() {
-    return 'Auth';
-  }
+  @Get('/')
+  findMany(
+    @TraceId() traceId: string | undefined,
+    @Param('postId', IsStringNumberPipe) postId: string,
+    @Query() query: FindPostPublicationsDto,
+  ) {
+    const payload: FindPostPublicationsQuery.Request = {
+      postId: Number(postId),
+      pagination: query,
+    };
 
-  @Roles(Role.ADMIN)
-  @Get('/admin')
-  getAdmin() {
-    return 'Admin';
-  }
-
-  @Roles(Role.USER)
-  @Get('/user')
-  getUser() {
-    return 'User';
-  }
-
-  @Roles(Role.ADMIN, Role.USER)
-  @Get('/both')
-  getBoth() {
-    return 'Both';
+    return this.amqpConnection.request<FindPostPublicationsQuery.Response>({
+      exchange: FindPostPublicationsQuery.exchange,
+      routingKey: FindPostPublicationsQuery.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
   }
 }

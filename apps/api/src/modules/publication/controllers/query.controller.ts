@@ -1,6 +1,7 @@
 import {
   FindPostPublicationsQuery,
   FindPublicationByIdQuery,
+  FindPublicationQuery,
   createSuccessResponse,
 } from '@app/contracts';
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
@@ -21,6 +22,22 @@ export class QueryController {
   ): Promise<FindPublicationByIdQuery.Response> {
     const payload = await this.publicationService.findPublicationById(
       message.id,
+    );
+
+    return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: FindPublicationQuery.exchange,
+    routingKey: FindPublicationQuery.routingKey,
+    queue: FindPublicationQuery.queue,
+  })
+  async find(
+    @RabbitPayload() message: FindPublicationQuery.Request,
+  ): Promise<FindPublicationQuery.Response> {
+    const payload = await this.publicationService.findPublication(
+      message.id,
+      message.postId,
     );
 
     return createSuccessResponse(payload);

@@ -7,6 +7,7 @@ import {
   publicationTitle,
 } from './publication.validation';
 import { createZodDto } from 'nestjs-zod';
+import { postId } from '../post';
 
 export const updatePublicationPayloadValidationSchema = z.object({
   title: publicationTitle.optional(),
@@ -16,6 +17,7 @@ export const updatePublicationPayloadValidationSchema = z.object({
 
 export const updatePublicationValidationSchema = z.object({
   id: publicationId,
+  postId,
   payload: updatePublicationPayloadValidationSchema,
 });
 

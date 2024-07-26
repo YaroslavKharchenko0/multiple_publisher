@@ -21,13 +21,15 @@ export interface Service {
     options?: Options,
   ): Promise<PublicationModel>;
   findPublicationById(id: number): Promise<PublicationModel>;
+  findPublication(id: number, postId: number): Promise<PublicationModel>;
   findPostPublications(
     postId: number,
     pagination: Pagination,
   ): Promise<PublicationModel[]>;
-  updatePublicationById(
+  updatePublication(
     id: number,
+    postId: number,
     params: UpdatePublicationParams,
   ): Promise<PublicationModel>;
-  deletePublicationById(id: number): Promise<PublicationModel>;
+  deletePublication(id: number, postId: number): Promise<PublicationModel>;
 }

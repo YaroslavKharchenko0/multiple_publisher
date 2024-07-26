@@ -38,8 +38,9 @@ export class CommandController {
   async update(
     @RabbitPayload() message: UpdatePublicationCommand.Request,
   ): Promise<UpdatePublicationCommand.Response> {
-    const payload = await this.publicationService.updatePublicationById(
+    const payload = await this.publicationService.updatePublication(
       message.id,
+      message.postId,
       message.payload,
     );
 
@@ -54,8 +55,9 @@ export class CommandController {
   async delete(
     @RabbitPayload() message: DeletePublicationCommand.Request,
   ): Promise<DeletePublicationCommand.Response> {
-    const payload = await this.publicationService.deletePublicationById(
+    const payload = await this.publicationService.deletePublication(
       message.id,
+      message.postId,
     );
 
     return createSuccessResponse(payload);

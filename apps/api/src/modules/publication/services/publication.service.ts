@@ -18,7 +18,6 @@ export class PublicationService implements Service {
     private readonly rmqErrorService: RmqErrorService,
     private readonly postFacade: PostFacade,
   ) { }
-
   async createPublication(
     params: CreatePublicationParams,
     options?: Options,
@@ -60,6 +59,16 @@ export class PublicationService implements Service {
 
     return PublicationModel.fromEntity(entity);
   }
+  async findPublication(id: number, postId: number): Promise<PublicationModel> {
+    const entity = await this.repository.findByIdAndPostId(id, postId);
+
+    if (!entity) {
+      this.rmqErrorService.notFound();
+    }
+
+    return PublicationModel.fromEntity(entity);
+  }
+
   async findPostPublications(
     postId: number,
     pagination: Pagination,
@@ -71,11 +80,16 @@ export class PublicationService implements Service {
 
     return entities.map(PublicationModel.fromEntity);
   }
-  async updatePublicationById(
+  async updatePublication(
     id: number,
+    postId: number,
     params: UpdatePublicationParams,
   ): Promise<PublicationModel> {
-    const entities = await this.repository.updateById(id, params);
+    const entities = await this.repository.updateByIdAndPostId(
+      id,
+      postId,
+      params,
+    );
 
     const [entity] = entities;
 
@@ -85,8 +99,11 @@ export class PublicationService implements Service {
 
     return PublicationModel.fromEntity(entity);
   }
-  async deletePublicationById(id: number): Promise<PublicationModel> {
-    const entities = await this.repository.deleteById(id);
+  async deletePublication(
+    id: number,
+    postId: number,
+  ): Promise<PublicationModel> {
+    const entities = await this.repository.deleteByIdAndPostId(id, postId);
 
     const [entity] = entities;
 

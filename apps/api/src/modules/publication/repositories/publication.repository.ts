@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Database, Orm, schema } from '../../../database';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { Pagination } from '@app/validation';
 import { PublicationStatus } from '@app/types';
 
@@ -39,6 +39,19 @@ export class PublicationRepository {
     return result;
   }
 
+  async findByIdAndPostId(id: number, postId: number) {
+    const where = and(
+      eq(this.publications.id, id),
+      eq(this.publications.postId, postId),
+    );
+
+    const result = await this.db.query.publications.findFirst({
+      where,
+    });
+
+    return result;
+  }
+
   async findPublicationsByPostId(postId: number, pagination: Pagination) {
     const where = eq(this.publications.postId, postId);
 
@@ -60,8 +73,15 @@ export class PublicationRepository {
     return result;
   }
 
-  async updateById(id: number, input: Partial<CreatePublicationInput>) {
-    const where = eq(this.publications.id, id);
+  async updateByIdAndPostId(
+    id: number,
+    postId: number,
+    input: Partial<CreatePublicationInput>,
+  ) {
+    const where = and(
+      eq(this.publications.id, id),
+      eq(this.publications.postId, postId),
+    );
 
     const result = await this.db
       .update(this.publications)
@@ -73,8 +93,11 @@ export class PublicationRepository {
     return result;
   }
 
-  async deleteById(id: number) {
-    const where = eq(this.publications.id, id);
+  async deleteByIdAndPostId(id: number, postId: number) {
+    const where = and(
+      eq(this.publications.id, id),
+      eq(this.publications.postId, postId),
+    );
 
     const result = await this.db
       .delete(this.publications)
