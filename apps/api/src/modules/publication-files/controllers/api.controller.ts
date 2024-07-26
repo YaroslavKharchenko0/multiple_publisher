@@ -1,28 +1,30 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
-  CommandCommand,
-  CommandErrorCommand,
-  EventEvent,
-  QueryQuery,
+  CreatePublicationFilesCommand,
+  DeletePublicationFilesCommand,
+  FindPublicationFilesQuery,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { Auth, Roles } from '@app/utils';
-import { Role } from '@app/types';
+import { IsStringNumberPipe } from '@app/utils';
+import { CreatePublicationFilesDto } from '@app/validation';
 
-@Controller('example')
+@Controller('posts/:postId/publications/:publicationId/files')
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/command')
-  command(@TraceId() traceId: string | undefined) {
-    const payload: CommandCommand.Request = {
-      message: 'Hello World',
+  @Get()
+  findPublicationFiles(
+    @TraceId() traceId: string | undefined,
+    @Param('publicationId', IsStringNumberPipe) publicationId: string,
+  ) {
+    const payload: FindPublicationFilesQuery.Request = {
+      publicationId: Number(publicationId),
     };
 
-    return this.amqpConnection.request<CommandCommand.Response>({
-      exchange: CommandCommand.exchange,
-      routingKey: CommandCommand.routingKey,
+    return this.amqpConnection.request<FindPublicationFilesQuery.Response>({
+      exchange: FindPublicationFilesQuery.exchange,
+      routingKey: FindPublicationFilesQuery.routingKey,
       payload,
       headers: {
         traceId,
@@ -30,33 +32,21 @@ export class ApiController {
     });
   }
 
-  @Get('/event')
-  event(@TraceId() traceId: string | undefined) {
-    const payload: EventEvent.Request = {
-      message: 'Hello World',
+  @Post()
+  createPublicationFiles(
+    @TraceId() traceId: string | undefined,
+    @Param('publicationId', IsStringNumberPipe) publicationId: string,
+    @Body() body: CreatePublicationFilesDto,
+  ) {
+    const payload: CreatePublicationFilesCommand.Request = {
+      publicationId: Number(publicationId),
+      ...body,
+      isOriginal: false,
     };
 
-    return this.amqpConnection.publish<EventEvent.Request>(
-      EventEvent.exchange,
-      EventEvent.routingKey,
-      payload,
-      {
-        headers: {
-          traceId,
-        },
-      },
-    );
-  }
-
-  @Get('/query')
-  query(@TraceId() traceId: string | undefined) {
-    const payload: QueryQuery.Request = {
-      message: 'Hello World',
-    };
-
-    return this.amqpConnection.request<QueryQuery.Response>({
-      exchange: QueryQuery.exchange,
-      routingKey: QueryQuery.routingKey,
+    return this.amqpConnection.request<CreatePublicationFilesCommand.Response>({
+      exchange: CreatePublicationFilesCommand.exchange,
+      routingKey: CreatePublicationFilesCommand.routingKey,
       payload,
       headers: {
         traceId,
@@ -64,43 +54,22 @@ export class ApiController {
     });
   }
 
-  @Get('/error')
-  error(@TraceId() traceId: string | undefined) {
-    const payload: CommandErrorCommand.Request = {
-      message: 'Hello World',
+  @Delete()
+  deletePublicationFiles(
+    @TraceId() traceId: string | undefined,
+    @Param('publicationId', IsStringNumberPipe) publicationId: string,
+  ) {
+    const payload: DeletePublicationFilesCommand.Request = {
+      publicationId: Number(publicationId),
     };
 
-    return this.amqpConnection.request<CommandErrorCommand.Response>({
-      exchange: CommandErrorCommand.exchange,
-      routingKey: CommandErrorCommand.routingKey,
+    return this.amqpConnection.request<DeletePublicationFilesCommand.Response>({
+      exchange: DeletePublicationFilesCommand.exchange,
+      routingKey: DeletePublicationFilesCommand.routingKey,
       payload,
       headers: {
         traceId,
       },
     });
-  }
-
-  @Auth()
-  @Get('/auth')
-  auth() {
-    return 'Auth';
-  }
-
-  @Roles(Role.ADMIN)
-  @Get('/admin')
-  getAdmin() {
-    return 'Admin';
-  }
-
-  @Roles(Role.USER)
-  @Get('/user')
-  getUser() {
-    return 'User';
-  }
-
-  @Roles(Role.ADMIN, Role.USER)
-  @Get('/both')
-  getBoth() {
-    return 'Both';
   }
 }

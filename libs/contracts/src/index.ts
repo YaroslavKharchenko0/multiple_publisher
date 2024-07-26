@@ -15,3 +15,4 @@ export * from './account-token';
 export * from './post';
 export * from './post-file';
 export * from './publication';
+export * from './publication-file';

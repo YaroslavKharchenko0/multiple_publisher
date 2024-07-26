@@ -1,1 +1,1 @@
-export { ExampleModule } from './example.module';
+export { PublicationFileModule } from './publication-file.module';

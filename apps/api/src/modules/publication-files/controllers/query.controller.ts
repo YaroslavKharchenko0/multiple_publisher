@@ -1,24 +1,25 @@
-import { QueryQuery, createSuccessResponse } from '@app/contracts';
-import { internalServerError } from '@app/errors';
+import { FindPublicationFilesQuery, createSuccessResponse } from '@app/contracts';
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
+import { POST_FILE_SERVICE } from '../providers/publication-file.providers';
+import { PublicationFileService } from '../services/publication-file.service';
 
 @Controller()
 export class QueryController {
-  @RabbitRPC({
-    exchange: QueryQuery.exchange,
-    routingKey: QueryQuery.routingKey,
-    queue: QueryQuery.queue,
-  })
-  command(@RabbitPayload() message: QueryQuery.Request): QueryQuery.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`,
-      });
+  constructor(
+    @Inject(POST_FILE_SERVICE) private readonly service: PublicationFileService,
+  ) { }
 
-      return payload;
-    } catch (error) {
-      return internalServerError;
-    }
+  @RabbitRPC({
+    exchange: FindPublicationFilesQuery.exchange,
+    routingKey: FindPublicationFilesQuery.routingKey,
+    queue: FindPublicationFilesQuery.queue,
+  })
+  async create(
+    @RabbitPayload() message: FindPublicationFilesQuery.Request,
+  ): Promise<FindPublicationFilesQuery.Response> {
+    const payload = await this.service.findPublicationFiles(message.postId);
+
+    return createSuccessResponse(payload);
   }
 }
