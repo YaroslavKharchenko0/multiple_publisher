@@ -1,4 +1,5 @@
 import { OnCreatePublicationEvent } from '@app/contracts';
+import { TraceId } from '@app/logger';
 import { PostFacade } from '@app/utils';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
@@ -18,8 +19,12 @@ export class EventController {
   })
   async onCreatePublication(
     @RabbitPayload() message: OnCreatePublicationEvent.Request,
+    @TraceId() traceId: string,
   ): Promise<void> {
-    const postFiles = await this.postFacade.findPostFiles(message.postId);
+    const postFiles = await this.postFacade.findPostFiles(
+      message.postId,
+      traceId,
+    );
 
     if (!postFiles || !postFiles?.length) {
       return;
@@ -33,6 +38,6 @@ export class EventController {
       isOriginal: true,
     };
 
-    await this.publicationFacade.createPublicationFiles(payload);
+    await this.publicationFacade.createPublicationFiles(payload, traceId);
   }
 }

@@ -10,6 +10,8 @@ import { PublicationRepository } from '../repositories/publication.repository';
 import { RmqErrorService } from '@app/errors';
 import { Options, PublicationStatus } from '@app/types';
 import { PostFacade } from '@app/utils';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { OnCreatePublicationEvent } from '@app/contracts';
 
 @Injectable()
 export class PublicationService implements Service {
@@ -17,6 +19,7 @@ export class PublicationService implements Service {
     private readonly repository: PublicationRepository,
     private readonly rmqErrorService: RmqErrorService,
     private readonly postFacade: PostFacade,
+    private readonly amqpConnection: AmqpConnection,
   ) { }
   async createPublication(
     params: CreatePublicationParams,
@@ -48,7 +51,15 @@ export class PublicationService implements Service {
       throw this.rmqErrorService.internalServerError();
     }
 
-    return PublicationModel.fromEntity(entity);
+    const model = PublicationModel.fromEntity(entity);
+
+    await this.amqpConnection.publish<OnCreatePublicationEvent.Request>(
+      OnCreatePublicationEvent.exchange,
+      OnCreatePublicationEvent.routingKey,
+      model,
+    );
+
+    return model;
   }
   async findPublicationById(id: number): Promise<PublicationModel> {
     const entity = await this.repository.findById(id);
