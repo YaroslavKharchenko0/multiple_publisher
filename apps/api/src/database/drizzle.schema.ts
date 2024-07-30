@@ -15,6 +15,7 @@ import {
   FileType,
   PostType,
   ProviderKey,
+  PublicationProvider,
   PublicationStatus,
   Role,
   UploadStatus,
@@ -178,6 +179,17 @@ export const publicationFiles = pgTable('publication_files', {
   isOriginal: boolean('is_original').default(true),
 });
 
+export const publicationProviders = pgTable('publication_providers', {
+  id: serial('id').primaryKey(),
+  accountProviderId: integer('account_provider_id')
+    .notNull()
+    .references(() => accountProviders.id, { onDelete: 'cascade' }),
+  key: varchar('key', { length: 50 })
+    .notNull()
+    .$type<PublicationProvider>()
+    .unique(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
@@ -246,6 +258,7 @@ export const accountProvidersRelations = relations(
   accountProviders,
   ({ many }) => ({
     accounts: many(accounts),
+    publicationProviders: many(publicationProviders),
   }),
 );
 
@@ -314,6 +327,16 @@ export const publicationFilesRelations = relations(
     file: one(files, {
       fields: [publicationFiles.fileId],
       references: [files.id],
+    }),
+  }),
+);
+
+export const publicationProvidersRelations = relations(
+  publicationProviders,
+  ({ one }) => ({
+    accountProvider: one(accountProviders, {
+      fields: [publicationProviders.accountProviderId],
+      references: [accountProviders.id],
     }),
   }),
 );
