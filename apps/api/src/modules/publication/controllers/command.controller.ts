@@ -25,6 +25,7 @@ export class CommandController {
       postId: message.postId,
       title: message.title,
       description: message.description,
+      publicationProviderId: message.publicationProviderId,
     });
 
     return createSuccessResponse(payload);

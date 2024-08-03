@@ -13,6 +13,7 @@ export interface CreatePublicationInput {
   postId: number;
   status: PublicationStatus;
   accountId: number;
+  publicationProviderId: number;
 }
 
 @Injectable()

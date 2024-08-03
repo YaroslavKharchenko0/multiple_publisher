@@ -7,6 +7,7 @@ export interface CreatePublicationParams {
   description?: string;
   postId: number;
   accountId: number;
+  publicationProviderId: number;
 }
 
 export interface UpdatePublicationParams {

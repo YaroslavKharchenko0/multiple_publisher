@@ -7,6 +7,7 @@ import {
 import { postId } from '../post';
 import { accountId } from '../account';
 import { createZodDto } from 'nestjs-zod';
+import { publicationProviderId } from '../publication-provider';
 
 export const createPublicationValidationSchema = z
   .object({
@@ -14,6 +15,7 @@ export const createPublicationValidationSchema = z
     description: publicationDescription.optional(),
     postId,
     accountId,
+    publicationProviderId,
   })
   .required();
 
