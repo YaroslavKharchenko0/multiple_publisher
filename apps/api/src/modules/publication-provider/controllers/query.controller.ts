@@ -1,24 +1,65 @@
-import { QueryQuery, createSuccessResponse } from '@app/contracts';
-import { internalServerError } from '@app/errors';
+import {
+  FindPublicationProviderQuery,
+  FindPublicationProvidersByAccountProviderQuery,
+  FindPublicationProvidersQuery,
+  createSuccessResponse,
+} from '@app/contracts';
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
+import { PublicationProviderService } from '../services/publication-provider.service';
 
 @Controller()
 export class QueryController {
-  @RabbitRPC({
-    exchange: QueryQuery.exchange,
-    routingKey: QueryQuery.routingKey,
-    queue: QueryQuery.queue,
-  })
-  command(@RabbitPayload() message: QueryQuery.Request): QueryQuery.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`,
-      });
+  constructor(
+    private readonly publicationProviderService: PublicationProviderService,
+  ) { }
 
-      return payload;
-    } catch (error) {
-      return internalServerError;
-    }
+  @RabbitRPC({
+    exchange: FindPublicationProviderQuery.exchange,
+    routingKey: FindPublicationProviderQuery.routingKey,
+    queue: FindPublicationProviderQuery.queue,
+  })
+  async findOne(
+    @RabbitPayload() message: FindPublicationProviderQuery.Request,
+  ): Promise<FindPublicationProviderQuery.Response> {
+    const payload =
+      await this.publicationProviderService.findPublicationProvider(
+        message.key,
+      );
+
+    return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: FindPublicationProvidersQuery.exchange,
+    routingKey: FindPublicationProvidersQuery.routingKey,
+    queue: FindPublicationProvidersQuery.queue,
+  })
+  async findMany(
+    @RabbitPayload() message: FindPublicationProvidersQuery.Request,
+  ): Promise<FindPublicationProvidersQuery.Response> {
+    const payload =
+      await this.publicationProviderService.findPublicationProviders(
+        message.pagination,
+      );
+
+    return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: FindPublicationProvidersByAccountProviderQuery.exchange,
+    routingKey: FindPublicationProvidersByAccountProviderQuery.routingKey,
+    queue: FindPublicationProvidersByAccountProviderQuery.queue,
+  })
+  async findManyByAccountProvider(
+    @RabbitPayload()
+    message: FindPublicationProvidersByAccountProviderQuery.Request,
+  ): Promise<FindPublicationProvidersByAccountProviderQuery.Response> {
+    const payload =
+      await this.publicationProviderService.findPublicationProvidersByAccountProvider(
+        message.accountProviderId,
+      );
+
+    return createSuccessResponse(payload);
   }
 }

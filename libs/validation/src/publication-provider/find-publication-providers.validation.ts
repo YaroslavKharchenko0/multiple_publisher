@@ -12,7 +12,7 @@ export type FindPublicationProvidersRequest = z.infer<
 >;
 
 export class FindPublicationProvidersDto extends createZodDto(
-  findPublicationProvidersValidationSchema,
+  paginationValidationSchema,
 ) { }
 
 export type FindPublicationProvidersResponse = PublicationProvider[];

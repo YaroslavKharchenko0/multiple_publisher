@@ -4,11 +4,9 @@ import {
   PublicationProvider,
   publicationProviderKey,
 } from './publication-provider.validation';
-import { accountProviderId } from '../account-provider';
 
 export const deletePublicationProviderValidationSchema = z.object({
   key: publicationProviderKey,
-  accountProviderId,
 });
 
 export type DeletePublicationProviderRequest = z.infer<
