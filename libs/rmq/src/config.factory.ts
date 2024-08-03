@@ -27,6 +27,7 @@ export const createConfigFactory = async (
       { name: 'publication', type: 'topic' },
       { name: 'publication-file', type: 'topic' },
       { name: 'publication-provider', type: 'topic' },
+      { name: 'publisher', type: 'topic' },
     ],
     connectionInitOptions: { wait: true, timeout: 5000 },
     enableControllerDiscovery: true,

@@ -20,6 +20,7 @@ import { AccountTokenModule } from '../modules/account-token';
 import { PublicationModule } from '../modules/publication';
 import { PublicationFileModule } from '../modules/publication-files';
 import { PublicationProviderModule } from '../modules/publication-provider';
+import { PublisherModule } from '../modules/publisher';
 
 @Module({})
 export class AppModule {
@@ -48,6 +49,7 @@ export class AppModule {
         PublicationModule.forRoot(),
         PublicationFileModule.forRoot(),
         PublicationProviderModule.forRoot(),
+        PublisherModule.forRoot(),
       ],
     };
   }

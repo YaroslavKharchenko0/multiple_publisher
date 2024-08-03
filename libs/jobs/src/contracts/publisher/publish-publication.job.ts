@@ -7,9 +7,7 @@ export abstract class PublishPublicationJob extends PublisherQueue {
     publicationId: number;
   };
 
-  public static response: {
-    status: 'success' | 'error';
-  };
+  public static response: null;
 
   public static options = {
     removeOnComplete: true,
