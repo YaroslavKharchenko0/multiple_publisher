@@ -159,6 +159,9 @@ export const publications = pgTable('publications', {
   accountId: integer('account_id')
     .notNull()
     .references(() => accounts.id),
+  publicationProviderId: integer('publication_provider_id')
+    .notNull()
+    .references(() => publicationProviders.id),
   status: varchar('status', { length: 10 })
     .$type<PublicationStatus>()
     .notNull(),
@@ -333,10 +336,11 @@ export const publicationFilesRelations = relations(
 
 export const publicationProvidersRelations = relations(
   publicationProviders,
-  ({ one }) => ({
+  ({ one, many }) => ({
     accountProvider: one(accountProviders, {
       fields: [publicationProviders.accountProviderId],
       references: [accountProviders.id],
     }),
+    publications: many(publications),
   }),
 );
