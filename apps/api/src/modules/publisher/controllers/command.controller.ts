@@ -1,42 +1,47 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
 import {
-  CommandCommand,
-  CommandErrorCommand,
   createSuccessResponse,
+  PublishPublicationCommand,
 } from '@app/contracts';
-import { RmqErrorService, internalServerError } from '@app/errors';
+import { InjectQueue } from '@nestjs/bullmq';
+import { PublisherQueue, PublishPublicationJob } from '@app/jobs';
+import { JobsOptions, Queue } from 'bullmq';
 
 @Controller()
 export class CommandController {
-  constructor(private readonly rmqErrorService: RmqErrorService) {}
+  constructor(
+    @InjectQueue(PublisherQueue.queueName)
+    private readonly publisherQueue: Queue,
+  ) { }
 
   @RabbitRPC({
-    exchange: CommandCommand.exchange,
-    routingKey: CommandCommand.routingKey,
-    queue: CommandCommand.queue,
+    exchange: PublishPublicationCommand.exchange,
+    routingKey: PublishPublicationCommand.routingKey,
+    queue: PublishPublicationCommand.queue,
   })
-  command(
-    @RabbitPayload() message: CommandCommand.Request,
-  ): CommandCommand.Response {
-    try {
-      const payload = createSuccessResponse({
-        message: `Command Received :${JSON.stringify(message)}`,
-      });
+  async createPublish(
+    @RabbitPayload() message: PublishPublicationCommand.Request,
+  ): Promise<PublishPublicationCommand.Response> {
+    const payload: typeof PublishPublicationJob.request = {
+      publicationId: message.publicationId,
+    };
 
-      return payload;
-    } catch (error) {
-      return internalServerError;
-    }
-  }
+    const now = Date.now();
 
-  @RabbitRPC({
-    exchange: CommandErrorCommand.exchange,
-    routingKey: CommandErrorCommand.routingKey,
-    queue: CommandErrorCommand.queue,
-  })
-  error() //@RabbitPayload() _message: CommandErrorCommand.Request,
-  : CommandErrorCommand.Response {
-    throw this.rmqErrorService.notFound();
+    const delay = new Date(message.publishAt).getTime() - now;
+
+    const options: JobsOptions = {
+      ...PublishPublicationJob.options,
+      delay: delay > 0 ? delay : 0,
+    };
+
+    await this.publisherQueue.add(
+      PublishPublicationJob.jobName,
+      payload,
+      options,
+    );
+
+    return createSuccessResponse(null);
   }
 }

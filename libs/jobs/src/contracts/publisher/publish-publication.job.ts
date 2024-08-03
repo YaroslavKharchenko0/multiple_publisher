@@ -1,11 +1,10 @@
-import { Publication } from '@app/validation';
 import { PublisherQueue } from '../../queues';
 
 export abstract class PublishPublicationJob extends PublisherQueue {
   public static readonly jobName = 'publisher.publish-publication';
 
   public static request: {
-    publication: Publication;
+    publicationId: number;
   };
 
   public static response: {
