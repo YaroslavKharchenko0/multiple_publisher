@@ -21,7 +21,7 @@ export class PublishPublicationProcessor extends WorkerHost {
     try {
       this.logger.log(`Processing ${job.name}, job id: ${job.id}`);
 
-      const traceId = `[JOB]-refresh-tokens-${job.id}`;
+      const traceId = `[JOB]-publish-publication-${job.id}`;
 
       return null;
     } catch (error) {
