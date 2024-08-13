@@ -59,6 +59,12 @@ export class BunnyProvider implements ProviderAbstract {
       return this.createStorageConfig(file as FileImage);
     }
 
-    return this.createStreamConfig(file as FileVideo);
+    const isVideo = file.type === FileType.VIDEO;
+
+    if (isVideo) {
+      return this.createStreamConfig(file as FileVideo);
+    }
+
+    return null;
   }
 }

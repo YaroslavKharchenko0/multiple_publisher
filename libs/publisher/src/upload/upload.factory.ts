@@ -3,9 +3,7 @@ import { YouTubeVideoUpload } from './youtube-video.upload';
 import { YouTubeShortsUpload } from './youtube-shorts.upload';
 
 export class UploadFactory {
-  constructor() { }
-
-  createUpload(type: PublicationProvider) {
+  static createUpload(type: PublicationProvider) {
     switch (type) {
       case PublicationProvider.youtubeVideo:
         return new YouTubeVideoUpload();

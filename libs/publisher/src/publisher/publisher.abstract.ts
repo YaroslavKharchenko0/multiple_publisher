@@ -1,4 +1,4 @@
-import { AccountStatus } from '@app/types';
+import { AccountStatus, Options } from '@app/types';
 import {
   Account,
   AccountToken,
@@ -12,17 +12,27 @@ import { UploadParams } from '../upload/upload.abstract';
 import { BlobObject } from '../file-validator/file-validator.abstract';
 
 export abstract class PublisherAbstract {
-  abstract findPublication(publicationId: number): Promise<Publication | null>;
+  abstract findPublication(
+    publicationId: number,
+    options: Options,
+  ): Promise<Publication | null>;
 
-  abstract findPublicationFiles(publicationId: number): Promise<File[]>;
+  abstract findPublicationFiles(
+    publicationId: number,
+    options: Options,
+  ): Promise<File[]>;
 
   abstract createBlobObjects(files: File[]): Promise<BlobObject[]>;
 
   abstract findPublicationProvider(
     providerId: number,
+    options: Options,
   ): Promise<PublicationProvider | null>;
 
-  abstract findAccount(accountId: number): Promise<Account | null>;
+  abstract findAccount(
+    accountId: number,
+    options: Options,
+  ): Promise<Account | null>;
 
   validateAccountProvider(
     account: Account,
@@ -40,12 +50,15 @@ export abstract class PublisherAbstract {
     return isActive;
   }
 
-  abstract findAccountTokens(account: Account): Promise<AccountToken[]>;
+  abstract findAccountTokens(
+    account: Account,
+    options: Options,
+  ): Promise<AccountToken[]>;
 
-  abstract upload(params: UploadParams): Promise<void>;
+  abstract upload(params: UploadParams, options: Options): Promise<void>;
 
-  async publish(publicationId: number): Promise<void> {
-    const publication = await this.findPublication(publicationId);
+  async publish(publicationId: number, options: Options): Promise<void> {
+    const publication = await this.findPublication(publicationId, options);
 
     if (!publication) {
       throw new Error('Publication not found');
@@ -53,6 +66,7 @@ export abstract class PublisherAbstract {
 
     const publicationProvider = await this.findPublicationProvider(
       publication.publicationProviderId,
+      options,
     );
 
     if (!publicationProvider) {
@@ -72,7 +86,7 @@ export abstract class PublisherAbstract {
       throw new Error('Invalid title or description');
     }
 
-    const account = await this.findAccount(publication.accountId);
+    const account = await this.findAccount(publication.accountId, options);
 
     if (!account) {
       throw new Error('Account not found');
@@ -86,7 +100,7 @@ export abstract class PublisherAbstract {
       throw new Error('Account provider mismatch');
     }
 
-    const files = await this.findPublicationFiles(publicationId);
+    const files = await this.findPublicationFiles(publicationId, options);
 
     const validator = FileValidatorFactory.createValidator(
       publicationProvider.key,
@@ -102,14 +116,17 @@ export abstract class PublisherAbstract {
       throw new Error('Invalid files');
     }
 
-    const accountTokens = await this.findAccountTokens(account);
+    const accountTokens = await this.findAccountTokens(account, options);
 
-    await this.upload({
-      publication,
-      account,
-      accountTokens,
-      publicationProvider,
-      objects: validBlobObjects,
-    });
+    await this.upload(
+      {
+        publication,
+        account,
+        accountTokens,
+        publicationProvider,
+        objects: validBlobObjects,
+      },
+      options,
+    );
   }
 }

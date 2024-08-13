@@ -3,9 +3,11 @@ import {
   DeleteAccountTokensCommand,
   FindAccountProviderQuery,
   FindAccountQuery,
+  GetAccountTokensQuery,
   SuccessResponse,
 } from '@app/contracts';
 import { AccountTokenType, ProviderKey } from '@app/types';
+import { AccountToken } from '@app/validation';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 
@@ -124,5 +126,32 @@ export class AccountFacade {
     });
 
     await Promise.all(promises);
+  }
+  async findAccountTokensById(
+    accountId: number,
+    options?: Options,
+  ): Promise<AccountToken[] | null> {
+    const payload: GetAccountTokensQuery.Request = {
+      accountId,
+    };
+
+    const accountResponse =
+      await this.amqpConnection.request<GetAccountTokensQuery.Response>({
+        exchange: GetAccountTokensQuery.exchange,
+        routingKey: GetAccountTokensQuery.routingKey,
+        payload,
+        headers: {
+          traceId: options?.traceId,
+        },
+      });
+
+    if (accountResponse.isError) {
+      return null;
+    }
+
+    const successResponse =
+      accountResponse as SuccessResponse<GetAccountTokensQuery.ResponsePayload>;
+
+    return successResponse.payload;
   }
 }

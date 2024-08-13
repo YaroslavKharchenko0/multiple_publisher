@@ -5,6 +5,7 @@ import { RmqModule } from '@app/rmq';
 import { AccountFacade } from './account.facade';
 import { PostFacade } from './post.facade';
 import { PublicationFacade } from './publication.facade';
+import { PublicationProviderFacade } from './publication-provider.facade';
 
 @Module({})
 @Global()
@@ -19,6 +20,7 @@ export class FacadeModule {
         AccountFacade,
         PostFacade,
         PublicationFacade,
+        PublicationProviderFacade,
       ],
       exports: [
         FileFacade,
@@ -26,6 +28,7 @@ export class FacadeModule {
         AccountFacade,
         PostFacade,
         PublicationFacade,
+        PublicationProviderFacade,
       ],
       global: true,
     };
