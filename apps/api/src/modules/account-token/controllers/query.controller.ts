@@ -9,14 +9,14 @@ export class QueryController {
   constructor(
     @Inject(ACCOUNT_TOKEN_SERVICE)
     private readonly service: AccountTokenService,
-  ) {}
+  ) { }
 
   @RabbitRPC({
     exchange: GetAccountTokensQuery.exchange,
     routingKey: GetAccountTokensQuery.routingKey,
     queue: GetAccountTokensQuery.queue,
   })
-  async delete(
+  async getAccountTokens(
     @RabbitPayload() message: GetAccountTokensQuery.Request,
   ): Promise<GetAccountTokensQuery.Response> {
     const payload = await this.service.getTokens(message.accountId);

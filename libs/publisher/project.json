@@ -1,0 +1,9 @@
+{
+  "name": "publisher",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/publisher/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project publisher --web",
+  "targets": {}
+}

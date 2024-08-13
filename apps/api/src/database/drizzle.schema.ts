@@ -7,6 +7,7 @@ import {
   uuid,
   varchar,
   integer,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import {
   AccountStatus,
@@ -14,6 +15,8 @@ import {
   FileType,
   PostType,
   ProviderKey,
+  PublicationProvider,
+  PublicationStatus,
   Role,
   UploadStatus,
   WorkspaceRole,
@@ -148,6 +151,48 @@ export const postFiles = pgTable('post_files', {
     .references(() => files.id, { onDelete: 'cascade' }),
 });
 
+export const publications = pgTable('publications', {
+  id: serial('id').primaryKey(),
+  postId: integer('post_id').references(() => posts.id, {
+    onDelete: 'set null',
+  }),
+  accountId: integer('account_id')
+    .notNull()
+    .references(() => accounts.id),
+  publicationProviderId: integer('publication_provider_id')
+    .notNull()
+    .references(() => publicationProviders.id),
+  status: varchar('status', { length: 10 })
+    .$type<PublicationStatus>()
+    .notNull(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const publicationFiles = pgTable('publication_files', {
+  id: serial('id').primaryKey(),
+  publicationId: integer('publication_id')
+    .notNull()
+    .references(() => publications.id, { onDelete: 'cascade' }),
+  fileId: integer('file_id')
+    .notNull()
+    .references(() => files.id, { onDelete: 'cascade' }),
+  isOriginal: boolean('is_original').default(true),
+});
+
+export const publicationProviders = pgTable('publication_providers', {
+  id: serial('id').primaryKey(),
+  accountProviderId: integer('account_provider_id')
+    .notNull()
+    .references(() => accountProviders.id, { onDelete: 'cascade' }),
+  key: varchar('key', { length: 50 })
+    .notNull()
+    .$type<PublicationProvider>()
+    .unique(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
@@ -216,6 +261,7 @@ export const accountProvidersRelations = relations(
   accountProviders,
   ({ many }) => ({
     accounts: many(accounts),
+    publicationProviders: many(publicationProviders),
   }),
 );
 
@@ -229,6 +275,7 @@ export const accountsRelations = relations(accounts, ({ one, many }) => ({
     references: [accountProviders.id],
   }),
   accountTokens: many(accountTokens),
+  publications: many(publications),
 }));
 
 export const accountTokensRelations = relations(accountTokens, ({ one }) => ({
@@ -244,4 +291,56 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
     references: [users.id],
   }),
   postFiles: many(postFiles),
+  publications: many(publications),
 }));
+
+export const publicationRelations = relations(
+  publications,
+  ({ one, many }) => ({
+    post: one(posts, {
+      fields: [publications.postId],
+      references: [posts.id],
+    }),
+    account: one(accounts, {
+      fields: [publications.accountId],
+      references: [accounts.id],
+    }),
+    publicationFiles: many(publicationFiles),
+  }),
+);
+
+export const postFilesRelations = relations(postFiles, ({ one }) => ({
+  post: one(posts, {
+    fields: [postFiles.postId],
+    references: [posts.id],
+  }),
+  file: one(files, {
+    fields: [postFiles.fileId],
+    references: [files.id],
+  }),
+}));
+
+export const publicationFilesRelations = relations(
+  publicationFiles,
+  ({ one }) => ({
+    publication: one(publications, {
+      fields: [publicationFiles.publicationId],
+      references: [publications.id],
+    }),
+    file: one(files, {
+      fields: [publicationFiles.fileId],
+      references: [files.id],
+    }),
+  }),
+);
+
+export const publicationProvidersRelations = relations(
+  publicationProviders,
+  ({ one, many }) => ({
+    accountProvider: one(accountProviders, {
+      fields: [publicationProviders.accountProviderId],
+      references: [accountProviders.id],
+    }),
+    publications: many(publications),
+  }),
+);

@@ -1,5 +1,5 @@
-import { createZodDto } from 'nestjs-zod'
-import { z } from 'nestjs-zod/z'
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'nestjs-zod/z';
 
 export const userId = z.number();
 export const userEmail = z.string().email();
@@ -16,8 +16,8 @@ const userValidationSchema = z.object({
   providerId: userProviderId,
   name: userName,
   birthDate: userBirthDate,
-})
+});
 
-export type User = z.infer<typeof userValidationSchema>
+export type User = z.infer<typeof userValidationSchema>;
 
-export class UserDto extends createZodDto(userValidationSchema) { }
+export class UserDto extends createZodDto(userValidationSchema) {}

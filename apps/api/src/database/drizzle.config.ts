@@ -12,9 +12,9 @@ const isEnableSSL = process.env.DATABASE_SSL === 'true';
 
 const ssl = isEnableSSL
   ? {
-      rejectUnauthorized: false,
-      ca: fs.readFileSync(certPath).toString(),
-    }
+    rejectUnauthorized: false,
+    ca: fs.readFileSync(certPath).toString(),
+  }
   : false;
 
 const host = process.env.DATABASE_HOST;

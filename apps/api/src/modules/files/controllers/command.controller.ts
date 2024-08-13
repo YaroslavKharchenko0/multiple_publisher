@@ -16,7 +16,7 @@ import { TraceId } from '@app/logger';
 export class CommandController {
   constructor(
     @Inject(FILE_SERVICE) private readonly fileService: FileService,
-  ) {}
+  ) { }
 
   @RabbitRPC({
     exchange: UploadFileCommand.exchange,
@@ -38,7 +38,7 @@ export class CommandController {
       { traceId },
     );
 
-    return createSuccessResponse(payload);
+    return createSuccessResponse(payload.toFile());
   }
 
   @RabbitRPC({
@@ -76,7 +76,7 @@ export class CommandController {
       path: message.path,
     });
 
-    return createSuccessResponse(payload);
+    return createSuccessResponse(payload.toFile());
   }
 
   @RabbitRPC({
@@ -92,7 +92,7 @@ export class CommandController {
       message.userId,
     );
 
-    return createSuccessResponse(payload);
+    return createSuccessResponse(payload.toFile());
   }
 
   @RabbitRPC({
@@ -105,6 +105,6 @@ export class CommandController {
   ): Promise<UpdateFileCommand.Response> {
     const payload = await this.fileService.updateById(message.id, message);
 
-    return createSuccessResponse(payload);
+    return createSuccessResponse(payload.toFile());
   }
 }

@@ -13,7 +13,7 @@ import { FileService } from '../services/files.service';
 export class QueryController {
   constructor(
     @Inject(FILE_SERVICE) private readonly fileService: FileService,
-  ) {}
+  ) { }
 
   @RabbitRPC({
     exchange: FindFileByIdQuery.exchange,
@@ -25,7 +25,7 @@ export class QueryController {
   ): Promise<FindFileByIdQuery.Response> {
     const payload = await this.fileService.findById(message.id);
 
-    return createSuccessResponse(payload);
+    return createSuccessResponse(payload.toFile());
   }
 
   @RabbitRPC({
@@ -38,7 +38,7 @@ export class QueryController {
   ): Promise<FindFileByProviderIdQuery.Response> {
     const payload = await this.fileService.findByProviderId(message.providerId);
 
-    return createSuccessResponse(payload);
+    return createSuccessResponse(payload.toFile());
   }
 
   @RabbitRPC({
@@ -54,6 +54,8 @@ export class QueryController {
       message.pagination,
     );
 
-    return createSuccessResponse(payload);
+    const files = payload.map((file) => file.toFile());
+
+    return createSuccessResponse(files);
   }
 }

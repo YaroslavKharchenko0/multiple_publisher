@@ -15,6 +15,7 @@ import {
 } from '@app/logger';
 import { TransformInterceptor } from '@app/response';
 import { HttpErrorFilter, RmqErrorInterceptor } from '@app/errors';
+import { createSwagger } from '@app/docs';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -39,6 +40,8 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpErrorFilter());
 
   const port = Number(configService.getOrThrow<string>('PORT'));
+
+  await createSwagger(app);
 
   await app.listen(port, '0.0.0.0');
 

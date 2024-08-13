@@ -22,3 +22,5 @@ CREATE TRIGGER before_workspace_delete
 INSERT INTO workspace_roles (role) VALUES ('admin'), ('editor'), ('viewer') ON CONFLICT DO NOTHING;
 
 INSERT INTO account_providers (key) VALUES ('google') ON CONFLICT DO NOTHING;
+
+INSERT INTO publication_providers (account_provider_id, key) VALUES (1,'youtube_video'), (1, 'youtube_shorts') ON CONFLICT DO NOTHING;

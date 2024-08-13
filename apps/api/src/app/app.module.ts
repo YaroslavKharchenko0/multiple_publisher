@@ -17,6 +17,10 @@ import { StatusModule } from '../modules/status';
 import { AccountProviderModule } from '../modules/account-provider';
 import { AccountModule } from '../modules/account';
 import { AccountTokenModule } from '../modules/account-token';
+import { PublicationModule } from '../modules/publication';
+import { PublicationFileModule } from '../modules/publication-files';
+import { PublicationProviderModule } from '../modules/publication-provider';
+import { PublisherModule } from '../modules/publisher';
 
 @Module({})
 export class AppModule {
@@ -42,6 +46,10 @@ export class AppModule {
         AccountProviderModule.forRoot(),
         AccountModule.forRoot(),
         AccountTokenModule.forRoot(),
+        PublicationModule.forRoot(),
+        PublicationFileModule.forRoot(),
+        PublicationProviderModule.forRoot(),
+        PublisherModule.forRoot(),
       ],
     };
   }
