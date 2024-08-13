@@ -39,8 +39,9 @@ export class QueryController {
   async findOneById(
     @RabbitPayload() message: FindPublicationProviderByIdQuery.Request,
   ): Promise<FindPublicationProviderByIdQuery.Response> {
-    // TODO: Implement this
-    throw new Error('Method not implemented.');
+    const payload = await this.publicationProviderService.findById(message.id);
+
+    return createSuccessResponse(payload);
   }
 
   @RabbitRPC({

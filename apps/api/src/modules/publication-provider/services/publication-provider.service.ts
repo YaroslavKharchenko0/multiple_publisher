@@ -15,6 +15,15 @@ export class PublicationProviderService implements Service {
     private readonly repository: PublicationProviderRepository,
     private readonly rmqErrorService: RmqErrorService,
   ) { }
+  async findById(id: number): Promise<PublicationProviderModel> {
+    const entity = await this.repository.findById(id);
+
+    if (!entity) {
+      throw this.rmqErrorService.notFound();
+    }
+
+    return PublicationProviderModel.fromEntity(entity);
+  }
 
   async createPublicationProvider(
     params: CreatePublicationProviderParams,
@@ -38,7 +47,7 @@ export class PublicationProviderService implements Service {
     const entity = await this.repository.findByKey(key);
 
     if (!entity) {
-      throw this.rmqErrorService.internalServerError();
+      throw this.rmqErrorService.notFound();
     }
 
     return PublicationProviderModel.fromEntity(entity);

@@ -33,6 +33,16 @@ export class PublicationProviderRepository {
     return result;
   }
 
+  async findById(id: number) {
+    const where = eq(this.publicationProviders.id, id);
+
+    const result = await this.db.query.publicationProviders.findFirst({
+      where,
+    });
+
+    return result;
+  }
+
   async find(pagination: Pagination) {
     const result = await this.db.query.publicationProviders.findMany({
       limit: pagination?.limit,

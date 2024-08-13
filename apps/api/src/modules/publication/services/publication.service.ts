@@ -21,6 +21,20 @@ export class PublicationService implements Service {
     private readonly postFacade: PostFacade,
     private readonly amqpConnection: AmqpConnection,
   ) { }
+  async updatePublicationById(
+    id: number,
+    params: UpdatePublicationParams,
+  ): Promise<PublicationModel> {
+    const entities = await this.repository.updateById(id, params);
+
+    const [entity] = entities;
+
+    if (!entity) {
+      throw this.rmqErrorService.notFound();
+    }
+
+    return PublicationModel.fromEntity(entity);
+  }
   async createPublication(
     params: CreatePublicationParams,
     options?: Options,

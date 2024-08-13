@@ -14,6 +14,7 @@ export interface Service {
   findPublicationProvider(
     key: PublicationProvider,
   ): Promise<PublicationProviderModel>;
+  findById(id: number): Promise<PublicationProviderModel>;
   findPublicationProviders(
     pagination: Pagination,
   ): Promise<PublicationProviderModel[]>;

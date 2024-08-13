@@ -73,7 +73,11 @@ export class CommandController {
   async updateById(
     @RabbitPayload() message: UpdatePublicationByIdCommand.Request,
   ): Promise<UpdatePublicationByIdCommand.Response> {
-    // TODO: Implement updateById
-    throw new Error('Method not implemented');
+    const payload = await this.publicationService.updatePublicationById(
+      message.id,
+      message.payload,
+    );
+
+    return createSuccessResponse(payload);
   }
 }

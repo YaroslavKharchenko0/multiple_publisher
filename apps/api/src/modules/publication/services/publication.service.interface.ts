@@ -33,4 +33,8 @@ export interface Service {
     params: UpdatePublicationParams,
   ): Promise<PublicationModel>;
   deletePublication(id: number, postId: number): Promise<PublicationModel>;
+  updatePublicationById(
+    id: number,
+    params: UpdatePublicationParams,
+  ): Promise<PublicationModel>;
 }

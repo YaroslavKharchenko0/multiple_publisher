@@ -94,6 +94,19 @@ export class PublicationRepository {
     return result;
   }
 
+  async updateById(id: number, input: Partial<CreatePublicationInput>) {
+    const where = eq(this.publications.id, id);
+
+    const result = await this.db
+      .update(this.publications)
+      .set(input)
+      .where(where)
+      .returning()
+      .execute();
+
+    return result;
+  }
+
   async deleteByIdAndPostId(id: number, postId: number) {
     const where = and(
       eq(this.publications.id, id),
