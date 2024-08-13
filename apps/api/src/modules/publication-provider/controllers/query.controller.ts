@@ -1,4 +1,5 @@
 import {
+  FindPublicationProviderByIdQuery,
   FindPublicationProviderQuery,
   FindPublicationProvidersByAccountProviderQuery,
   FindPublicationProvidersQuery,
@@ -28,6 +29,18 @@ export class QueryController {
       );
 
     return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: FindPublicationProviderByIdQuery.exchange,
+    routingKey: FindPublicationProviderByIdQuery.routingKey,
+    queue: FindPublicationProviderByIdQuery.queue,
+  })
+  async findOneById(
+    @RabbitPayload() message: FindPublicationProviderByIdQuery.Request,
+  ): Promise<FindPublicationProviderByIdQuery.Response> {
+    // TODO: Implement this
+    throw new Error('Method not implemented.');
   }
 
   @RabbitRPC({

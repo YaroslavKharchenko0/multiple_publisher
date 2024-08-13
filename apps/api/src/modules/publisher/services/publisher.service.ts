@@ -6,7 +6,7 @@ import {
   UploadFactory,
   UploadParams,
 } from '@app/publisher';
-import { Options } from '@app/types';
+import { Options, PublicationStatus } from '@app/types';
 import {
   Publication,
   File,
@@ -46,6 +46,20 @@ export class PublisherService extends PublisherAbstract {
       stream: this.stream,
     });
   }
+  updatePublicationStatus(
+    publicationId: number,
+    status: PublicationStatus,
+    options: Options,
+  ): Promise<void> {
+    return this.publicationFacade.updatePublicationById(
+      publicationId,
+      {
+        status,
+      },
+      options,
+    );
+  }
+
   private async createBlobObject(file: File): Promise<BlobObject> {
     const fileConfig = await this.provider.createFileConfig(file);
 

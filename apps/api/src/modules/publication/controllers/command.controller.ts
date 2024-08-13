@@ -4,6 +4,7 @@ import {
   CreatePublicationCommand,
   createSuccessResponse,
   DeletePublicationCommand,
+  UpdatePublicationByIdCommand,
   UpdatePublicationCommand,
 } from '@app/contracts';
 import { PublicationService } from '../services/publication.service';
@@ -62,5 +63,17 @@ export class CommandController {
     );
 
     return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: UpdatePublicationByIdCommand.exchange,
+    routingKey: UpdatePublicationByIdCommand.routingKey,
+    queue: UpdatePublicationByIdCommand.queue,
+  })
+  async updateById(
+    @RabbitPayload() message: UpdatePublicationByIdCommand.Request,
+  ): Promise<UpdatePublicationByIdCommand.Response> {
+    // TODO: Implement updateById
+    throw new Error('Method not implemented');
   }
 }

@@ -3,4 +3,5 @@ export enum PublicationStatus {
   PUBLISHING = 'publishing',
   PUBLISHED = 'published',
   ARCHIVED = 'archived',
+  ERROR = 'error',
 }

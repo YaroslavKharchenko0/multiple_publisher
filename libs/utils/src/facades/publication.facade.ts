@@ -4,7 +4,9 @@ import {
   FindPublicationByIdQuery,
   FindPublicationFilesQuery,
   SuccessResponse,
+  UpdatePublicationByIdCommand,
 } from '@app/contracts';
+import { UpdatePublicationPayload } from '@app/validation';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 
@@ -94,6 +96,26 @@ export class PublicationFacade {
       exchange: DeletePublicationCommand.exchange,
       routingKey: DeletePublicationCommand.routingKey,
       payload,
+      headers: {
+        traceId: options?.traceId,
+      },
+    });
+  }
+
+  async updatePublicationById(
+    publicationId: number,
+    payload: UpdatePublicationPayload,
+    options?: Options,
+  ) {
+    const requestPayload: UpdatePublicationByIdCommand.Request = {
+      id: publicationId,
+      payload,
+    };
+
+    await this.amqpConnection.request<UpdatePublicationByIdCommand.Response>({
+      exchange: UpdatePublicationByIdCommand.exchange,
+      routingKey: UpdatePublicationByIdCommand.routingKey,
+      payload: requestPayload,
       headers: {
         traceId: options?.traceId,
       },

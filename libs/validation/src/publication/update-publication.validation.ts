@@ -25,6 +25,10 @@ export type UpdatePublicationRequest = z.infer<
   typeof updatePublicationValidationSchema
 >;
 
+export type UpdatePublicationPayload = z.infer<
+  typeof updatePublicationPayloadValidationSchema
+>;
+
 export class UpdatePublicationDto extends createZodDto(
   updatePublicationPayloadValidationSchema,
 ) { }
