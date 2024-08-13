@@ -6,16 +6,20 @@ import {
   BunnyDeleteVideoResponse,
   CreateVideoParams,
   DeleteVideoFileParams,
+  FindVideoMetadata,
   GenerateSignatureParams,
+  GenerateSignatureResponse,
+  Video,
 } from './bunny.types';
 import { addHours } from 'date-fns';
 import { createHash } from 'crypto';
 import { toUnixTimestamp } from '@app/utils';
 import { HttpService } from '@nestjs/axios';
 import { UploadStatus } from '@app/types';
+import { Stream } from './bunny.interfaces';
 
 @Injectable()
-export class BunnyStreamService {
+export class BunnyStreamService implements Stream {
   private readonly client;
 
   private readonly baseUrl: string;
@@ -54,7 +58,34 @@ export class BunnyStreamService {
     this.client = client;
   }
 
-  generateSignature(params: GenerateSignatureParams) {
+  async findVideoMetadata(params: FindVideoMetadata): Promise<Video | null> {
+    const libraryId = this.config.stream.libraryId;
+
+    const path = `library/${libraryId}/videos/${params.videoId}`;
+
+    const url = `${this.baseUrl}/${path}`;
+
+    try {
+      const response = await this.client.get(url, {
+        headers: this.baseHeaders,
+      });
+
+      if (response.status === 200) {
+        return response.data as Video;
+      }
+      return null;
+    } catch (error) {
+      throw new Error('Error finding video metadata in provider');
+    }
+  }
+
+  getVideoUrl(videoId: string): string {
+    return `${this.config.stream.pullZoneUrl}/${videoId}/play_720p.mp4`;
+  }
+
+  generateSignature(
+    params: GenerateSignatureParams,
+  ): GenerateSignatureResponse {
     const currentDate = Date.now();
 
     const defaultExpirationTime = addHours(currentDate, 1);

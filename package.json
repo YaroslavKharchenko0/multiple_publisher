@@ -9,6 +9,7 @@
     "@fastify/multipart": "^8.3.0",
     "@fastify/static": "^7.0.4",
     "@golevelup/nestjs-rabbitmq": "^5.3.0",
+    "@googleapis/youtube": "^19.0.0",
     "@nest-lab/fastify-multer": "^1.2.0",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bullmq": "^10.1.1",

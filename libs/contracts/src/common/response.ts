@@ -15,7 +15,7 @@ export interface ErrorResponse extends BaseResponse {
   isError: true;
   error: {
     message: string;
-  }
+  };
 }
 export type RmqResponse<T> = SuccessResponse<T> | ErrorResponse;
 
@@ -24,19 +24,20 @@ export const createSuccessResponse = <T>(payload: T): SuccessResponse<T> => {
     code: 200,
     isError: false,
     payload,
-    isRmqResponse: true
-  }
-}
+    isRmqResponse: true,
+  };
+};
 
-export const createErrorResponse = (code: number, message: string): ErrorResponse => {
+export const createErrorResponse = (
+  code: number,
+  message: string,
+): ErrorResponse => {
   return {
     code,
     isError: true,
     error: {
-      message
+      message,
     },
-    isRmqResponse: true
-  }
-}
-
-
+    isRmqResponse: true,
+  };
+};

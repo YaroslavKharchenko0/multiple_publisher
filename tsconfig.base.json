@@ -25,6 +25,7 @@
       "@app/gcp": ["libs/gcp/src/index.ts"],
       "@app/jobs": ["libs/jobs/src/index.ts"],
       "@app/logger": ["libs/logger/src/index.ts"],
+      "@app/publisher": ["libs/publisher/src/index.ts"],
       "@app/response": ["libs/response/src/index.ts"],
       "@app/rmq": ["libs/rmq/src/index.ts"],
       "@app/scripts": ["libs/scripts/src/index.ts"],

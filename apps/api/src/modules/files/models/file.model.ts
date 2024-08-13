@@ -1,4 +1,5 @@
 import { FileType, UploadStatus } from '@app/types';
+import { FileImage, FileVideo } from '@app/validation';
 
 export class FileModel {
   id: number;
@@ -19,6 +20,36 @@ export class FileModel {
     this.path = input.path ?? this.path;
 
     return this;
+  }
+
+  private toVideoFile(): FileVideo {
+    return {
+      id: this.id,
+      providerId: this.providerId,
+      path: null,
+      type: FileType.VIDEO,
+      uploadStatus: this.uploadStatus,
+      authorId: this.authorId,
+      createdAt: this.createdAt,
+    };
+  }
+
+  private toImageFile(): FileImage {
+    return {
+      id: this.id,
+      providerId: null,
+      path: this.path,
+      type: FileType.IMAGE,
+      uploadStatus: null,
+      authorId: this.authorId,
+      createdAt: this.createdAt,
+    };
+  }
+
+  toFile(): FileVideo | FileImage {
+    const isImage = this.isImage();
+
+    return isImage ? this.toImageFile() : this.toVideoFile();
   }
 
   isVideo() {
