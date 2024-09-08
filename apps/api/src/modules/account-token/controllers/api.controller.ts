@@ -12,7 +12,7 @@ export class ApiController {
   @Delete('/')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
-  command(
+  delete(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,
   ) {

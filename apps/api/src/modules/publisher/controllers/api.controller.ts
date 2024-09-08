@@ -1,5 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { PublishPublicationCommand } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { IsStringNumberPipe, PostAccess, Roles } from '@app/utils';
@@ -10,7 +10,7 @@ import { PublishPublicationDto } from '@app/validation';
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/')
+  @Post('/')
   @Roles(Role.USER, Role.ADMIN)
   @PostAccess({ isAuthor: true })
   createPublish(

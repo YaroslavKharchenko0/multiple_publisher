@@ -9,6 +9,7 @@ import {
   ROLE_REPOSITORY,
   ROLE_SERVICE,
 } from './providers/role.providers';
+import { ApiController } from './controllers/api.controller';
 
 @Module({})
 export class RolesModule {
@@ -16,7 +17,12 @@ export class RolesModule {
     return {
       module: RolesModule,
       imports: [RmqModule.forRoot()],
-      controllers: [AdminApiController, CommandController, QueryController],
+      controllers: [
+        AdminApiController,
+        ApiController,
+        CommandController,
+        QueryController,
+      ],
       providers: [roleServiceProvider, roleRepositoryProvider],
       exports: [ROLE_SERVICE, ROLE_REPOSITORY],
     };
