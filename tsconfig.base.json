@@ -28,6 +28,7 @@
       "@app/publisher": ["libs/publisher/src/index.ts"],
       "@app/response": ["libs/response/src/index.ts"],
       "@app/rmq": ["libs/rmq/src/index.ts"],
+      "@app/router": ["libs/router/src/index.ts"],
       "@app/scripts": ["libs/scripts/src/index.ts"],
       "@app/types": ["libs/types/src/index.ts"],
       "@app/utils": ["libs/utils/src/index.ts"],
