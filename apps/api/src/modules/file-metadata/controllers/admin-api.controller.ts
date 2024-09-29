@@ -19,11 +19,11 @@ import { Role } from '@app/types';
 import {
   CreateFileMetadataBodyDto,
   FindFileMetadataByFileIdBodyDto,
-} from '@app/validation';
+} from '@app/dtos';
 
 @Controller('admin/files/:fileId/metadata')
 export class AdminApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Get('/')
   @Roles(Role.ADMIN)

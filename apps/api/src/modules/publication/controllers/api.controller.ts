@@ -22,7 +22,7 @@ import {
   CreatePublicationDto,
   FindPostPublicationsDto,
   UpdatePublicationDto,
-} from '@app/validation';
+} from '@app/dtos';
 
 @Controller('posts/:postId/publications')
 export class ApiController {

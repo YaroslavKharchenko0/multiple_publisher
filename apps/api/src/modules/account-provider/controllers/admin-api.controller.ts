@@ -6,12 +6,12 @@ import {
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { IsEnumPipe, Roles } from '@app/utils';
-import { CreateAccountProviderBodyDto } from '@app/validation';
+import { CreateAccountProviderBodyDto } from '@app/dtos';
 import { ProviderKey, Role } from '@app/types';
 
 @Controller('admin/accounts/providers')
 export class AdminApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/')
   @Roles(Role.ADMIN)

@@ -1,7 +1,6 @@
-import { z } from 'nestjs-zod/z'
+import { z } from 'zod';
 import { accountId } from '../account/account.validation'
 import { AccountToken, accountToken, accountTokenType } from './account-token.validation'
-import { createZodDto } from 'nestjs-zod'
 
 export const createAccountTokenValidationSchema = z.object({
   accountId,
@@ -10,7 +9,5 @@ export const createAccountTokenValidationSchema = z.object({
 })
 
 export type CreateAccountTokenRequest = z.infer<typeof createAccountTokenValidationSchema>
-
-export class CreateAccountTokenBodyDto extends createZodDto(createAccountTokenValidationSchema) { }
 
 export type CreateAccountTokenResponse = AccountToken

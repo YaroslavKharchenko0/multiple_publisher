@@ -15,13 +15,13 @@ import {
   UpdateUserRoleCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { CreateUserRoleBodyDto, UpdateUserRoleBodyDto } from '@app/validation';
+import { CreateUserRoleBodyDto, UpdateUserRoleBodyDto } from '@app/dtos';
 import { IsStringNumberPipe, Roles } from '@app/utils';
 import { Role } from '@app/types';
 
 @Controller('admin/users/:userId/roles')
 export class AdminApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/')
   @Roles(Role.ADMIN)

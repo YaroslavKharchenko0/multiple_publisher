@@ -8,11 +8,11 @@ import {
   DeleteWorkspaceRoleCommand,
   FindWorkspaceRoleQuery,
 } from '@app/contracts';
-import { CreateWorkspaceRoleDto } from '@app/validation';
+import { CreateWorkspaceRoleDto } from '@app/dtos';
 
 @Controller('admin/workspace-roles')
 export class AdminApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Get('/:role')
   @Roles(Role.ADMIN)

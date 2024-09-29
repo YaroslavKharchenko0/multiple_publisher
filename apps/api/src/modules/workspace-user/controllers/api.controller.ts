@@ -24,14 +24,11 @@ import {
   WorkspaceRoles,
 } from '@app/utils';
 import { Role, WorkspaceRole } from '@app/types';
-import {
-  CreateWorkspaceUserDto,
-  UpdateWorkspaceUserDto,
-} from '@app/validation';
+import { CreateWorkspaceUserDto, UpdateWorkspaceUserDto } from '@app/dtos';
 
 @Controller('workspaces/:workspaceId/users')
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/')
   @Roles(Role.USER)

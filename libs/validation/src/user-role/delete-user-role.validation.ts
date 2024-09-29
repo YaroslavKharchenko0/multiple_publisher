@@ -1,5 +1,4 @@
-import { z } from 'nestjs-zod/z'
-import { createZodDto } from 'nestjs-zod'
+import { z } from 'zod'
 import { userId } from '../user/user.validation'
 
 export const deleteUserRoleValidationSchema = z.object({
@@ -7,7 +6,5 @@ export const deleteUserRoleValidationSchema = z.object({
 })
 
 export type DeleteUserRoleRequest = z.infer<typeof deleteUserRoleValidationSchema>
-
-export class DeleteUserRoleDto extends createZodDto(deleteUserRoleValidationSchema) { }
 
 export type DeleteUserRoleResponse = null

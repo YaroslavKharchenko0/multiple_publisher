@@ -6,12 +6,12 @@ import {
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { Auth, IsEnumPipe } from '@app/utils';
-import { FindAccountProvidersBodyDto } from '@app/validation';
+import { FindAccountProvidersBodyDto } from '@app/dtos';
 import { ProviderKey } from '@app/types';
 
 @Controller('accounts/providers')
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Get('/')
   @Auth()

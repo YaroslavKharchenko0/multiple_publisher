@@ -6,15 +6,11 @@ import {
   VerifyEmailCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import {
-  SignInBodyDto,
-  SignUpBodyDto,
-  VerifyEmailBodyDto,
-} from '@app/validation';
+import { SignInBodyDto, SignUpBodyDto, VerifyEmailBodyDto } from '@app/dtos';
 
 @Controller('auth')
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/sign-up')
   signUp(@TraceId() traceId: string | undefined, @Body() body: SignUpBodyDto) {

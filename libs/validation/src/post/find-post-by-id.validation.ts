@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { Post, postId } from './post.validation';
 
 export const findPostByIdValidationSchema = z.object({
@@ -7,9 +6,5 @@ export const findPostByIdValidationSchema = z.object({
 });
 
 export type FindPostByIdRequest = z.infer<typeof findPostByIdValidationSchema>;
-
-export class FindPostByIdBodyDto extends createZodDto(
-  findPostByIdValidationSchema,
-) { }
 
 export type FindPostByIdResponse = Post;

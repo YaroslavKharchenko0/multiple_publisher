@@ -10,11 +10,11 @@ import {
 import { TraceId } from '@app/logger';
 import { IsStringNumberPipe, Roles } from '@app/utils';
 import { Role } from '@app/types';
-import { UpdateFileBodyDto } from '@app/validation';
+import { UpdateFileBodyDto } from '@app/dtos';
 
 @Controller('admin/files')
 export class AdminApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Delete('/:fileId')
   @Roles(Role.ADMIN)

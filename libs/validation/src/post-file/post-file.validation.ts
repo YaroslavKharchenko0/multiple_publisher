@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { postId } from '../post/post.validation';
 import { fileId } from '../file';
 
@@ -12,5 +11,3 @@ export const postFileValidationSchema = z.object({
 });
 
 export type PostFile = z.infer<typeof postFileValidationSchema>;
-
-export class PostFileDto extends createZodDto(postFileValidationSchema) { }

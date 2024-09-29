@@ -1,5 +1,4 @@
-import { z } from 'nestjs-zod/z'
-import { createZodDto } from 'nestjs-zod'
+import { z } from 'zod'
 import { workspaceId } from './workspace.validation'
 
 export const deleteWorkspaceValidationSchema = z.object({
@@ -7,7 +6,5 @@ export const deleteWorkspaceValidationSchema = z.object({
 })
 
 export type DeleteWorkspaceRequest = z.infer<typeof deleteWorkspaceValidationSchema>
-
-export class DeleteWorkspaceBodyDto extends createZodDto(deleteWorkspaceValidationSchema) { }
 
 export type DeleteWorkspaceResponse = null

@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { PublicationFile } from './publication-file.validation';
 import { publicationId } from '../publication/publication.validation';
 
@@ -10,9 +9,5 @@ export const deletePublicationFilesValidationSchema = z.object({
 export type DeletePublicationFilesRequest = z.infer<
   typeof deletePublicationFilesValidationSchema
 >;
-
-export class DeletePublicationFilesDto extends createZodDto(
-  deletePublicationFilesValidationSchema,
-) { }
 
 export type DeletePublicationFilesResponse = PublicationFile[];

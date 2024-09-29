@@ -15,13 +15,13 @@ import {
   FindRoleQuery,
   FindRolesQuery,
 } from '@app/contracts';
-import { CreateRoleBodyDto, FindRolesBodyDto } from '@app/validation';
+import { CreateRoleBodyDto, FindRolesBodyDto } from '@app/dtos';
 import { Role } from '@app/types';
 import { IsEnumPipe, Roles } from '@app/utils';
 
 @Controller('admin/roles')
 export class AdminApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/')
   @Roles(Role.ADMIN)

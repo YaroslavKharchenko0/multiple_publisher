@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod'
-import { z } from 'nestjs-zod/z'
+import { z } from 'zod'
 import { userId } from '../user'
 import { workspaceId } from '../workspace'
 import { workspaceRoleId } from '../workspace-role'
@@ -16,4 +15,3 @@ export const workspaceUserValidationSchema = z.object({
 
 export type WorkspaceUser = z.infer<typeof workspaceUserValidationSchema>
 
-export class WorkspaceUserDto extends createZodDto(workspaceUserValidationSchema) { }

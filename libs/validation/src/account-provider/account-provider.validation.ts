@@ -1,6 +1,5 @@
 import { ProviderKey } from '@app/types'
-import { createZodDto } from 'nestjs-zod'
-import { z } from 'nestjs-zod/z'
+import { z } from 'zod';
 
 export const accountProviderKey = z.nativeEnum(ProviderKey)
 
@@ -13,4 +12,3 @@ export const accountProviderValidationSchema = z.object({
 
 export type AccountProvider = z.infer<typeof accountProviderValidationSchema>
 
-export class AccountProviderDto extends createZodDto(accountProviderValidationSchema) { }

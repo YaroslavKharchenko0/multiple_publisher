@@ -28,13 +28,13 @@ import {
   Roles,
   UserAccess,
 } from '@app/utils';
-import { FindUserFilesBodyDto, UpdateFileBodyDto } from '@app/validation';
+import { FindUserFilesBodyDto, UpdateFileBodyDto } from '@app/dtos';
 import { File } from '@nest-lab/fastify-multer';
 import { Role } from '@app/types';
 
 @Controller('/users/:userId/files')
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/upload/image')
   @Roles(Role.USER)

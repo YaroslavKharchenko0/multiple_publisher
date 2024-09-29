@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { fileId } from '../file';
 import {
   PublicationFile,
@@ -17,11 +16,5 @@ export type CreatePublicationFilesRequest = z.infer<
   typeof createPublicationFilesValidationSchema
 >;
 
-export class CreatePublicationFilesDto extends createZodDto(
-  createPublicationFilesValidationSchema.omit({
-    publicationId: true,
-    isOriginal: true,
-  }),
-) { }
 
 export type CreatePublicationFilesResponse = PublicationFile[];

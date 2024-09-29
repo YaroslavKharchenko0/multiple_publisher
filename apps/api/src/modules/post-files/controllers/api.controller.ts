@@ -7,7 +7,7 @@ import {
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { IsStringNumberPipe, PostAccess } from '@app/utils';
-import { CreatePostFilesDto } from '@app/validation';
+import { CreatePostFilesDto } from '@app/dtos';
 
 @Controller('posts/:postId/files')
 export class ApiController {

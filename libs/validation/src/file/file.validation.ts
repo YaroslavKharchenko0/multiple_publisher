@@ -1,6 +1,5 @@
 import { FileType, UploadStatus } from '@app/types';
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { userId } from '../user';
 
 export const fileId = z.number();
@@ -38,5 +37,3 @@ export const fileVideoValidationSchema = fileValidationSchema.extend({
 export type FileVideo = z.infer<typeof fileVideoValidationSchema>;
 
 export type File = FileVideo | FileImage;
-
-export class FileDto extends createZodDto(fileValidationSchema) { }

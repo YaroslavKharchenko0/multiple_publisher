@@ -23,7 +23,7 @@ import {
   FindPostsBodyDto,
   FindUserPostsBodyDto,
   UpdatePostBodyDto,
-} from '@app/validation';
+} from '@app/dtos';
 import { IsStringNumberPipe, JWTUser, PostAccess, User } from '@app/utils';
 
 @Controller()

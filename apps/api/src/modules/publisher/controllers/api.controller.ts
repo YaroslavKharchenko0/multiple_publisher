@@ -1,10 +1,10 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { PublishPublicationCommand } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { IsStringNumberPipe, PostAccess, Roles } from '@app/utils';
 import { Role } from '@app/types';
-import { PublishPublicationDto } from '@app/validation';
+import { PublishPublicationDto } from '@app/dtos';
 
 @Controller('posts/:postId/publications/:publicationId/publish')
 export class ApiController {

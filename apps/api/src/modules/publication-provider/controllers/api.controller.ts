@@ -19,7 +19,7 @@ import { TraceId } from '@app/logger';
 import {
   CreatePublicationProviderDto,
   FindPublicationProvidersDto,
-} from '@app/validation';
+} from '@app/dtos';
 import { IsEnumPipe, IsStringNumberPipe, Roles } from '@app/utils';
 import { PublicationProvider, Role } from '@app/types';
 

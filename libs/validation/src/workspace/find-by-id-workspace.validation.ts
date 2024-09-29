@@ -1,5 +1,4 @@
-import { z } from 'nestjs-zod/z'
-import { createZodDto } from 'nestjs-zod'
+import { z } from 'zod'
 import { Workspace, workspaceId } from './workspace.validation'
 
 export const findByIdWorkspaceValidationSchema = z.object({
@@ -7,7 +6,5 @@ export const findByIdWorkspaceValidationSchema = z.object({
 })
 
 export type FindByIdWorkspaceRequest = z.infer<typeof findByIdWorkspaceValidationSchema>
-
-export class FindByIdWorkspaceBodyDto extends createZodDto(findByIdWorkspaceValidationSchema) { }
 
 export type FindByIdWorkspaceResponse = Workspace

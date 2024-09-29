@@ -1,15 +1,14 @@
-import { z } from 'nestjs-zod/z'
-import { userId } from '../user'
-import { createZodDto } from 'nestjs-zod'
-import { fileValidationSchema } from './file.validation'
+import { z } from 'zod';
+import { userId } from '../user';
+import { fileValidationSchema } from './file.validation';
 
 export const generateSignatureValidationSchema = z.object({
   userId,
-})
+});
 
-export type GenerateSignatureRequest = z.infer<typeof generateSignatureValidationSchema>
-
-export class GenerateSignatureBodyDto extends createZodDto(generateSignatureValidationSchema) { }
+export type GenerateSignatureRequest = z.infer<
+  typeof generateSignatureValidationSchema
+>;
 
 export const generateSignatureResponseValidationSchema = z.object({
   metadata: z.object({
@@ -19,6 +18,8 @@ export const generateSignatureResponseValidationSchema = z.object({
     videoId: z.string().uuid(),
   }),
   file: fileValidationSchema,
-})
+});
 
-export type GenerateSignatureResponse = z.infer<typeof generateSignatureResponseValidationSchema>
+export type GenerateSignatureResponse = z.infer<
+  typeof generateSignatureResponseValidationSchema
+>;

@@ -1,5 +1,4 @@
-import { z } from 'nestjs-zod/z';
-import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 import { userId } from '../user';
 import { File } from './file.validation';
 
@@ -14,9 +13,5 @@ export const uploadFileValidationSchema = z.object({
 });
 
 export type UploadFileRequest = z.infer<typeof uploadFileValidationSchema>;
-
-export class UploadFileBodyDto extends createZodDto(
-  uploadFileValidationSchema,
-) { }
 
 export type UploadFileResponse = File;

@@ -23,7 +23,7 @@ import {
   Roles,
   User,
 } from '@app/utils';
-import { UpdateAccountBodyDto } from '@app/validation';
+import { UpdateAccountBodyDto } from '@app/dtos';
 import { Role } from '@app/types';
 
 @Controller('accounts')

@@ -1,6 +1,5 @@
-import { z } from 'nestjs-zod/z'
+import { z } from 'zod'
 import { role } from '../role'
-import { createZodDto } from 'nestjs-zod'
 import { UserRole } from './user-role.validation'
 
 export const createUserRoleValidationSchema = z.object({
@@ -11,7 +10,5 @@ export const createUserRoleValidationSchema = z.object({
 export type CreateUserRoleRequest = z.infer<typeof createUserRoleValidationSchema>
 
 export const createUserRoleBodyValidationSchema = createUserRoleValidationSchema.omit({ userId: true })
-
-export class CreateUserRoleBodyDto extends createZodDto(createUserRoleBodyValidationSchema) { }
 
 export type CreateUserRoleResponse = UserRole

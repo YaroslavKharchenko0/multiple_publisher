@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { postDescription, postId, postTitle } from '../post';
 import { PublicationStatus } from '@app/types';
 import { accountId } from '../account';
@@ -23,5 +22,3 @@ export const publicationValidationSchema = z.object({
 });
 
 export type Publication = z.infer<typeof publicationValidationSchema>;
-
-export class PublicationDto extends createZodDto(publicationValidationSchema) { }

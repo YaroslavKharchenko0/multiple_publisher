@@ -1,13 +1,12 @@
-import { z } from 'nestjs-zod/z'
-import { Account, accountId } from './account.validation'
-import { createZodDto } from 'nestjs-zod'
+import { z } from 'zod';
+import { Account, accountId } from './account.validation';
 
 export const deleteAccountValidationSchema = z.object({
-  id: accountId
-})
+  id: accountId,
+});
 
-export type DeleteAccountRequest = z.infer<typeof deleteAccountValidationSchema>
+export type DeleteAccountRequest = z.infer<
+  typeof deleteAccountValidationSchema
+>;
 
-export class DeleteAccountBodyDto extends createZodDto(deleteAccountValidationSchema) { }
-
-export type DeleteAccountResponse = Account
+export type DeleteAccountResponse = Account;

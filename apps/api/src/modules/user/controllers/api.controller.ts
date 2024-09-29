@@ -7,12 +7,12 @@ import {
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { IsStringNumberPipe, Roles, UserAccess } from '@app/utils';
-import { UpdateUserBodyDto } from '@app/validation';
+import { UpdateUserBodyDto } from '@app/dtos';
 import { Role } from '@app/types';
 
 @Controller('users')
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Get('/:userId')
   @Roles(Role.USER)

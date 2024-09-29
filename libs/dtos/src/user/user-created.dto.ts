@@ -1,3 +1,3 @@
-import { UserDto } from "./user.validation";
+import { UserDto } from './user.dto';
 
 export class UserCreatedBodyDto extends UserDto { }

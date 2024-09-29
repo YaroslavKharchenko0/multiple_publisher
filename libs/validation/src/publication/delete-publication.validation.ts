@@ -1,6 +1,5 @@
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { Publication, publicationId } from './publication.validation';
-import { createZodDto } from 'nestjs-zod';
 import { postId } from '../post';
 
 export const deletePublicationValidationSchema = z.object({
@@ -11,9 +10,5 @@ export const deletePublicationValidationSchema = z.object({
 export type DeletePublicationRequest = z.infer<
   typeof deletePublicationValidationSchema
 >;
-
-export class DeletePublicationDto extends createZodDto(
-  deletePublicationValidationSchema,
-) { }
 
 export type DeletePublicationResponse = Publication;

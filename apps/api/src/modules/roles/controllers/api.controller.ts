@@ -2,7 +2,7 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { TraceId } from '@app/logger';
 import { FindRoleQuery, FindRolesQuery } from '@app/contracts';
-import { FindRolesBodyDto } from '@app/validation';
+import { FindRolesBodyDto } from '@app/dtos';
 import { Role } from '@app/types';
 import { IsEnumPipe, Roles } from '@app/utils';
 

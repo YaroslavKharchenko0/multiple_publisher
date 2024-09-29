@@ -1,6 +1,5 @@
-import { z } from 'nestjs-zod/z'
+import { z } from 'zod';
 import { AccountProvider, accountProviderKey } from './account-provider.validation'
-import { createZodDto } from 'nestjs-zod';
 
 
 export const findAccountProviderValidationSchema = z.object({
@@ -8,8 +7,6 @@ export const findAccountProviderValidationSchema = z.object({
 })
 
 export type FindAccountProviderRequest = z.infer<typeof findAccountProviderValidationSchema>
-
-export class FindAccountProviderBodyDto extends createZodDto(findAccountProviderValidationSchema) { }
 
 export type FindAccountProviderResponse = AccountProvider;
 
