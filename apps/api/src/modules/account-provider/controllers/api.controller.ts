@@ -8,6 +8,7 @@ import { TraceId } from '@app/logger';
 import { Auth, IsEnumPipe } from '@app/utils';
 import { FindAccountProvidersBodyDto } from '@app/dtos';
 import { ProviderKey } from '@app/types';
+import { FindAccountProvidersDocs } from '@app/docs';
 
 @Controller('accounts/providers')
 export class ApiController {
@@ -15,6 +16,7 @@ export class ApiController {
 
   @Get('/')
   @Auth()
+  @FindAccountProvidersDocs()
   findMany(
     @TraceId() traceId: string | undefined,
     @Query() query: FindAccountProvidersBodyDto,

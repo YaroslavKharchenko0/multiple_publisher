@@ -25,6 +25,13 @@ import {
 } from '@app/utils';
 import { UpdateAccountBodyDto } from '@app/dtos';
 import { Role } from '@app/types';
+import {
+  DeleteAccountDocs,
+  FindAccountDocs,
+  GoogleAuthUrlDocs,
+  GoogleCallbackDocs,
+  UpdateAccountDocs,
+} from '@app/docs';
 
 @Controller('accounts')
 export class ApiController {
@@ -32,6 +39,7 @@ export class ApiController {
 
   @Get('/auth/google/url')
   @Roles(Role.ADMIN, Role.USER)
+  @GoogleAuthUrlDocs()
   googleAuthUrl(@TraceId() traceId: string | undefined, @User() user: JWTUser) {
     const payload: GoogleSingInUrlCommand.Request = {
       userId: user.app_id,
@@ -48,6 +56,7 @@ export class ApiController {
   }
 
   @Get('/auth/google/callback')
+  @GoogleCallbackDocs()
   async googleCallback(
     @Query('code') code: string,
     @Query('state') state: string,
@@ -71,6 +80,7 @@ export class ApiController {
   @Delete('/:accountId')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
+  @DeleteAccountDocs()
   delete(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,
@@ -92,6 +102,7 @@ export class ApiController {
   @Get('/:accountId')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
+  @FindAccountDocs()
   findOne(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,
@@ -113,6 +124,7 @@ export class ApiController {
   @Patch('/:accountId')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
+  @UpdateAccountDocs()
   update(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,

@@ -1,11 +1,15 @@
 import { applyDecorators } from '@nestjs/common';
 import { defaultDecorators } from './default';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import { SignUpBodyDto } from '@app/dtos';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const SignUpDocs = () =>
+  applyDecorators(...defaultDecorators, ApiOperation({ summary: 'Sign up' }));
+
+export const SignInDocs = () =>
+  applyDecorators(...defaultDecorators, ApiOperation({ summary: 'Sign in' }));
+
+export const VerifyEmailDocs = () =>
   applyDecorators(
     ...defaultDecorators,
-    ApiOperation({ summary: 'Sign up' }),
-    ApiBody({ type: SignUpBodyDto }),
+    ApiOperation({ summary: 'Verify email' }),
   );

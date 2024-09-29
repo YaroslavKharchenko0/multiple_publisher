@@ -7,7 +7,7 @@ import {
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { SignInBodyDto, SignUpBodyDto, VerifyEmailBodyDto } from '@app/dtos';
-import { SignUpDocs } from '@app/docs';
+import { SignInDocs, SignUpDocs, VerifyEmailDocs } from '@app/docs';
 
 @Controller('auth')
 export class ApiController {
@@ -29,6 +29,7 @@ export class ApiController {
   }
 
   @Post('/sign-in')
+  @SignInDocs()
   signIn(@TraceId() traceId: string | undefined, @Body() body: SignInBodyDto) {
     const payload: SignInCommand.Request = body;
 
@@ -43,6 +44,7 @@ export class ApiController {
   }
 
   @Put('/email/verify')
+  @VerifyEmailDocs()
   verifyEmail(
     @TraceId() traceId: string | undefined,
     @Body() body: VerifyEmailBodyDto,
