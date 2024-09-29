@@ -1,6 +1,5 @@
 import { AccountStatus } from '@app/types';
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { userId } from '../user';
 import { accountProviderId } from '../account-provider';
 
@@ -10,7 +9,7 @@ export const accountStatus = z.nativeEnum(AccountStatus);
 export const accountUserId = userId.nullable();
 export const accountInternalId = z.string();
 
-const accountValidationSchema = z.object({
+export const accountValidationSchema = z.object({
   id: accountId,
   name: accountName,
   userId: accountUserId,
@@ -22,5 +21,3 @@ const accountValidationSchema = z.object({
 });
 
 export type Account = z.infer<typeof accountValidationSchema>;
-
-export class AccountDto extends createZodDto(accountValidationSchema) { }

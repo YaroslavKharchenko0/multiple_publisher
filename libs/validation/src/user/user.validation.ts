@@ -8,7 +8,7 @@ export const userProviderId = z.string().uuid();
 export const userName = z.string().min(3).max(100).optional();
 export const userBirthDate = z.date().optional();
 
-const userValidationSchema = z.object({
+export const userValidationSchema = z.object({
   id: userId,
   email: userEmail,
   createdAt: z.date(),
@@ -20,4 +20,4 @@ const userValidationSchema = z.object({
 
 export type User = z.infer<typeof userValidationSchema>;
 
-export class UserDto extends createZodDto(userValidationSchema) {}
+export class UserDto extends createZodDto(userValidationSchema) { }

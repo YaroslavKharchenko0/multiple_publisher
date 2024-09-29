@@ -1,0 +1,5 @@
+export * from './create-workspace.dto'
+export * from './delete-workspace.dto'
+export * from './find-by-id-workspace.dto'
+export * from './workspace.dto'
+export * from './workspace-created.dto'

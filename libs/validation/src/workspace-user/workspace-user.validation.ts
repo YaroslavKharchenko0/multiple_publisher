@@ -4,9 +4,9 @@ import { userId } from '../user'
 import { workspaceId } from '../workspace'
 import { workspaceRoleId } from '../workspace-role'
 
-const workspaceUserId = z.number()
+export const workspaceUserId = z.number()
 
-const workspaceUserValidationSchema = z.object({
+export const workspaceUserValidationSchema = z.object({
   id: workspaceUserId,
   userId,
   workspaceId,

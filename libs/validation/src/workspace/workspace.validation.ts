@@ -5,7 +5,7 @@ import { userId } from '../user'
 export const workspaceId = z.number()
 export const workspaceName = z.string().max(100)
 
-const workspaceValidationSchema = z.object({
+export const workspaceValidationSchema = z.object({
   id: workspaceId,
   userId,
   name: workspaceName,

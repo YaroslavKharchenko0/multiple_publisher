@@ -6,7 +6,7 @@ export const accountProviderKey = z.nativeEnum(ProviderKey)
 
 export const accountProviderId = z.number()
 
-const accountProviderValidationSchema = z.object({
+export const accountProviderValidationSchema = z.object({
   id: accountProviderId,
   key: accountProviderKey
 })

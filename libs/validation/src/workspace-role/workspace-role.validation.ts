@@ -6,7 +6,7 @@ export const workspaceRole = z.nativeEnum(BaseRole)
 
 export const workspaceRoleId = z.number()
 
-const workspaceRoleValidationSchema = z.object({
+export const workspaceRoleValidationSchema = z.object({
   id: workspaceRoleId,
   role: workspaceRole,
 })

@@ -10,7 +10,7 @@ export const createUserRoleValidationSchema = z.object({
 
 export type CreateUserRoleRequest = z.infer<typeof createUserRoleValidationSchema>
 
-const createUserRoleBodyValidationSchema = createUserRoleValidationSchema.omit({ userId: true })
+export const createUserRoleBodyValidationSchema = createUserRoleValidationSchema.omit({ userId: true })
 
 export class CreateUserRoleBodyDto extends createZodDto(createUserRoleBodyValidationSchema) { }
 

@@ -5,7 +5,7 @@ import { z } from 'nestjs-zod/z'
 export const role = z.nativeEnum(RoleEnum)
 export const roleId = z.number()
 
-const roleValidationSchema = z.object({
+export const roleValidationSchema = z.object({
   id: roleId,
   role,
 })
