@@ -18,6 +18,8 @@ export const createSwagger = async (
 
   builder.setVersion(appVersion);
 
+  patchNestJsSwagger();
+
   const config = builder.build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -25,6 +27,4 @@ export const createSwagger = async (
   SwaggerModule.setup('swagger', app, document, {
     jsonDocumentUrl: 'swagger/json',
   });
-
-  patchNestJsSwagger();
 };

@@ -7,12 +7,14 @@ import {
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { SignInBodyDto, SignUpBodyDto, VerifyEmailBodyDto } from '@app/dtos';
+import { SignUpDocs } from '@app/docs';
 
 @Controller('auth')
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/sign-up')
+  @SignUpDocs()
   signUp(@TraceId() traceId: string | undefined, @Body() body: SignUpBodyDto) {
     const payload: SignUpCommand.Request = body;
 
