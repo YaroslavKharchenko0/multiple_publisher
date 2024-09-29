@@ -1,13 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import {
   CreateUserRoleCommand,
   DeleteUserRoleCommand,
@@ -16,14 +8,16 @@ import {
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { CreateUserRoleBodyDto, UpdateUserRoleBodyDto } from '@app/dtos';
-import { IsStringNumberPipe, Roles } from '@app/utils';
+import { IsStringNumberPipe, ModuleRoute, Roles, Route } from '@app/utils';
 import { Role } from '@app/types';
 
-@Controller('admin/users/:userId/roles')
+export const moduleName = 'adminUserRole';
+
+@ModuleRoute(moduleName)
 export class AdminApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('/')
+  @Route(moduleName, 'createUserRole')
   @Roles(Role.ADMIN)
   createUserRole(
     @TraceId() traceId: string | undefined,
@@ -45,7 +39,7 @@ export class AdminApiController {
     });
   }
 
-  @Get('/')
+  @Route(moduleName, 'findUserRole')
   @Roles(Role.ADMIN)
   findUserRole(
     @TraceId() traceId: string | undefined,
@@ -65,7 +59,7 @@ export class AdminApiController {
     });
   }
 
-  @Delete('/')
+  @Route(moduleName, 'deleteUserRole')
   @Roles(Role.ADMIN)
   deleteUserRole(
     @TraceId() traceId: string | undefined,
@@ -85,7 +79,7 @@ export class AdminApiController {
     });
   }
 
-  @Patch('/')
+  @Route(moduleName, 'updateUserRole')
   @Roles(Role.ADMIN)
   updateUserRole(
     @TraceId() traceId: string | undefined,

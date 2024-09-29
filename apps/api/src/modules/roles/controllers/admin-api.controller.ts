@@ -1,13 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import { TraceId } from '@app/logger';
 import {
   CreateRoleCommand,
@@ -17,13 +9,15 @@ import {
 } from '@app/contracts';
 import { CreateRoleBodyDto, FindRolesBodyDto } from '@app/dtos';
 import { Role } from '@app/types';
-import { IsEnumPipe, Roles } from '@app/utils';
+import { IsEnumPipe, ModuleRoute, Roles, Route } from '@app/utils';
 
-@Controller('admin/roles')
+export const moduleName = 'adminRoles';
+
+@ModuleRoute(moduleName)
 export class AdminApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('/')
+  @Route(moduleName, 'createRole')
   @Roles(Role.ADMIN)
   createRole(
     @TraceId() traceId: string | undefined,
@@ -41,7 +35,7 @@ export class AdminApiController {
     });
   }
 
-  @Delete('/:role')
+  @Route(moduleName, 'deleteRole')
   @Roles(Role.ADMIN)
   deleteRole(
     @TraceId() traceId: string | undefined,
@@ -59,7 +53,7 @@ export class AdminApiController {
     });
   }
 
-  @Get('/:role')
+  @Route(moduleName, 'findRole')
   @Roles(Role.ADMIN)
   findRole(
     @TraceId() traceId: string | undefined,
@@ -77,7 +71,7 @@ export class AdminApiController {
     });
   }
 
-  @Get('/')
+  @Route(moduleName, 'findRoles')
   @Roles(Role.ADMIN)
   findRoles(
     @TraceId() traceId: string | undefined,

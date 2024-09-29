@@ -1,19 +1,21 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import {
   CreatePostFilesCommand,
   DeletePostFilesCommand,
   FindPostFilesQuery,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe, PostAccess } from '@app/utils';
+import { IsStringNumberPipe, ModuleRoute, PostAccess, Route } from '@app/utils';
 import { CreatePostFilesDto } from '@app/dtos';
 
-@Controller('posts/:postId/files')
+export const moduleName = 'postFiles';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get()
+  @Route(moduleName, 'findPostFiles')
   @PostAccess({ isAuthor: true })
   findPostFiles(
     @TraceId() traceId: string | undefined,
@@ -33,7 +35,7 @@ export class ApiController {
     });
   }
 
-  @Post()
+  @Route(moduleName, 'createPostFiles')
   @PostAccess({ isAuthor: true })
   createPostFiles(
     @TraceId() traceId: string | undefined,
@@ -55,7 +57,7 @@ export class ApiController {
     });
   }
 
-  @Delete()
+  @Route(moduleName, 'deletePostFiles')
   @PostAccess({ isAuthor: true })
   deletePostFiles(
     @TraceId() traceId: string | undefined,

@@ -1,20 +1,22 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import {
   FindUserByIdQuery,
   UpdateUserCommand,
   DeleteUserCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe, Roles } from '@app/utils';
+import { IsStringNumberPipe, ModuleRoute, Roles, Route } from '@app/utils';
 import { UpdateUserBodyDto } from '@app/dtos';
 import { Role } from '@app/types';
 
-@Controller('admin/users')
+export const moduleName = 'adminUser';
+
+@ModuleRoute(moduleName)
 export class AdminApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/:id')
+  @Route(moduleName, 'findUserById')
   @Roles(Role.ADMIN)
   findUserById(
     @TraceId() traceId: string | undefined,
@@ -34,7 +36,7 @@ export class AdminApiController {
     });
   }
 
-  @Patch('/:id')
+  @Route(moduleName, 'updateUser')
   @Roles(Role.ADMIN)
   updateUser(
     @TraceId() traceId: string | undefined,
@@ -56,7 +58,7 @@ export class AdminApiController {
     });
   }
 
-  @Delete('/:id')
+  @Route(moduleName, 'deleteUser')
   @Roles(Role.ADMIN)
   deleteUser(
     @TraceId() traceId: string | undefined,

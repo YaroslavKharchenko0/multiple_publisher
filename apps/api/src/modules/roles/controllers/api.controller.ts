@@ -1,16 +1,18 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Param, Query } from '@nestjs/common';
 import { TraceId } from '@app/logger';
 import { FindRoleQuery, FindRolesQuery } from '@app/contracts';
 import { FindRolesBodyDto } from '@app/dtos';
 import { Role } from '@app/types';
-import { IsEnumPipe, Roles } from '@app/utils';
+import { IsEnumPipe, ModuleRoute, Roles, Route } from '@app/utils';
 
-@Controller('roles')
+export const moduleName = 'roles';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/:role')
+  @Route(moduleName, 'findRole')
   @Roles(Role.USER)
   findRole(
     @TraceId() traceId: string | undefined,
@@ -28,7 +30,7 @@ export class ApiController {
     });
   }
 
-  @Get('/')
+  @Route(moduleName, 'findRoles')
   @Roles(Role.USER)
   findRoles(
     @TraceId() traceId: string | undefined,

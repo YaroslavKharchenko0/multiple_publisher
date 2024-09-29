@@ -1,19 +1,21 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import {
   CreatePublicationFilesCommand,
   DeletePublicationFilesCommand,
   FindPublicationFilesQuery,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe, PostAccess } from '@app/utils';
+import { IsStringNumberPipe, ModuleRoute, PostAccess, Route } from '@app/utils';
 import { CreatePublicationFilesDto } from '@app/dtos';
 
-@Controller('posts/:postId/publications/:publicationId/files')
+export const moduleName = 'publicationFiles';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get()
+  @Route(moduleName, 'findPublicationFiles')
   @PostAccess({ isAuthor: true })
   findPublicationFiles(
     @TraceId() traceId: string | undefined,
@@ -33,7 +35,7 @@ export class ApiController {
     });
   }
 
-  @Post()
+  @Route(moduleName, 'createPublicationFiles')
   @PostAccess({ isAuthor: true })
   createPublicationFiles(
     @TraceId() traceId: string | undefined,
@@ -56,7 +58,7 @@ export class ApiController {
     });
   }
 
-  @Delete()
+  @Route(moduleName, 'deletePublicationFiles')
   @PostAccess({ isAuthor: true })
   deletePublicationFiles(
     @TraceId() traceId: string | undefined,

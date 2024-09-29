@@ -19,18 +19,22 @@ import { TraceId } from '@app/logger';
 import {
   IsStringNumberPipe,
   JWTUser,
+  ModuleRoute,
   Roles,
+  Route,
   User,
   WorkspaceRoles,
 } from '@app/utils';
 import { Role, WorkspaceRole } from '@app/types';
 import { CreateWorkspaceUserDto, UpdateWorkspaceUserDto } from '@app/dtos';
 
-@Controller('workspaces/:workspaceId/users')
+export const moduleName = 'workspaceUser';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('/')
+  @Route(moduleName, 'createWorkspaceUser')
   @Roles(Role.USER)
   @WorkspaceRoles(WorkspaceRole.ADMIN)
   createWorkspaceUser(
@@ -55,7 +59,7 @@ export class ApiController {
     });
   }
 
-  @Delete('/:userId')
+  @Route(moduleName, 'deleteWorkspaceUser')
   @Roles(Role.USER)
   @WorkspaceRoles(WorkspaceRole.ADMIN)
   deleteWorkspaceUser(
@@ -78,7 +82,7 @@ export class ApiController {
     });
   }
 
-  @Patch('/:userId')
+  @Route(moduleName, 'updateWorkspaceUser')
   @Roles(Role.USER)
   @WorkspaceRoles(WorkspaceRole.ADMIN)
   updateWorkspaceUser(
@@ -103,7 +107,7 @@ export class ApiController {
     });
   }
 
-  @Get('/:userId')
+  @Route(moduleName, 'findWorkspaceUser')
   @Roles(Role.USER)
   @WorkspaceRoles(
     WorkspaceRole.ADMIN,
@@ -130,7 +134,7 @@ export class ApiController {
     });
   }
 
-  @Get('/')
+  @Route(moduleName, 'findWorkspaceUsers')
   @Roles(Role.USER)
   @WorkspaceRoles(
     WorkspaceRole.ADMIN,

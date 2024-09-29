@@ -1,4 +1,4 @@
-import { Router } from './types';
+import { Router, HttpMethod } from './types';
 
 export const router: Router = {
   account: {
@@ -306,7 +306,7 @@ export const router: Router = {
     },
   },
   adminRoles: {
-    basePath: 'roles',
+    basePath: 'admin/roles',
     routes: {
       findRole: {
         method: 'GET',
@@ -450,3 +450,5 @@ export const router: Router = {
     },
   },
 };
+
+export { HttpMethod }

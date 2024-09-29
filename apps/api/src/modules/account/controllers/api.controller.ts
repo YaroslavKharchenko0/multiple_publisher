@@ -1,13 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Query,
-} from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   DeleteAccountCommand,
   FindAccountQuery,
@@ -20,6 +12,8 @@ import {
   AccountAccess,
   IsStringNumberPipe,
   JWTUser,
+  ModuleRoute,
+  Route,
   Roles,
   User,
 } from '@app/utils';
@@ -33,11 +27,13 @@ import {
   UpdateAccountDocs,
 } from '@app/docs';
 
-@Controller('accounts')
+const moduleName = 'account';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/auth/google/url')
+  @Route(moduleName, 'googleAuthUrl')
   @Roles(Role.ADMIN, Role.USER)
   @GoogleAuthUrlDocs()
   googleAuthUrl(@TraceId() traceId: string | undefined, @User() user: JWTUser) {
@@ -55,7 +51,7 @@ export class ApiController {
     });
   }
 
-  @Get('/auth/google/callback')
+  @Route(moduleName, 'googleCallback')
   @GoogleCallbackDocs()
   async googleCallback(
     @Query('code') code: string,
@@ -77,7 +73,7 @@ export class ApiController {
     });
   }
 
-  @Delete('/:accountId')
+  @Route(moduleName, 'delete')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
   @DeleteAccountDocs()
@@ -99,7 +95,7 @@ export class ApiController {
     });
   }
 
-  @Get('/:accountId')
+  @Route(moduleName, 'findOne')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
   @FindAccountDocs()
@@ -121,7 +117,7 @@ export class ApiController {
     });
   }
 
-  @Patch('/:accountId')
+  @Route(moduleName, 'update')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
   @UpdateAccountDocs()

@@ -7,3 +7,5 @@ export * from './user-access.decorator';
 export * from './image-upload.decorator';
 export * from './account-access.decorator';
 export * from './post-access.decorator';
+export * from './module-route.decorator';
+export * from './route.decorator';

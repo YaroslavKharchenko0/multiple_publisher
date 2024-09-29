@@ -1,5 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import {
   DeleteFileCommand,
   FindFileByIdQuery,
@@ -8,15 +8,17 @@ import {
   UpdateFileCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe, Roles } from '@app/utils';
+import { IsStringNumberPipe, ModuleRoute, Roles, Route } from '@app/utils';
 import { Role } from '@app/types';
 import { UpdateFileBodyDto } from '@app/dtos';
 
-@Controller('admin/files')
+export const moduleName = 'adminFile';
+
+@ModuleRoute(moduleName)
 export class AdminApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Delete('/:fileId')
+  @Route(moduleName, 'deleteFile')
   @Roles(Role.ADMIN)
   deleteFile(
     @TraceId() traceId: string | undefined,
@@ -38,7 +40,7 @@ export class AdminApiController {
     });
   }
 
-  @Get('/:fileId')
+  @Route(moduleName, 'findById')
   @Roles(Role.ADMIN)
   findById(
     @TraceId() traceId: string | undefined,
@@ -60,7 +62,7 @@ export class AdminApiController {
     });
   }
 
-  @Get('/providers/:providerId')
+  @Route(moduleName, 'findByProviderId')
   @Roles(Role.ADMIN)
   findByProviderId(
     @TraceId() traceId: string | undefined,
@@ -80,7 +82,7 @@ export class AdminApiController {
     });
   }
 
-  @Get('/authors/:authorId')
+  @Route(moduleName, 'findUserFile')
   @Roles(Role.ADMIN)
   findUserFile(
     @TraceId() traceId: string | undefined,
@@ -100,7 +102,7 @@ export class AdminApiController {
     });
   }
 
-  @Put('/:fileId')
+  @Route(moduleName, 'updateUserFile')
   @Roles(Role.ADMIN)
   updateUserFile(
     @TraceId() traceId: string | undefined,

@@ -1,13 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   CreatePublicationProviderCommand,
   DeletePublicationProviderCommand,
@@ -20,14 +12,22 @@ import {
   CreatePublicationProviderDto,
   FindPublicationProvidersDto,
 } from '@app/dtos';
-import { IsEnumPipe, IsStringNumberPipe, Roles } from '@app/utils';
+import {
+  IsEnumPipe,
+  IsStringNumberPipe,
+  ModuleRoute,
+  Roles,
+  Route,
+} from '@app/utils';
 import { PublicationProvider, Role } from '@app/types';
 
-@Controller()
+export const moduleName = 'publicationProviders';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('publication/providers/')
+  @Route(moduleName, 'create')
   @Roles(Role.ADMIN)
   create(
     @TraceId() traceId: string | undefined,
@@ -47,7 +47,7 @@ export class ApiController {
     );
   }
 
-  @Delete('publication/providers/:key')
+  @Route(moduleName, 'delete')
   @Roles(Role.ADMIN)
   delete(
     @TraceId() traceId: string | undefined,
@@ -69,7 +69,7 @@ export class ApiController {
     );
   }
 
-  @Get('publication/providers/:key')
+  @Route(moduleName, 'findOne')
   findOne(
     @TraceId() traceId: string | undefined,
     @Param('key', new IsEnumPipe(PublicationProvider)) key: PublicationProvider,
@@ -88,7 +88,7 @@ export class ApiController {
     });
   }
 
-  @Get('publication/providers/')
+  @Route(moduleName, 'findMany')
   findMany(
     @TraceId() traceId: string | undefined,
     @Query() query: FindPublicationProvidersDto,
@@ -107,7 +107,7 @@ export class ApiController {
     });
   }
 
-  @Get('accounts/providers/:accountProviderId/publications/providers')
+  @Route(moduleName, 'findManyByAccountProvider')
   findManyByAccountProvider(
     @TraceId() traceId: string | undefined,
     @Param('accountProviderId', IsStringNumberPipe) accountProviderId: string,

@@ -1,16 +1,24 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import { PublishPublicationCommand } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe, PostAccess, Roles } from '@app/utils';
+import {
+  IsStringNumberPipe,
+  ModuleRoute,
+  PostAccess,
+  Roles,
+  Route,
+} from '@app/utils';
 import { Role } from '@app/types';
 import { PublishPublicationDto } from '@app/dtos';
 
-@Controller('posts/:postId/publications/:publicationId/publish')
+export const moduleName = 'publisher';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('/')
+  @Route(moduleName, 'createPublish')
   @Roles(Role.USER, Role.ADMIN)
   @PostAccess({ isAuthor: true })
   createPublish(

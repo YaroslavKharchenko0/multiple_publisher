@@ -1,19 +1,21 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import {
   CreateAccountProviderCommand,
   DeleteAccountProviderCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsEnumPipe, Roles } from '@app/utils';
+import { IsEnumPipe, ModuleRoute, Roles, Route } from '@app/utils';
 import { CreateAccountProviderBodyDto } from '@app/dtos';
 import { ProviderKey, Role } from '@app/types';
 
-@Controller('admin/accounts/providers')
+const moduleName = 'adminAccountProviders';
+
+@ModuleRoute(moduleName)
 export class AdminApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('/')
+  @Route(moduleName, 'create')
   @Roles(Role.ADMIN)
   create(
     @TraceId() traceId: string | undefined,
@@ -31,7 +33,7 @@ export class AdminApiController {
     });
   }
 
-  @Delete('/:key')
+  @Route(moduleName, 'delete')
   @Roles(Role.ADMIN)
   delete(
     @TraceId() traceId: string | undefined,

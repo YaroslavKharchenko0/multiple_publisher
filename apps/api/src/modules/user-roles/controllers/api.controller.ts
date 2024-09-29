@@ -1,15 +1,17 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Controller, Get, Param } from '@nestjs/common';
+import { Param } from '@nestjs/common';
 import { FindUserRoleCommand } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe, Roles } from '@app/utils';
+import { IsStringNumberPipe, ModuleRoute, Roles, Route } from '@app/utils';
 import { Role } from '@app/types';
 
-@Controller('users/:userId/roles')
+export const moduleName = 'userRole';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/')
+  @Route(moduleName, 'findUserRole')
   @Roles(Role.USER)
   findUserRole(
     @TraceId() traceId: string | undefined,

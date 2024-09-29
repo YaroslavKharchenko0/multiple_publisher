@@ -1,5 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body } from '@nestjs/common';
 import {
   SignInCommand,
   SignUpCommand,
@@ -8,12 +8,15 @@ import {
 import { TraceId } from '@app/logger';
 import { SignInBodyDto, SignUpBodyDto, VerifyEmailBodyDto } from '@app/dtos';
 import { SignInDocs, SignUpDocs, VerifyEmailDocs } from '@app/docs';
+import { ModuleRoute, Route } from '@app/utils';
 
-@Controller('auth')
+export const moduleName = 'auth';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('/sign-up')
+  @Route(moduleName, 'signUp')
   @SignUpDocs()
   signUp(@TraceId() traceId: string | undefined, @Body() body: SignUpBodyDto) {
     const payload: SignUpCommand.Request = body;
@@ -28,7 +31,7 @@ export class ApiController {
     });
   }
 
-  @Post('/sign-in')
+  @Route(moduleName, 'signIn')
   @SignInDocs()
   signIn(@TraceId() traceId: string | undefined, @Body() body: SignInBodyDto) {
     const payload: SignInCommand.Request = body;
@@ -43,7 +46,7 @@ export class ApiController {
     });
   }
 
-  @Put('/email/verify')
+  @Route(moduleName, 'verifyEmail')
   @VerifyEmailDocs()
   verifyEmail(
     @TraceId() traceId: string | undefined,
