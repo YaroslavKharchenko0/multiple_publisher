@@ -2,11 +2,19 @@ import { FileType, UploadStatus } from '@app/types';
 import { z } from 'zod';
 import { userId } from '../user';
 
-export const fileId = z.number();
-export const fileProviderId = z.string().uuid().readonly().nullable();
-export const fileType = z.nativeEnum(FileType);
-export const fileUploadStatus = z.nativeEnum(UploadStatus).nullable();
-export const filePath = z.string().nullable();
+export const fileId = z.number().describe('File id');
+export const fileProviderId = z
+  .string()
+  .uuid()
+  .readonly()
+  .nullable()
+  .describe('File provider id');
+export const fileType = z.nativeEnum(FileType).describe('File type');
+export const fileUploadStatus = z
+  .nativeEnum(UploadStatus)
+  .nullable()
+  .describe('File upload status');
+export const filePath = z.string().nullable().describe('File path');
 
 export const fileValidationSchema = z.object({
   id: fileId,

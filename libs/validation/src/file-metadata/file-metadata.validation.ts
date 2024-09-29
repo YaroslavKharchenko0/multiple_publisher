@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { fileId } from '../file/file.validation';
 
-export const fileMetadataId = z.number();
+export const fileMetadataId = z.number().describe('File metadata id');
 
 export const fileMetadataValidationSchema = z.object({
   id: fileMetadataId,

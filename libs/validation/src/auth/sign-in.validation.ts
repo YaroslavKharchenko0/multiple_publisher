@@ -9,9 +9,9 @@ export const signInValidationSchema = z.object({
 export type SignInRequest = z.infer<typeof signInValidationSchema>
 
 export const signInResponseSchema = z.object({
-  idToken: z.string(),
-  accessToken: z.string(),
-  refreshToken: z.string(),
+  idToken: z.string().describe('Id token'),
+  accessToken: z.string().describe('Access token'),
+  refreshToken: z.string().describe('Refresh token'),
 })
 
 export type SignInResponse = z.infer<typeof signInResponseSchema>

@@ -3,11 +3,13 @@ import { z } from 'zod';
 import { userId } from '../user';
 import { accountProviderId } from '../account-provider';
 
-export const accountId = z.number();
-export const accountName = z.string().max(100);
-export const accountStatus = z.nativeEnum(AccountStatus);
-export const accountUserId = userId.nullable();
-export const accountInternalId = z.string();
+export const accountId = z.number().describe('Account id');
+export const accountName = z.string().max(100).describe('Account name');
+export const accountStatus = z
+  .nativeEnum(AccountStatus)
+  .describe('Account status');
+export const accountUserId = userId.nullable().describe('Account user id');
+export const accountInternalId = z.string().describe('Account internal id');
 
 export const accountValidationSchema = z.object({
   id: accountId,

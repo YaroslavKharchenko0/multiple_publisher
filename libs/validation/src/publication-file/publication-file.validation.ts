@@ -2,9 +2,11 @@ import { z } from 'zod';
 import { postId } from '../post/post.validation';
 import { fileId } from '../file';
 
-export const publicationFileId = z.number();
+export const publicationFileId = z.number().describe('Publication file id');
 
-export const publicationFileIsOriginal = z.boolean();
+export const publicationFileIsOriginal = z
+  .boolean()
+  .describe('Is original file');
 
 export const publicationFileValidationSchema = z.object({
   id: publicationFileId,

@@ -1,5 +1,5 @@
-import { User } from './user.validation'
+import { User } from './user.validation';
 
-export type UserCreatedRequest = User
+export type UserCreatedRequest = User;
 
-export type UserCreatedResponse = null
+export type UserCreatedResponse = null;

@@ -3,7 +3,7 @@ import { userId } from '../user/user.validation'
 import { roleId } from '../role'
 
 export const userRoleValidationSchema = z.object({
-  id: z.number(),
+  id: z.number().describe('User role id'),
   userId: userId,
   roleId: roleId,
 })

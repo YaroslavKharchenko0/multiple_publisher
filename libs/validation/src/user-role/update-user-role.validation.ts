@@ -1,9 +1,10 @@
 import { z } from 'zod'
 import { role } from '../role'
 import { UserRole } from './user-role.validation'
+import { userId } from '../user'
 
 export const updateUserRoleValidationSchema = z.object({
-  userId: z.number(),
+  userId,
   role,
 })
 

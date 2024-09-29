@@ -6,7 +6,7 @@ export const publishPublicationValidationSchema = z
   .object({
     publicationId,
     postId,
-    publishAt: z.date(),
+    publishAt: z.date().describe('Publish date'),
   })
   .required();
 

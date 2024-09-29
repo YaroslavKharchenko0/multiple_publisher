@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { userEmail } from '../user';
 
 export const verifyEmailValidationSchema = z.object({
-  code: z.string(),
-  email: z.string().email(),
+  code: z.string().describe('Verification code'),
+  email: userEmail,
 });
 
 export type VerifyEmailRequest = z.infer<typeof verifyEmailValidationSchema>;
