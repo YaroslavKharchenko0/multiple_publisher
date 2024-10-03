@@ -1,5 +1,5 @@
-export interface HttpResponse {
-  data: unknown;
+export interface HttpResponse<T> {
+  data: T;
   path: string;
   timestamp: string;
 }

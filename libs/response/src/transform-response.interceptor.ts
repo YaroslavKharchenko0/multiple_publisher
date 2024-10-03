@@ -44,11 +44,11 @@ const isRpcResponse = (data: any): data is RmqResponse<unknown> => {
 
 @Injectable()
 export class TransformInterceptor<T>
-  implements NestInterceptor<T, HttpResponse> {
+  implements NestInterceptor<T, HttpResponse<unknown>> {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<HttpResponse> {
+  ): Observable<HttpResponse<unknown>> {
     const isRmqContext = isRabbitContext(context);
 
     if (isRmqContext) {
