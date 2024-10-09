@@ -16,6 +16,7 @@ import {
 import { TransformInterceptor } from '@app/response';
 import { HttpErrorFilter, RmqErrorInterceptor } from '@app/errors';
 import { createSwagger } from '@app/docs';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -38,6 +39,8 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new HttpErrorFilter());
+
+  app.useGlobalPipes(new ZodValidationPipe());
 
   const port = Number(configService.getOrThrow<string>('PORT'));
 

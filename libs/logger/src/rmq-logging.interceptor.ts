@@ -1,5 +1,11 @@
 import { isRabbitContext } from '@golevelup/nestjs-rabbitmq';
-import { Injectable, NestInterceptor, ExecutionContext, Logger, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  Logger,
+  CallHandler,
+} from '@nestjs/common';
 import { catchError, tap } from 'rxjs/operators';
 
 @Injectable()
@@ -14,7 +20,7 @@ export class RMQLoggingInterceptor implements NestInterceptor {
     }
 
     const now = Date.now();
-    const rmqContext = context.switchToRpc().getContext()
+    const rmqContext = context.switchToRpc().getContext();
 
     const exchange = rmqContext.fields.exchange;
     const routingKey = rmqContext.fields.routingKey;
@@ -23,11 +29,15 @@ export class RMQLoggingInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(() => {
         const delay = Date.now() - now;
-        this.logger.log(`[${exchange}] ${routingKey} - ${delay}ms, traceId: ${traceId}`);
+        this.logger.log(
+          `[${exchange}] ${routingKey} - ${delay}ms, traceId: ${traceId}`,
+        );
       }),
       catchError((error) => {
         const delay = Date.now() - now;
-        this.logger.error(`[${exchange}] ${routingKey} - ${delay}ms, traceId: ${traceId} - ${error}`);
+        this.logger.error(
+          `[${exchange}] ${routingKey} - ${delay}ms, traceId: ${traceId} - ${error}`,
+        );
         throw error;
       }),
     );
@@ -35,8 +45,8 @@ export class RMQLoggingInterceptor implements NestInterceptor {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private executeTraceId = (rmqContext: any) => {
-    const traceId: string | undefined = rmqContext.properties.headers.traceId
+    const traceId: string | undefined = rmqContext.properties.headers.traceId;
 
     return traceId;
-  }
+  };
 }
