@@ -36,7 +36,15 @@ export class QueryController {
   async findPosts(
     @RabbitPayload() message: FindPostsQuery.Request,
   ): Promise<FindPostsQuery.Response> {
-    const payload = await this.postService.getPosts(message.pagination);
+    const getPosts = this.postService.getPosts(message.pagination);
+    const getMetadata = this.postService.getPostsPaginationMetadata();
+
+    const [posts, metadata] = await Promise.all([getPosts, getMetadata]);
+
+    const payload: FindPostsQuery.ResponsePayload = {
+      posts,
+      metadata,
+    };
 
     return createSuccessResponse(payload);
   }
@@ -49,10 +57,21 @@ export class QueryController {
   async findUserPosts(
     @RabbitPayload() message: FindUserPostsQuery.Request,
   ): Promise<FindUserPostsQuery.Response> {
-    const payload = await this.postService.getUserPosts(
+    const getUserPosts = this.postService.getUserPosts(
       message.userId,
       message.pagination,
     );
+
+    const getMetadata = this.postService.getUserPostsPaginationMetadata(
+      message.userId,
+    );
+
+    const [posts, metadata] = await Promise.all([getUserPosts, getMetadata]);
+
+    const payload: FindUserPostsQuery.ResponsePayload = {
+      posts,
+      metadata,
+    };
 
     return createSuccessResponse(payload);
   }

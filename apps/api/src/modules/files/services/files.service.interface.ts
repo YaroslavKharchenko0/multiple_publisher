@@ -1,6 +1,6 @@
 import { Base64, FileType, UploadStatus } from '@app/types';
 import { FileModel } from '../models/file.model';
-import { Pagination } from '@app/validation';
+import { Pagination, PaginationMetadata } from '@app/validation';
 
 export interface CreateFileInput {
   providerId: string;
@@ -56,6 +56,9 @@ export interface Service {
   findById(id: number): Promise<FileModel>;
   findByProviderId(providerId: string): Promise<FileModel>;
   findUserFiles(authorId: number, pagination: Pagination): Promise<FileModel[]>;
+  findUserFilesPaginationMetadata(
+    authorId: number,
+  ): Promise<PaginationMetadata>;
   updateById(id: number, input: Partial<FileModel>): Promise<FileModel>;
   updateByProviderId(
     providerId: string,

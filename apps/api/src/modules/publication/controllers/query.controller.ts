@@ -51,10 +51,25 @@ export class QueryController {
   async findByPostId(
     @RabbitPayload() message: FindPostPublicationsQuery.Request,
   ): Promise<FindPostPublicationsQuery.Response> {
-    const payload = await this.publicationService.findPostPublications(
+    const findPostPublications = this.publicationService.findPostPublications(
       message.postId,
       message.pagination,
     );
+
+    const findMetadata =
+      this.publicationService.createPostPublicationsPaginationMetadata(
+        message.postId,
+      );
+
+    const [publications, metadata] = await Promise.all([
+      findPostPublications,
+      findMetadata,
+    ]);
+
+    const payload: FindPostPublicationsQuery.ResponsePayload = {
+      publications,
+      metadata,
+    };
 
     return createSuccessResponse(payload);
   }

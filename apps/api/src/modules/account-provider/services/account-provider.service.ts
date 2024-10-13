@@ -15,7 +15,7 @@ export class AccountProviderService implements Service {
     @Inject(ACCOUNT_PROVIDER_REPOSITORY)
     private readonly repository: AccountProviderRepository,
     private readonly rmqErrorService: RmqErrorService,
-  ) {}
+  ) { }
 
   async findAccountProviders(
     pagination: Pagination,

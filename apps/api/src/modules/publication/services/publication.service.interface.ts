@@ -1,4 +1,4 @@
-import { Pagination } from '@app/validation';
+import { Pagination, PaginationMetadata } from '@app/validation';
 import { PublicationModel } from '../models/publication.model';
 import { Options, PublicationStatus } from '@app/types';
 
@@ -27,6 +27,9 @@ export interface Service {
     postId: number,
     pagination: Pagination,
   ): Promise<PublicationModel[]>;
+  createPostPublicationsPaginationMetadata(
+    postId: number,
+  ): Promise<PaginationMetadata>;
   updatePublication(
     id: number,
     postId: number,

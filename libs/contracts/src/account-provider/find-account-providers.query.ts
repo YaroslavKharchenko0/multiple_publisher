@@ -1,5 +1,8 @@
-import { RmqResponse } from '../common'
-import { FindAccountProvidersRequest, FindAccountProvidersResponse } from '@app/validation'
+import { RmqResponse } from '../common';
+import {
+  FindAccountProvidersRequest,
+  FindAccountProvidersResponse,
+} from '@app/validation';
 
 export namespace FindAccountProvidersQuery {
   export const exchange = 'account-provider';
@@ -12,6 +15,5 @@ export namespace FindAccountProvidersQuery {
 
   export type ResponsePayload = FindAccountProvidersResponse;
 
-  export type Response = RmqResponse<FindAccountProvidersResponse>
+  export type Response = RmqResponse<FindAccountProvidersResponse>;
 }
-

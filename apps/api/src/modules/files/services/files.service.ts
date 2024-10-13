@@ -11,7 +11,7 @@ import {
 import { FileModel } from '../models/file.model';
 import { FILE_REPOSITORY } from '../providers/file.providers';
 import { FileRepository } from '../repositories/files.repository';
-import { Pagination } from '@app/validation';
+import { Pagination, PaginationMetadata } from '@app/validation';
 import {
   BunnyStorage,
   BunnyStorageService,
@@ -32,7 +32,7 @@ export class FileService implements Service {
     @BunnyStream() private readonly stream: BunnyStreamService,
     private readonly exceptionService: RmqErrorService,
     private readonly fileFacade: FileFacade,
-  ) {}
+  ) { }
   private generateVideoTitle(): string {
     return randomUUID();
   }
@@ -168,6 +168,24 @@ export class FileService implements Service {
     const entities = await this.repository.findUserFiles(authorId, pagination);
 
     return entities.map(FileModel.fromEntity);
+  }
+
+  async findUserFilesPaginationMetadata(
+    authorId: number,
+  ): Promise<PaginationMetadata> {
+    const results = await this.repository.findUserFilesCount(authorId);
+
+    const [result] = results;
+
+    if (!result) {
+      throw this.exceptionService.notFound();
+    }
+
+    const metadata: PaginationMetadata = {
+      total: result.count,
+    };
+
+    return metadata;
   }
   async updateById(id: number, input: Partial<FileModel>): Promise<FileModel> {
     const entity = await this.updateById(id, input);
