@@ -5,9 +5,9 @@ import {
   POST_ACCESS_KEY,
   PostAccessOptions,
 } from '../decorators/post-access.decorator';
-import { JWTUser } from '../decorators';
 import { Post } from '@app/validation';
 import { randomUUID } from 'crypto';
+import { JWTUser } from '@app/types';
 
 const postIdKey = 'postId';
 

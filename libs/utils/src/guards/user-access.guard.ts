@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { FILE_ACCESS_KEY, JWTUser } from '../decorators';
+import { FILE_ACCESS_KEY } from '../decorators';
+import { JWTUser } from '@app/types';
 
 @Injectable()
 export class UserAccessGuard implements CanActivate {

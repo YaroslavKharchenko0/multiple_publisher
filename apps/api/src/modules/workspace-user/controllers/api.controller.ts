@@ -10,14 +10,13 @@ import {
 import { TraceId } from '@app/logger';
 import {
   IsStringNumberPipe,
-  JWTUser,
   ModuleRoute,
   Roles,
   Route,
   User,
   WorkspaceRoles,
 } from '@app/utils';
-import { Role, WorkspaceRole } from '@app/types';
+import { JWTUser, Role, WorkspaceRole } from '@app/types';
 import { CreateWorkspaceUserDto, UpdateWorkspaceUserDto } from '@app/dtos';
 
 export const moduleName = 'workspaceUser';

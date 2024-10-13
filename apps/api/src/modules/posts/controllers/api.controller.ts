@@ -17,12 +17,12 @@ import {
 } from '@app/dtos';
 import {
   IsStringNumberPipe,
-  JWTUser,
   ModuleRoute,
   PostAccess,
   Route,
   User,
 } from '@app/utils';
+import { JWTUser } from '@app/types';
 
 export const moduleName = 'post';
 

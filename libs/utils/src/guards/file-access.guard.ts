@@ -1,19 +1,25 @@
-
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { FILE_ACCESS_KEY, JWTUser, Options } from "../decorators";
-import { File } from '@app/validation'
-import { randomUUID } from "crypto";
-import { FileFacade } from "../facades/file.facade";
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { FILE_ACCESS_KEY, Options } from '../decorators';
+import { File } from '@app/validation';
+import { randomUUID } from 'crypto';
+import { FileFacade } from '../facades/file.facade';
+import { JWTUser } from '@app/types';
 
 @Injectable()
 export class FileAccessGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector, private readonly fileFacade: FileFacade) { }
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly fileFacade: FileFacade,
+  ) { }
 
-  private async findFile(options: Options, params: Record<string, string>): Promise<File | null> {
+  private async findFile(
+    options: Options,
+    params: Record<string, string>,
+  ): Promise<File | null> {
     let file: File | null = null;
 
-    const traceId = `file-access-${randomUUID()}`
+    const traceId = `file-access-${randomUUID()}`;
 
     const fileId = Number(params?.['fileId']);
 
@@ -32,7 +38,7 @@ export class FileAccessGuard implements CanActivate {
 
   private checkAccess(options: Options, file: File, jwtUser: JWTUser): boolean {
     if (jwtUser.isAdmin()) {
-      return true
+      return true;
     }
 
     if (options.by.user) {
@@ -74,5 +80,4 @@ export class FileAccessGuard implements CanActivate {
 
     return this.checkAccess(options, file, jwtUser);
   }
-
 }

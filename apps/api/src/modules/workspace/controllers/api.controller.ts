@@ -8,7 +8,6 @@ import {
 import { TraceId } from '@app/logger';
 import {
   IsStringNumberPipe,
-  JWTUser,
   ModuleRoute,
   Roles,
   Route,
@@ -16,7 +15,7 @@ import {
   WorkspaceRoles,
 } from '@app/utils';
 import { CreateWorkspaceBodyDto } from '@app/dtos';
-import { Role, WorkspaceRole } from '@app/types';
+import { JWTUser, Role, WorkspaceRole } from '@app/types';
 
 export const moduleName = 'workspace';
 

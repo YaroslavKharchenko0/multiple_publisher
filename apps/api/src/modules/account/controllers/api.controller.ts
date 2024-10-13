@@ -11,14 +11,13 @@ import { TraceId } from '@app/logger';
 import {
   AccountAccess,
   IsStringNumberPipe,
-  JWTUser,
   ModuleRoute,
   Route,
   Roles,
   User,
 } from '@app/utils';
 import { UpdateAccountBodyDto } from '@app/dtos';
-import { Role } from '@app/types';
+import { JWTUser, Role } from '@app/types';
 import {
   DeleteAccountDocs,
   FindAccountDocs,
