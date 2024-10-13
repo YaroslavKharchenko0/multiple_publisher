@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Database, Orm, schema } from '../../../database';
-import { and, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 
 export type InsertWorkspaceUser = typeof schema.workspaceUsers.$inferInsert;
 export type SelectWorkspaceUser = typeof schema.workspaceUsers.$inferSelect;
@@ -34,6 +34,11 @@ export interface FindUserWorkspacesParams {
     limit: number;
     offset: number;
   };
+}
+
+export interface FindUserWorkspaceCountParams {
+  userId: number;
+  unique: boolean;
 }
 
 @Injectable()
@@ -120,6 +125,23 @@ export class WorkspaceUserRepository {
       .limit(params.pagination.limit)
       .offset(params.pagination.offset)
       .execute();
+
+    return result;
+  }
+
+  async findUserWorkspaceCount(params: FindUserWorkspaceCountParams) {
+    const where = eq(this.workspaceUsers.userId, params.userId);
+
+    const query = this.db
+      .select({ count: count() })
+      .from(this.workspaceUsers)
+      .where(where);
+
+    if (params.unique) {
+      query.groupBy(this.workspaceUsers.workspaceId);
+    }
+
+    const result = await query.execute();
 
     return result;
   }

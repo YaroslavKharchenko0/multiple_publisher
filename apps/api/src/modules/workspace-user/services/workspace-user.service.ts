@@ -3,6 +3,7 @@ import {
   CreateOne,
   DeleteOneParams,
   FindOneParams,
+  FindUserWorkspacePaginationMetadata,
   FindUserWorkspaces,
   FindWorkspaceUsersParams,
   Options,
@@ -20,6 +21,7 @@ import { WorkspaceRole } from '@app/types';
 import { RmqErrorService, RmqResponseService } from '@app/errors';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { FindWorkspaceRoleQuery } from '@app/contracts';
+import { PaginationMetadata } from '@app/validation';
 
 @Injectable()
 export class WorkspaceUserService implements Service {
@@ -156,5 +158,26 @@ export class WorkspaceUserService implements Service {
     });
 
     return entities.map(WorkspaceUserModel.fromEntity);
+  }
+
+  async findUserWorkspacePaginationMetadata(
+    params: FindUserWorkspacePaginationMetadata,
+  ): Promise<PaginationMetadata> {
+    const results = await this.repository.findUserWorkspaceCount({
+      userId: params.userId,
+      unique: params.unique,
+    });
+
+    const [result] = results;
+
+    if (!result) {
+      throw this.rmqErrorService.notFound();
+    }
+
+    const metadata: PaginationMetadata = {
+      total: result.count,
+    };
+
+    return metadata;
   }
 }

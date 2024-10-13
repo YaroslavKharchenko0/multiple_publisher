@@ -59,13 +59,28 @@ export class QueryController {
   async findUserWorkspaces(
     @RabbitPayload() message: FindUserWorkspacesQuery.Request,
   ): Promise<FindUserWorkspacesQuery.Response> {
-    const payload = await this.service.findUserWorkspaces({
+    const findWorkspaces = this.service.findUserWorkspaces({
       userId: message.userId,
       pagination: {
         limit: message?.pagination?.limit,
         offset: message?.pagination?.offset,
       },
     });
+
+    const findMetadata = this.service.findUserWorkspacePaginationMetadata({
+      userId: message.userId,
+      unique: true,
+    });
+
+    const [workspaces, metadata] = await Promise.all([
+      findWorkspaces,
+      findMetadata,
+    ]);
+
+    const payload: FindUserWorkspacesQuery.ResponsePayload = {
+      workspaces,
+      metadata,
+    };
 
     return createSuccessResponse(payload);
   }
