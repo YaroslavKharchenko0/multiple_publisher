@@ -17,6 +17,7 @@ import { TransformInterceptor } from '@app/response';
 import { HttpErrorFilter, RmqErrorInterceptor } from '@app/errors';
 import { createSwagger } from '@app/docs';
 import { ZodValidationPipe } from 'nestjs-zod';
+import cors from '@fastify/cors';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -29,6 +30,12 @@ async function bootstrap() {
   const logger = createLogger(configService);
 
   app.useLogger(logger);
+
+  app.register(cors as unknown as any, {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   app.useGlobalInterceptors(
     new TraceInterceptor(),
