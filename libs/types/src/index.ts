@@ -9,3 +9,4 @@ export * from './post';
 export * from './publication';
 export * from './publication-provider';
 export * from './response';
+export * from './user';

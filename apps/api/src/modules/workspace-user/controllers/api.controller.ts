@@ -1,13 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import {
   CreateWorkspaceUserCommand,
   DeleteWorkspaceUserCommand,
