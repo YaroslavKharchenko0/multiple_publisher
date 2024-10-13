@@ -13,7 +13,7 @@ import { WorkspaceRole } from '@app/types';
 
 @Controller()
 export class EventController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @RabbitSubscribe({
     exchange: WorkspaceCreatedEvent.exchange,

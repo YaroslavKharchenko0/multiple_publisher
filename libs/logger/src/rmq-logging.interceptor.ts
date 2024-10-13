@@ -45,7 +45,8 @@ export class RMQLoggingInterceptor implements NestInterceptor {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private executeTraceId = (rmqContext: any) => {
-    const traceId: string | undefined = rmqContext.properties.headers.traceId;
+    const traceId: string | undefined =
+      rmqContext?.properties?.headers?.traceId;
 
     return traceId;
   };

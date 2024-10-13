@@ -11,23 +11,17 @@ import { catchError } from 'rxjs/operators';
 import { RmqErrorService } from './rmq-error.service';
 import { CognitoIdentityProviderServiceException } from '@aws-sdk/client-cognito-identity-provider';
 
-
 @Injectable()
-export class RmqErrorInterceptor<T>
-  implements NestInterceptor<T> {
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ) {
+export class RmqErrorInterceptor<T> implements NestInterceptor<T> {
+  intercept(context: ExecutionContext, next: CallHandler) {
     const isRmqContext = isRabbitContext(context);
 
     if (!isRmqContext) {
       return next.handle();
     }
 
-    return next
-      .handle()
-      .pipe(catchError((error) => {
+    return next.handle().pipe(
+      catchError((error) => {
         if (error instanceof CognitoIdentityProviderServiceException) {
           const httpStatusCode = error.$metadata.httpStatusCode || 403;
 
@@ -42,7 +36,8 @@ export class RmqErrorInterceptor<T>
           return of(createErrorResponse(500, error.message));
         }
 
-        return of(createErrorResponse(500, "Errors"))
-      }));
+        return of(createErrorResponse(500, 'Errors'));
+      }),
+    );
   }
 }
