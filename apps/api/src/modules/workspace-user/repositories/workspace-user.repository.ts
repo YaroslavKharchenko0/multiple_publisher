@@ -122,6 +122,7 @@ export class WorkspaceUserRepository {
       .from(this.workspaceUsers)
       .where(where)
       .groupBy(this.workspaceUsers.workspaceId)
+      .orderBy(this.workspaceUsers.joinedAt)
       .limit(params.pagination.limit)
       .offset(params.pagination.offset)
       .execute();
