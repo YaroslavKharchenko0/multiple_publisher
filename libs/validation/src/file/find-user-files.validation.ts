@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { File } from './file.validation';
 import { userId } from '../user';
-import { paginationValidationSchema } from '../common';
+import { PaginationMetadata, paginationValidationSchema } from '../common';
 
 export const findUserFilesValidationSchema = z.object({
   userId,
@@ -12,4 +12,7 @@ export type FindUserFilesRequest = z.infer<
   typeof findUserFilesValidationSchema
 >;
 
-export type FindUserFilesResponse = File[];
+export type FindUserFilesResponse = {
+  files: File[];
+  metadata: PaginationMetadata;
+};

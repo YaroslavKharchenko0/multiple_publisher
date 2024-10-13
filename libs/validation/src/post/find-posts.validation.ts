@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Post } from './post.validation';
-import { paginationValidationSchema } from '../common';
+import { PaginationMetadata, paginationValidationSchema } from '../common';
 
 export const findPostsValidationSchema = z.object({
   pagination: paginationValidationSchema,
@@ -8,4 +8,7 @@ export const findPostsValidationSchema = z.object({
 
 export type FindPostsRequest = z.infer<typeof findPostsValidationSchema>;
 
-export type FindPostsResponse = Post[];
+export type FindPostsResponse = {
+  posts: Post[];
+  metadata: PaginationMetadata;
+};

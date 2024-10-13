@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Publication } from './publication.validation';
 import { postId } from '../post';
-import { paginationValidationSchema } from '../common';
+import { PaginationMetadata, paginationValidationSchema } from '../common';
 
 export const findPostPublicationsValidationSchema = z.object({
   postId,
@@ -12,4 +12,7 @@ export type FindPostPublicationsRequest = z.infer<
   typeof findPostPublicationsValidationSchema
 >;
 
-export type FindPostPublicationsResponse = Publication[];
+export type FindPostPublicationsResponse = {
+  publications: Publication[];
+  metadata: PaginationMetadata;
+};
