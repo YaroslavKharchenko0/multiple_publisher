@@ -425,27 +425,31 @@ export const router: Router = {
     },
   },
   workspaceUser: {
-    basePath: 'workspaces/:workspaceId/users',
+    basePath: '',
     routes: {
       createWorkspaceUser: {
-        path: '/',
+        path: '/workspaces/:workspaceId/users/',
         method: 'POST',
       },
       deleteWorkspaceUser: {
         method: 'DELETE',
-        path: '/:userId',
+        path: '/workspaces/:workspaceId/users/:userId',
       },
       updateWorkspaceUser: {
         method: 'PATCH',
-        path: '/:userId',
+        path: '/workspaces/:workspaceId/users/:userId',
       },
       findWorkspaceUser: {
         method: 'GET',
-        path: '/:userId',
+        path: '/workspaces/:workspaceId/users/:userId',
       },
       findWorkspaceUsers: {
         method: 'GET',
-        path: '/',
+        path: '/workspaces/:workspaceId/users/',
+      },
+      findUserWorkspaces: {
+        method: 'GET',
+        path: '/users/:userId/workspaces',
       },
     },
   },
