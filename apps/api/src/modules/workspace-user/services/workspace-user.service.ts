@@ -165,7 +165,6 @@ export class WorkspaceUserService implements Service {
   ): Promise<PaginationMetadata> {
     const results = await this.repository.findUserWorkspaceCount({
       userId: params.userId,
-      unique: params.unique,
     });
 
     const [result] = results;

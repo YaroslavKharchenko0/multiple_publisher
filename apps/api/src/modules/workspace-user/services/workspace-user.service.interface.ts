@@ -44,7 +44,6 @@ export interface FindUserWorkspaces {
 
 export interface FindUserWorkspacePaginationMetadata {
   userId: number;
-  unique: boolean;
 }
 
 export interface Service {

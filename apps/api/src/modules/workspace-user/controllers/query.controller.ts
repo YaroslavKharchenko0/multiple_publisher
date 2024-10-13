@@ -69,7 +69,6 @@ export class QueryController {
 
     const findMetadata = this.service.findUserWorkspacePaginationMetadata({
       userId: message.userId,
-      unique: true,
     });
 
     const [workspaces, metadata] = await Promise.all([

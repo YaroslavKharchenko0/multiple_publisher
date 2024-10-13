@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Database, Orm, schema } from '../../../database';
-import { and, count, eq } from 'drizzle-orm';
+import { and, count, countDistinct, eq, max } from 'drizzle-orm';
 
 export type InsertWorkspaceUser = typeof schema.workspaceUsers.$inferInsert;
 export type SelectWorkspaceUser = typeof schema.workspaceUsers.$inferSelect;
@@ -38,7 +38,6 @@ export interface FindUserWorkspacesParams {
 
 export interface FindUserWorkspaceCountParams {
   userId: number;
-  unique: boolean;
 }
 
 @Injectable()
@@ -118,10 +117,20 @@ export class WorkspaceUserRepository {
     const where = eq(this.workspaceUsers.userId, params.userId);
 
     const result = await this.db
-      .select()
+      .select({
+        id: this.workspaceUsers.id,
+        joinedAt: max(this.workspaceUsers.joinedAt),
+        workspaceId: this.workspaceUsers.workspaceId,
+        userId: this.workspaceUsers.userId,
+        roleId: this.workspaceUsers.roleId,
+      })
       .from(this.workspaceUsers)
       .where(where)
-      .groupBy(this.workspaceUsers.workspaceId)
+      .groupBy(
+        this.workspaceUsers.workspaceId,
+        this.workspaceUsers.joinedAt,
+        this.workspaceUsers.id,
+      )
       .orderBy(this.workspaceUsers.joinedAt)
       .limit(params.pagination.limit)
       .offset(params.pagination.offset)
@@ -134,13 +143,9 @@ export class WorkspaceUserRepository {
     const where = eq(this.workspaceUsers.userId, params.userId);
 
     const query = this.db
-      .select({ count: count() })
+      .select({ count: countDistinct(this.workspaceUsers.workspaceId) })
       .from(this.workspaceUsers)
       .where(where);
-
-    if (params.unique) {
-      query.groupBy(this.workspaceUsers.workspaceId);
-    }
 
     const result = await query.execute();
 
