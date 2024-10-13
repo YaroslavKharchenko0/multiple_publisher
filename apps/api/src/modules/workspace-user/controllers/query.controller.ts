@@ -1,4 +1,5 @@
 import {
+  FindUserWorkspacesQuery,
   FindWorkspaceUserQuery,
   FindWorkspaceUsersQuery,
   createSuccessResponse,
@@ -13,7 +14,7 @@ export class QueryController {
   constructor(
     @Inject(WORKSPACE_USER_SERVICE)
     private readonly service: WorkspaceUserService,
-  ) {}
+  ) { }
 
   @RabbitRPC({
     exchange: FindWorkspaceUserQuery.exchange,
@@ -41,6 +42,25 @@ export class QueryController {
   ): Promise<FindWorkspaceUsersQuery.Response> {
     const payload = await this.service.findWorkspaceUsers({
       workspaceId: message.workspaceId,
+      pagination: {
+        limit: message?.pagination?.limit,
+        offset: message?.pagination?.offset,
+      },
+    });
+
+    return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: FindUserWorkspacesQuery.exchange,
+    routingKey: FindUserWorkspacesQuery.routingKey,
+    queue: FindUserWorkspacesQuery.queue,
+  })
+  async findUserWorkspaces(
+    @RabbitPayload() message: FindUserWorkspacesQuery.Request,
+  ): Promise<FindUserWorkspacesQuery.Response> {
+    const payload = await this.service.findUserWorkspaces({
+      userId: message.userId,
       pagination: {
         limit: message?.pagination?.limit,
         offset: message?.pagination?.offset,

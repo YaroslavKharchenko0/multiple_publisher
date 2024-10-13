@@ -1,8 +1,9 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Param } from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   CreateWorkspaceUserCommand,
   DeleteWorkspaceUserCommand,
+  FindUserWorkspacesQuery,
   FindWorkspaceUserQuery,
   FindWorkspaceUsersQuery,
   UpdateWorkspaceUserCommand,
@@ -14,10 +15,15 @@ import {
   Roles,
   Route,
   User,
+  UserAccess,
   WorkspaceRoles,
 } from '@app/utils';
 import { JWTUser, Role, WorkspaceRole } from '@app/types';
-import { CreateWorkspaceUserDto, UpdateWorkspaceUserDto } from '@app/dtos';
+import {
+  CreateWorkspaceUserDto,
+  FindUserWorkspacesDto,
+  UpdateWorkspaceUserDto,
+} from '@app/dtos';
 
 export const moduleName = 'workspaceUser';
 
@@ -143,6 +149,29 @@ export class ApiController {
     return this.amqpConnection.request<FindWorkspaceUsersQuery.Response>({
       exchange: FindWorkspaceUsersQuery.exchange,
       routingKey: FindWorkspaceUsersQuery.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
+
+  @Route(moduleName, 'findUserWorkspaces')
+  @Roles(Role.USER)
+  @UserAccess()
+  findUserWorkspaces(
+    @TraceId() traceId: string | undefined,
+    @Param('userId', IsStringNumberPipe) userId: string,
+    @Query('pagination') pagination: FindUserWorkspacesDto,
+  ) {
+    const payload: FindUserWorkspacesQuery.Request = {
+      userId: Number(userId),
+      pagination,
+    };
+
+    return this.amqpConnection.request<FindUserWorkspacesQuery.Response>({
+      exchange: FindUserWorkspacesQuery.exchange,
+      routingKey: FindUserWorkspacesQuery.routingKey,
       payload,
       headers: {
         traceId,

@@ -3,6 +3,7 @@ import {
   CreateOne,
   DeleteOneParams,
   FindOneParams,
+  FindUserWorkspaces,
   FindWorkspaceUsersParams,
   Options,
   Service,
@@ -28,7 +29,7 @@ export class WorkspaceUserService implements Service {
     private readonly amqpConnection: AmqpConnection,
     private readonly rmqResponseService: RmqResponseService,
     private readonly rmqErrorService: RmqErrorService,
-  ) {}
+  ) { }
 
   private async findWorkspaceRole(role: WorkspaceRole, traceId?: string) {
     const requestPayload: FindWorkspaceRoleQuery.Request = {
@@ -135,6 +136,19 @@ export class WorkspaceUserService implements Service {
   ): Promise<WorkspaceUserModel[]> {
     const entities = await this.repository.findWorkspaceUsers({
       workspaceId: params.workspaceId,
+      pagination: {
+        limit: params?.pagination?.limit,
+        offset: params?.pagination?.offset,
+      },
+    });
+
+    return entities.map(WorkspaceUserModel.fromEntity);
+  }
+  async findUserWorkspaces(
+    params: FindUserWorkspaces,
+  ): Promise<WorkspaceUserModel[]> {
+    const entities = await this.repository.findUserWorkspaces({
+      userId: params.userId,
       pagination: {
         limit: params?.pagination?.limit,
         offset: params?.pagination?.offset,

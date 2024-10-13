@@ -36,6 +36,11 @@ export interface Options {
   traceId?: string;
 }
 
+export interface FindUserWorkspaces {
+  userId: number;
+  pagination: Pagination;
+}
+
 export interface Service {
   createOneByRole(
     input: CreateOne,
@@ -51,4 +56,5 @@ export interface Service {
   findWorkspaceUsers(
     params: FindWorkspaceUsersParams,
   ): Promise<WorkspaceUserModel[]>;
+  findUserWorkspaces(params: FindUserWorkspaces): Promise<WorkspaceUserModel[]>;
 }

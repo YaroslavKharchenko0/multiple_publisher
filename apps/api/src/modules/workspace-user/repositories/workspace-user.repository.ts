@@ -28,9 +28,17 @@ export interface FindWorkspaceUsersParams {
   };
 }
 
+export interface FindUserWorkspacesParams {
+  userId: number;
+  pagination: {
+    limit: number;
+    offset: number;
+  };
+}
+
 @Injectable()
 export class WorkspaceUserRepository {
-  constructor(@Orm() private readonly db: Database) {}
+  constructor(@Orm() private readonly db: Database) { }
 
   private workspaceUsers = schema.workspaceUsers;
 
@@ -97,6 +105,21 @@ export class WorkspaceUserRepository {
       limit: params.pagination.limit,
       offset: params.pagination.offset,
     });
+
+    return result;
+  }
+
+  async findUserWorkspaces(params: FindUserWorkspacesParams) {
+    const where = eq(this.workspaceUsers.userId, params.userId);
+
+    const result = await this.db
+      .select()
+      .from(this.workspaceUsers)
+      .where(where)
+      .groupBy(this.workspaceUsers.workspaceId)
+      .limit(params.pagination.limit)
+      .offset(params.pagination.offset)
+      .execute();
 
     return result;
   }
