@@ -5,6 +5,8 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@anatine/zod-nestjs": "^2.0.9",
+    "@anatine/zod-openapi": "^2.2.6",
     "@aws-sdk/client-cognito-identity-provider": "^3.606.0",
     "@fastify/cors": "8.5.0",
     "@fastify/multipart": "^8.3.0",
@@ -32,8 +34,8 @@
     "jsonwebtoken": "^9.0.2",
     "jwks-rsa": "^3.1.0",
     "nest-winston": "^1.10.0",
-    "nestjs-zod": "^3.0.0",
     "node-jose": "^2.2.0",
+    "openapi3-ts": "^4.4.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.12.0",

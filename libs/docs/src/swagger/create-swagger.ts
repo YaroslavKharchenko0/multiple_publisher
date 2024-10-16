@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { RawServerDefault } from 'fastify';
-import { patchNestJsSwagger } from 'nestjs-zod';
+import { patchNestjsSwagger } from '@anatine/zod-nestjs';
 
 export const createSwagger = async (
   app: NestFastifyApplication<RawServerDefault>,
@@ -18,7 +18,7 @@ export const createSwagger = async (
 
   builder.setVersion(appVersion);
 
-  patchNestJsSwagger();
+  patchNestjsSwagger();
 
   const config = builder.build();
 

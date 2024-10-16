@@ -16,7 +16,7 @@ import {
 import { TransformInterceptor } from '@app/response';
 import { HttpErrorFilter, RmqErrorInterceptor } from '@app/errors';
 import { createSwagger } from '@app/docs';
-import { ZodValidationPipe } from 'nestjs-zod';
+import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import cors from '@fastify/cors';
 
 async function bootstrap() {

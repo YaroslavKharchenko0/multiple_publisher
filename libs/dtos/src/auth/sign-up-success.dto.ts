@@ -1,6 +1,6 @@
 import { signUpSuccessValidationSchema } from '@app/validation';
-import { z } from 'nestjs-zod/z';
+import { createZodDto } from '@anatine/zod-nestjs';
 
-export type SignUpSuccessRequest = z.infer<
-  typeof signUpSuccessValidationSchema
->;
+export class SignUpSuccessDto extends createZodDto(
+  signUpSuccessValidationSchema,
+) { }

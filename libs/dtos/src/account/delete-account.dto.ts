@@ -1,4 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
+import { createZodDto } from '@anatine/zod-nestjs';
 import { deleteAccountValidationSchema } from '@app/validation';
 
 export class DeleteAccountBodyDto extends createZodDto(
