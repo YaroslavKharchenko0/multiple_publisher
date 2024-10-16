@@ -21,7 +21,7 @@ import {
 import { JWTUser, Role, WorkspaceRole } from '@app/types';
 import {
   CreateWorkspaceUserDto,
-  FindUserWorkspacesDto,
+  PaginationDto,
   UpdateWorkspaceUserDto,
 } from '@app/dtos';
 
@@ -162,7 +162,7 @@ export class ApiController {
   findUserWorkspaces(
     @TraceId() traceId: string | undefined,
     @Param('userId', IsStringNumberPipe) userId: string,
-    @Query('pagination') pagination: FindUserWorkspacesDto,
+    @Query() pagination: PaginationDto,
   ) {
     const payload: FindUserWorkspacesQuery.Request = {
       userId: Number(userId),
