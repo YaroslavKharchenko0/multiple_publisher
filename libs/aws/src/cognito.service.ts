@@ -182,4 +182,38 @@ export class CognitoService {
     const result = await this.cognitoISP.adminDeleteUser(params);
     return result;
   }
+
+  async authByAccessToken(accessToken: string) {
+    const params = {
+      AccessToken: accessToken,
+    };
+
+    const result = await this.cognitoISP.getUser(params);
+
+    return result;
+  }
+
+  async authByRefreshToken(refreshToken: string) {
+    const authParams = {
+      AuthFlow: AuthFlowType.REFRESH_TOKEN_AUTH,
+      ClientId: this.config.clientId,
+      AuthParameters: {
+        REFRESH_TOKEN: refreshToken,
+      },
+    };
+
+    const result = await this.cognitoISP.initiateAuth(authParams);
+
+    return result;
+  }
+
+  async signOut(accessToken: string) {
+    const params = {
+      AccessToken: accessToken,
+    };
+
+    const result = await this.cognitoISP.globalSignOut(params);
+
+    return result;
+  }
 }
