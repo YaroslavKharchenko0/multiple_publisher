@@ -7,7 +7,13 @@ import {
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import { SignInBodyDto, SignUpBodyDto, VerifyEmailBodyDto } from '@app/dtos';
-import { SignInDocs, SignUpDocs, VerifyEmailDocs } from '@app/docs';
+import {
+  KeepSessionDocs,
+  SignInDocs,
+  SignOutDocs,
+  SignUpDocs,
+  VerifyEmailDocs,
+} from '@app/docs';
 import { ModuleRoute, Route } from '@app/utils';
 
 export const moduleName = 'auth';
@@ -46,6 +52,10 @@ export class ApiController {
     });
   }
 
+  @Route(moduleName, 'signOut')
+  @SignOutDocs()
+  signOut() { }
+
   @Route(moduleName, 'verifyEmail')
   @VerifyEmailDocs()
   verifyEmail(
@@ -63,4 +73,7 @@ export class ApiController {
       },
     });
   }
+  @Route(moduleName, 'keepSession')
+  @KeepSessionDocs()
+  keepSession() { }
 }

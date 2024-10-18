@@ -72,9 +72,17 @@ export const router: Router = {
         method: 'POST',
         path: '/sign-in',
       },
+      signOut: {
+        method: 'POST',
+        path: '/sign-out',
+      },
       verifyEmail: {
         method: 'PUT',
         path: '/email/verify',
+      },
+      keepSession: {
+        method: 'GET',
+        path: 'session/keep',
       },
     },
   },

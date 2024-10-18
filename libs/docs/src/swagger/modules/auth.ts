@@ -18,3 +18,12 @@ export const VerifyEmailDocs = () =>
     ...defaultDecorators,
     ApiOperation({ summary: 'Verify email' }),
   );
+
+export const SignOutDocs = () =>
+  applyDecorators(...defaultDecorators, ApiOperation({ summary: 'Sign out' }));
+
+export const KeepSessionDocs = () =>
+  applyDecorators(
+    ...defaultDecorators,
+    ApiOperation({ summary: 'Keep session' }),
+  );
