@@ -4,6 +4,7 @@ import {
   AttributeType,
   AuthFlowType,
   CognitoIdentityProvider,
+  GlobalSignOutCommandInput,
   InitiateAuthCommandInput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
@@ -208,7 +209,7 @@ export class CognitoService {
   }
 
   async signOut(accessToken: string) {
-    const params = {
+    const params: GlobalSignOutCommandInput = {
       AccessToken: accessToken,
     };
 

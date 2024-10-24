@@ -81,7 +81,7 @@ export const router: Router = {
         path: '/email/verify',
       },
       keepSession: {
-        method: 'GET',
+        method: 'POST',
         path: 'session/keep',
       },
     },
