@@ -1,5 +1,8 @@
-import { RmqResponse } from '../common'
-import { CreateWorkspaceRequest, CreateWorkspaceResponse } from '@app/validation'
+import { RmqResponse } from '../common';
+import {
+  CreateWorkspaceRequest,
+  CreateWorkspaceResponse,
+} from '@app/validation';
 
 export namespace CreateWorkspaceCommand {
   export const exchange = 'workspace';
@@ -12,6 +15,5 @@ export namespace CreateWorkspaceCommand {
 
   export type ResponsePayload = CreateWorkspaceResponse;
 
-  export type Response = RmqResponse<CreateWorkspaceResponse>
+  export type Response = RmqResponse<CreateWorkspaceResponse>;
 }
-
