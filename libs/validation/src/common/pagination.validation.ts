@@ -10,8 +10,6 @@ export const paginationValidationSchema = z.object({
     .transform((value) => parseInt(value, 0))
     .refine(
       (value) => {
-        console.log('refine', { value });
-
         return offset.safeParse(value).success;
       },
       {
