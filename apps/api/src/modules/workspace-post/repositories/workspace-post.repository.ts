@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Database, Orm, schema } from '../../../database';
 import { countDistinct, eq } from 'drizzle-orm';
+import { Pagination } from '@app/validation';
 
 export type InsertWorkspacePost = {
   workspaceId: number;
@@ -11,10 +12,7 @@ export type SelectWorkspacePost = typeof schema.workspacePosts.$inferSelect;
 
 export interface FindWorkspacePostsParams {
   workspaceId: number;
-  pagination: {
-    limit: number;
-    offset: number;
-  };
+  pagination: Pagination;
 }
 
 export interface FindWorkspacePostsCountParams {
