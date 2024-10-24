@@ -1,1 +1,1 @@
-export * from './workspace-post.module';
+export { WorkspacePostModule } from './workspace-post.module';
