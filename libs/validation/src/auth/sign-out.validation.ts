@@ -7,10 +7,8 @@ export const signOutValidationSchema = z.object({
 
 export type SignOutRequest = z.infer<typeof signOutValidationSchema>;
 
-export const signOutSuccessValidationSchema = z.object({
+export const signOutResponseValidationSchema = z.object({
   success: z.boolean(),
 });
 
-export type SignOutSuccessRequest = z.infer<
-  typeof signOutSuccessValidationSchema
->;
+export type SignOutResponse = z.infer<typeof signOutResponseValidationSchema>;

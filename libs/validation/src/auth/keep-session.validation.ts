@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { accessToken, idToken, refreshToken } from './auth';
 
 export const keepSessionValidationSchema = z.object({
-  accessToken,
   refreshToken,
 });
 
