@@ -1,5 +1,10 @@
 import { RmqModule } from '@app/rmq';
 import { Module } from '@nestjs/common';
+import { ApiController } from './controllers/api.controller';
+import { CommandController } from './controllers/command.controller';
+import { QueryController } from './controllers/query.controller';
+import { WorkspacePostService } from './services/workspace-post.service';
+import { WorkspacePostRepository } from './repositories/workspace-post.repository';
 
 @Module({})
 export class WorkspacePostModule {
@@ -7,9 +12,9 @@ export class WorkspacePostModule {
     return {
       module: WorkspacePostModule,
       imports: [RmqModule.forRoot()],
-      controllers: [],
-      providers: [],
-      exports: [],
+      controllers: [ApiController, CommandController, QueryController],
+      providers: [WorkspacePostService, WorkspacePostRepository],
+      exports: [WorkspacePostService, WorkspacePostRepository],
     };
   }
 }

@@ -7,9 +7,9 @@ import {
 export namespace FindWorkspaceAccountsQuery {
   export const exchange = 'workspace-account';
 
-  export const routingKey = 'create-workspace-accounts';
+  export const routingKey = 'find-workspace-accounts';
 
-  export const queue = 'create-workspace-accounts';
+  export const queue = 'find-workspace-accounts';
 
   export type Request = FindWorkspaceAccountsRequest;
 

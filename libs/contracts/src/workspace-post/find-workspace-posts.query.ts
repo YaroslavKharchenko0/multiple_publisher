@@ -7,9 +7,9 @@ import {
 export namespace FindWorkspacePostsQuery {
   export const exchange = 'workspace-post';
 
-  export const routingKey = 'create-workspace-posts';
+  export const routingKey = 'find-workspace-posts';
 
-  export const queue = 'create-workspace-posts';
+  export const queue = 'find-workspace-posts';
 
   export type Request = FindWorkspacePostsRequest;
 
