@@ -1,12 +1,20 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Body } from '@nestjs/common';
 import {
+  KeepSessionCommand,
   SignInCommand,
+  SignOutCommand,
   SignUpCommand,
   VerifyEmailCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { SignInBodyDto, SignUpBodyDto, VerifyEmailBodyDto } from '@app/dtos';
+import {
+  KeepSessionBodyDto,
+  SignInBodyDto,
+  SignOutBodyDto,
+  SignUpBodyDto,
+  VerifyEmailBodyDto,
+} from '@app/dtos';
 import {
   KeepSessionDocs,
   SignInDocs,
@@ -54,7 +62,21 @@ export class ApiController {
 
   @Route(moduleName, 'signOut')
   @SignOutDocs()
-  signOut() { }
+  signOut(
+    @TraceId() traceId: string | undefined,
+    @Body() body: SignOutBodyDto,
+  ) {
+    const payload: SignOutCommand.Request = body;
+
+    return this.amqpConnection.request<SignOutCommand.Response>({
+      exchange: SignOutCommand.exchange,
+      routingKey: SignOutCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
 
   @Route(moduleName, 'verifyEmail')
   @VerifyEmailDocs()
@@ -75,5 +97,19 @@ export class ApiController {
   }
   @Route(moduleName, 'keepSession')
   @KeepSessionDocs()
-  keepSession() { }
+  keepSession(
+    @TraceId() traceId: string | undefined,
+    @Body() body: KeepSessionBodyDto,
+  ) {
+    const payload: KeepSessionCommand.Request = body;
+
+    return this.amqpConnection.request<KeepSessionCommand.Response>({
+      exchange: KeepSessionCommand.exchange,
+      routingKey: KeepSessionCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
 }

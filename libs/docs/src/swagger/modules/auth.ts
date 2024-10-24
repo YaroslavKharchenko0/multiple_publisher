@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { defaultDecorators } from './default';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import { SignInBodyDto } from '@app/dtos';
+import { KeepSessionBodyDto, SignInBodyDto, SignOutBodyDto } from '@app/dtos';
 
 export const SignUpDocs = () =>
   applyDecorators(...defaultDecorators, ApiOperation({ summary: 'Sign up' }));
@@ -20,10 +20,15 @@ export const VerifyEmailDocs = () =>
   );
 
 export const SignOutDocs = () =>
-  applyDecorators(...defaultDecorators, ApiOperation({ summary: 'Sign out' }));
+  applyDecorators(
+    ...defaultDecorators,
+    ApiOperation({ summary: 'Sign out' }),
+    ApiBody({ type: SignOutBodyDto }),
+  );
 
 export const KeepSessionDocs = () =>
   applyDecorators(
     ...defaultDecorators,
     ApiOperation({ summary: 'Keep session' }),
+    ApiBody({ type: KeepSessionBodyDto }),
   );
