@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import { PaginationMetadata, paginationValidationSchema } from '../common';
 import { WorkspaceAccount } from './workspace-account.validation';
+import { workspaceId } from '../workspace/workspace.validation';
 
 export const findWorkspaceAccountsValidationSchema = z.object({
-  workspaceId: z.string(),
+  workspaceId,
   pagination: paginationValidationSchema,
 });
 
