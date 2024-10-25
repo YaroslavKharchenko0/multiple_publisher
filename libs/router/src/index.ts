@@ -468,6 +468,10 @@ export const router: Router = {
         method: 'GET',
         path: '/',
       },
+      createWorkspacePost: {
+        method: 'POST',
+        path: '/',
+      },
     },
   },
   workspaceAccounts: {
@@ -475,6 +479,10 @@ export const router: Router = {
     routes: {
       findWorkspaceAccounts: {
         method: 'GET',
+        path: '/',
+      },
+      createWorkspaceAccount: {
+        method: 'POST',
         path: '/',
       },
     },

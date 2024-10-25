@@ -1,6 +1,9 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Param } from '@nestjs/common';
-import { FindWorkspaceAccountsQuery } from '@app/contracts';
+import { Body, Param } from '@nestjs/common';
+import {
+  CreateWorkspaceAccountCommand,
+  FindWorkspaceAccountsQuery,
+} from '@app/contracts';
 import { TraceId } from '@app/logger';
 import {
   IsStringNumberPipe,
@@ -10,6 +13,7 @@ import {
   WorkspaceRoles,
 } from '@app/utils';
 import { Role, WorkspaceRole } from '@app/types';
+import { CreateWorkspaceAccountBodyDto } from '@app/dtos';
 
 export const moduleName = 'workspaceAccounts';
 
@@ -35,6 +39,29 @@ export class ApiController {
     return this.amqpConnection.request<FindWorkspaceAccountsQuery.Response>({
       exchange: FindWorkspaceAccountsQuery.exchange,
       routingKey: FindWorkspaceAccountsQuery.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
+
+  @Route(moduleName, 'createWorkspaceAccount')
+  @Roles(Role.USER)
+  @WorkspaceRoles(WorkspaceRole.ADMIN, WorkspaceRole.EDITOR)
+  createWorkspaceAccount(
+    @TraceId() traceId: string | undefined,
+    @Param('workspaceId', IsStringNumberPipe) id: string,
+    @Body() body: CreateWorkspaceAccountBodyDto,
+  ) {
+    const payload: CreateWorkspaceAccountCommand.Request = {
+      workspaceId: Number(id),
+      accountId: body.accountId,
+    };
+
+    return this.amqpConnection.request<CreateWorkspaceAccountCommand.Response>({
+      exchange: CreateWorkspaceAccountCommand.exchange,
+      routingKey: CreateWorkspaceAccountCommand.routingKey,
       payload,
       headers: {
         traceId,
