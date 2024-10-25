@@ -28,6 +28,8 @@ export const createConfigFactory = async (
       { name: 'publication-file', type: 'topic' },
       { name: 'publication-provider', type: 'topic' },
       { name: 'publisher', type: 'topic' },
+      { name: 'workspace-account', type: 'topic' },
+      { name: 'workspace-post', type: 'topic' },
     ],
     connectionInitOptions: { wait: true, timeout: 5000 },
     enableControllerDiscovery: true,

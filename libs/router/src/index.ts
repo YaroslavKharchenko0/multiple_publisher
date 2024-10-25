@@ -461,6 +461,32 @@ export const router: Router = {
       },
     },
   },
+  workspacePost: {
+    basePath: 'workspaces/:workspaceId/posts',
+    routes: {
+      findWorkspacePosts: {
+        method: 'GET',
+        path: '/',
+      },
+      createWorkspacePost: {
+        method: 'POST',
+        path: '/',
+      },
+    },
+  },
+  workspaceAccounts: {
+    basePath: 'workspaces/:workspaceId/accounts',
+    routes: {
+      findWorkspaceAccounts: {
+        method: 'GET',
+        path: '/',
+      },
+      createWorkspaceAccount: {
+        method: 'POST',
+        path: '/',
+      },
+    },
+  },
 };
 
-export { HttpMethod }
+export { HttpMethod };

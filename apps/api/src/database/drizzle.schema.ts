@@ -193,6 +193,26 @@ export const publicationProviders = pgTable('publication_providers', {
     .unique(),
 });
 
+export const workspacePosts = pgTable('workspace_posts', {
+  id: serial('id').primaryKey(),
+  workspaceId: integer('workspace_id')
+    .notNull()
+    .references(() => workspaces.id, { onDelete: 'cascade' }),
+  postId: integer('post_id').references(() => posts.id, {
+    onDelete: 'cascade',
+  }),
+});
+
+export const workspaceAccounts = pgTable('workspace_accounts', {
+  id: serial('id').primaryKey(),
+  workspaceId: integer('workspace_id')
+    .notNull()
+    .references(() => workspaces.id, { onDelete: 'cascade' }),
+  accountId: integer('account_id')
+    .notNull()
+    .references(() => accounts.id, { onDelete: 'cascade' }),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   workspaces: many(workspaces),
@@ -217,6 +237,8 @@ export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
     references: [users.id],
   }),
   workspaceUsers: many(workspaceUsers),
+  workspacePosts: many(workspacePosts),
+  workspaceAccounts: many(workspaceAccounts),
 }));
 
 export const workspaceRolesRelations = relations(
@@ -276,6 +298,7 @@ export const accountsRelations = relations(accounts, ({ one, many }) => ({
   }),
   accountTokens: many(accountTokens),
   publications: many(publications),
+  workspaceAccounts: many(workspaceAccounts),
 }));
 
 export const accountTokensRelations = relations(accountTokens, ({ one }) => ({
@@ -292,6 +315,7 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
   }),
   postFiles: many(postFiles),
   publications: many(publications),
+  workspacePosts: many(workspacePosts),
 }));
 
 export const publicationRelations = relations(
@@ -342,5 +366,30 @@ export const publicationProvidersRelations = relations(
       references: [accountProviders.id],
     }),
     publications: many(publications),
+  }),
+);
+
+export const workspacePostsRelations = relations(workspacePosts, ({ one }) => ({
+  workspace: one(workspaces, {
+    fields: [workspacePosts.workspaceId],
+    references: [workspaces.id],
+  }),
+  post: one(posts, {
+    fields: [workspacePosts.postId],
+    references: [posts.id],
+  }),
+}));
+
+export const workspaceAccountsRelations = relations(
+  workspaceAccounts,
+  ({ one }) => ({
+    workspace: one(workspaces, {
+      fields: [workspaceAccounts.workspaceId],
+      references: [workspaces.id],
+    }),
+    account: one(accounts, {
+      fields: [workspaceAccounts.accountId],
+      references: [accounts.id],
+    }),
   }),
 );

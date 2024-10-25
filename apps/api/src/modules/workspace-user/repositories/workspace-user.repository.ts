@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Database, Orm, schema } from '../../../database';
-import { and, count, countDistinct, eq, max } from 'drizzle-orm';
+import { and, countDistinct, eq, max } from 'drizzle-orm';
 
 export type InsertWorkspaceUser = typeof schema.workspaceUsers.$inferInsert;
 export type SelectWorkspaceUser = typeof schema.workspaceUsers.$inferSelect;
