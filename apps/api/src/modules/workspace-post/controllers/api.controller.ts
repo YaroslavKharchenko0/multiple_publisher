@@ -1,5 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Param } from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   CreateWorkspacePostCommand,
   FindWorkspacePostsQuery,
@@ -13,7 +13,7 @@ import {
   WorkspaceRoles,
 } from '@app/utils';
 import { Role, WorkspaceRole } from '@app/types';
-import { CreateWorkspacePostBodyDto } from '@app/dtos';
+import { CreateWorkspacePostBodyDto, PaginationDto } from '@app/dtos';
 
 export const moduleName = 'workspacePost';
 
@@ -31,9 +31,11 @@ export class ApiController {
   findWorkspacePosts(
     @TraceId() traceId: string | undefined,
     @Param('workspaceId', IsStringNumberPipe) id: string,
+    @Query() pagination: PaginationDto,
   ) {
     const payload: FindWorkspacePostsQuery.Request = {
       workspaceId: Number(id),
+      pagination,
     };
 
     return this.amqpConnection.request<FindWorkspacePostsQuery.Response>({

@@ -1,5 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Param } from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   CreateWorkspaceAccountCommand,
   FindWorkspaceAccountsQuery,
@@ -13,7 +13,7 @@ import {
   WorkspaceRoles,
 } from '@app/utils';
 import { Role, WorkspaceRole } from '@app/types';
-import { CreateWorkspaceAccountBodyDto } from '@app/dtos';
+import { CreateWorkspaceAccountBodyDto, PaginationDto } from '@app/dtos';
 
 export const moduleName = 'workspaceAccounts';
 
@@ -31,9 +31,11 @@ export class ApiController {
   findWorkspaceAccounts(
     @TraceId() traceId: string | undefined,
     @Param('workspaceId', IsStringNumberPipe) id: string,
+    @Query() pagination: PaginationDto,
   ) {
     const payload: FindWorkspaceAccountsQuery.Request = {
       workspaceId: Number(id),
+      pagination,
     };
 
     return this.amqpConnection.request<FindWorkspaceAccountsQuery.Response>({
