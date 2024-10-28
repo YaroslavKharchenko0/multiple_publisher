@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { accountProviderKey } from '../account-provider';
 import {
   Account,
-  accountInternalId,
   accountName,
   accountStatus,
   accountUserId,
@@ -14,7 +13,6 @@ export const createAccountValidationSchema = z.object({
   name: accountName,
   userId: accountUserId,
   status: accountStatus.default(AccountStatus.INACTIVE),
-  internalId: accountInternalId,
 });
 
 export type CreateAccountRequest = z.infer<
