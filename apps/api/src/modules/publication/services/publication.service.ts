@@ -4,7 +4,7 @@ import {
   Service,
   UpdatePublicationParams,
 } from './publication.service.interface';
-import { Pagination } from '@app/validation';
+import { Pagination, PaginationMetadata } from '@app/validation';
 import { PublicationModel } from '../models/publication.model';
 import { PublicationRepository } from '../repositories/publication.repository';
 import { RmqErrorService } from '@app/errors';
@@ -21,6 +21,7 @@ export class PublicationService implements Service {
     private readonly postFacade: PostFacade,
     private readonly amqpConnection: AmqpConnection,
   ) { }
+
   async updatePublicationById(
     id: number,
     params: UpdatePublicationParams,
@@ -104,6 +105,25 @@ export class PublicationService implements Service {
     );
 
     return entities.map(PublicationModel.fromEntity);
+  }
+
+  async createPostPublicationsPaginationMetadata(
+    postId: number,
+  ): Promise<PaginationMetadata> {
+    const results =
+      await this.repository.createPostPublicationsPaginationMetadata(postId);
+
+    const [result] = results;
+
+    if (!result) {
+      throw this.rmqErrorService.notFound();
+    }
+
+    const metadata: PaginationMetadata = {
+      total: result.count,
+    };
+
+    return metadata;
   }
   async updatePublication(
     id: number,

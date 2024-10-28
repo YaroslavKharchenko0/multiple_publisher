@@ -1,18 +1,26 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Controller, Delete, Param } from '@nestjs/common';
+import { Param } from '@nestjs/common';
 import { DeleteAccountTokensCommand } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { AccountAccess, IsStringNumberPipe, Roles } from '@app/utils';
+import {
+  AccountAccess,
+  IsStringNumberPipe,
+  ModuleRoute,
+  Roles,
+  Route,
+} from '@app/utils';
 import { Role } from '@app/types';
 
-@Controller('accounts/:accountId/tokens')
+export const moduleName = 'accountToken';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Delete('/')
+  @Route(moduleName, 'delete')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
-  command(
+  delete(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,
   ) {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Database, Orm, schema } from '../../../database';
-import { and, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { Pagination } from '@app/validation';
 
 export type InsertFile = typeof schema.files.$inferInsert;
@@ -8,7 +8,7 @@ export type SelectFile = typeof schema.files.$inferSelect;
 
 @Injectable()
 export class FileRepository {
-  constructor(@Orm() private readonly db: Database) {}
+  constructor(@Orm() private readonly db: Database) { }
 
   private files = schema.files;
 
@@ -33,6 +33,18 @@ export class FileRepository {
       where,
       ...pagination,
     });
+
+    return result;
+  }
+
+  async findUserFilesCount(authorId: number) {
+    const where = eq(this.files.authorId, authorId);
+
+    const result = await this.db
+      .select({ count: count() })
+      .from(this.files)
+      .where(where)
+      .execute();
 
     return result;
   }

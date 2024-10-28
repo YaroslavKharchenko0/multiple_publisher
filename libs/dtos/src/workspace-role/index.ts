@@ -1,0 +1,5 @@
+export * from './create-workspace-role.dto'
+export * from './find-workspace-role.dto'
+export * from './delete-workspace-role.dto'
+export * from './workspace-role.dto'
+export * from './find-workspace-role-by-id.dto'

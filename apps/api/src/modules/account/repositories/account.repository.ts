@@ -9,7 +9,6 @@ export type SelectAccount = typeof schema.accounts.$inferSelect;
 
 export interface InsertAccountParams {
   name: string;
-  internalId: string;
   providerId: number;
   status: AccountStatus;
   userId: number;

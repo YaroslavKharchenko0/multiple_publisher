@@ -4,7 +4,7 @@ import {
   Service,
   UpdatePostInput,
 } from './post.service.interface';
-import { Pagination } from '@app/validation';
+import { Pagination, PaginationMetadata } from '@app/validation';
 import { PostModel } from '../models/post.model';
 import { PostRepository } from '../repositories/posts.repository';
 import { RmqErrorService } from '@app/errors';
@@ -81,5 +81,37 @@ export class PostService implements Service {
     const entities = await this.repository.findPosts(pagination);
 
     return entities.map(PostModel.fromEntity);
+  }
+  async getUserPostsPaginationMetadata(
+    userId: number,
+  ): Promise<PaginationMetadata> {
+    const results = await this.repository.findPostsCountByUserId(userId);
+
+    const [result] = results;
+
+    if (!result) {
+      this.rmqErrorService.notFound();
+    }
+
+    const metadata: PaginationMetadata = {
+      total: result.count,
+    };
+
+    return metadata;
+  }
+  async getPostsPaginationMetadata(): Promise<PaginationMetadata> {
+    const results = await this.repository.findPostsCount();
+
+    const [result] = results;
+
+    if (!result) {
+      this.rmqErrorService.notFound();
+    }
+
+    const metadata: PaginationMetadata = {
+      total: result.count,
+    };
+
+    return metadata;
   }
 }

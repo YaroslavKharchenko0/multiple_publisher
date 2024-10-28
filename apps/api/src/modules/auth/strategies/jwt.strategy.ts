@@ -3,8 +3,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { passportJwtSecret } from 'jwks-rsa';
 import { ConfigService } from '@nestjs/config';
-import { CognitoJWTUser } from '@app/aws';
-import { JWTUser } from '@app/utils';
+import { JWTUser } from '@app/types';
+import { IdTokenUser } from '@app/validation';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super(config);
   }
 
-  public async validate(payload: CognitoJWTUser) {
+  public async validate(payload: IdTokenUser) {
     const jwtUser = JWTUser.fromCognito(payload);
 
     return jwtUser;

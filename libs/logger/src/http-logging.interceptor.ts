@@ -1,4 +1,10 @@
-import { Injectable, NestInterceptor, ExecutionContext, Logger, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  Logger,
+  CallHandler,
+} from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 
 import { catchError, tap } from 'rxjs/operators';
@@ -25,12 +31,16 @@ export class HTTPLoggingInterceptor implements NestInterceptor {
       tap(() => {
         const response = context.switchToHttp().getResponse();
         const delay = Date.now() - now;
-        this.logger.log(`${response.statusCode} | [${method}] ${url} - ${delay}ms, traceId: ${traceId}`);
+        this.logger.log(
+          `${response.statusCode} | [${method}] ${url} - ${delay}ms, traceId: ${traceId}`,
+        );
       }),
       catchError((error) => {
         const response = context.switchToHttp().getResponse();
         const delay = Date.now() - now;
-        this.logger.error(`${response.statusCode} | [${method}] ${url} - ${delay}ms, traceId: ${traceId}`, error.stack);
+        this.logger.error(
+          `${response.statusCode} | [${method}] ${url} - ${delay}ms, traceId: ${traceId}`,
+        );
         throw error;
       }),
     );
@@ -39,6 +49,6 @@ export class HTTPLoggingInterceptor implements NestInterceptor {
   private executeTraceId = (request: FastifyRequest) => {
     const traceId = request.headers['x-trace-id'] as string | undefined;
 
-    return traceId
-  }
+    return traceId;
+  };
 }

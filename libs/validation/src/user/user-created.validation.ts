@@ -1,7 +1,5 @@
-import { User, UserDto } from './user.validation'
+import { User } from './user.validation';
 
-export type UserCreatedRequest = User
+export type UserCreatedRequest = User;
 
-export class UserCreatedBodyDto extends UserDto { }
-
-export type UserCreatedResponse = null
+export type UserCreatedResponse = null;

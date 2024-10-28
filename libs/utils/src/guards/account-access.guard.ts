@@ -2,9 +2,9 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AccountFacade } from '../facades';
 import { ACCOUNT_ACCESS_KEY } from '../decorators/account-access.decorator';
-import { JWTUser } from '../decorators';
 import { Account } from '@app/validation';
 import { randomUUID } from 'crypto';
+import { JWTUser } from '@app/types';
 
 const accountIdKey = 'accountId';
 

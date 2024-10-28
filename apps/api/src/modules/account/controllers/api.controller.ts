@@ -1,14 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { Body, Param, Query } from '@nestjs/common';
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Query,
-} from '@nestjs/common';
-import {
+  CreateAccountCommand,
   DeleteAccountCommand,
   FindAccountQuery,
   GoogleCallbackCommand,
@@ -19,22 +12,86 @@ import { TraceId } from '@app/logger';
 import {
   AccountAccess,
   IsStringNumberPipe,
-  JWTUser,
+  ModuleRoute,
+  Route,
   Roles,
   User,
 } from '@app/utils';
-import { UpdateAccountBodyDto } from '@app/validation';
-import { Role } from '@app/types';
+import { CreateAccountBodyDto, UpdateAccountBodyDto } from '@app/dtos';
+import { AccountStatus, JWTUser, Role } from '@app/types';
+import {
+  CreateAccountDocs,
+  DeleteAccountDocs,
+  FindAccountDocs,
+  GoogleAuthUrlDocs,
+  GoogleCallbackDocs,
+  UpdateAccountDocs,
+} from '@app/docs';
 
-@Controller('accounts')
+const moduleName = 'account';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/auth/google/url')
+  @Route(moduleName, 'findOne')
   @Roles(Role.ADMIN, Role.USER)
-  googleAuthUrl(@TraceId() traceId: string | undefined, @User() user: JWTUser) {
+  @AccountAccess()
+  @FindAccountDocs()
+  findOne(
+    @TraceId() traceId: string | undefined,
+    @Param('accountId', IsStringNumberPipe) accountId: string,
+  ) {
+    const payload: FindAccountQuery.Request = {
+      id: Number(accountId),
+    };
+
+    return this.amqpConnection.request<FindAccountQuery.Response>({
+      exchange: FindAccountQuery.exchange,
+      routingKey: FindAccountQuery.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
+
+  @Route(moduleName, 'create')
+  @Roles(Role.ADMIN, Role.USER)
+  @CreateAccountDocs()
+  create(
+    @TraceId() traceId: string | undefined,
+    @User() user: JWTUser,
+    @Body() body: CreateAccountBodyDto,
+  ) {
+    const payload: CreateAccountCommand.Request = {
+      userId: user.app_id,
+      name: body.name,
+      provider: body.provider,
+      status: AccountStatus.INACTIVE,
+    };
+
+    return this.amqpConnection.request<CreateAccountCommand.Response>({
+      exchange: CreateAccountCommand.exchange,
+      routingKey: CreateAccountCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
+
+  @Route(moduleName, 'googleAuthUrl')
+  @Roles(Role.ADMIN, Role.USER)
+  @GoogleAuthUrlDocs()
+  googleAuthUrl(
+    @TraceId() traceId: string | undefined,
+    @User() user: JWTUser,
+    @Param('accountId', IsStringNumberPipe) accountId: string,
+  ) {
     const payload: GoogleSingInUrlCommand.Request = {
       userId: user.app_id,
+      accountId: Number(accountId),
     };
 
     return this.amqpConnection.request<string>({
@@ -47,7 +104,8 @@ export class ApiController {
     });
   }
 
-  @Get('/auth/google/callback')
+  @Route(moduleName, 'googleCallback')
+  @GoogleCallbackDocs()
   async googleCallback(
     @Query('code') code: string,
     @Query('state') state: string,
@@ -68,9 +126,10 @@ export class ApiController {
     });
   }
 
-  @Delete('/:accountId')
+  @Route(moduleName, 'delete')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
+  @DeleteAccountDocs()
   delete(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,
@@ -89,30 +148,10 @@ export class ApiController {
     });
   }
 
-  @Get('/:accountId')
+  @Route(moduleName, 'update')
   @Roles(Role.ADMIN, Role.USER)
   @AccountAccess()
-  findOne(
-    @TraceId() traceId: string | undefined,
-    @Param('accountId', IsStringNumberPipe) accountId: string,
-  ) {
-    const payload: FindAccountQuery.Request = {
-      id: Number(accountId),
-    };
-
-    return this.amqpConnection.request<FindAccountQuery.Response>({
-      exchange: FindAccountQuery.exchange,
-      routingKey: FindAccountQuery.routingKey,
-      payload,
-      headers: {
-        traceId,
-      },
-    });
-  }
-
-  @Patch('/:accountId')
-  @Roles(Role.ADMIN, Role.USER)
-  @AccountAccess()
+  @UpdateAccountDocs()
   update(
     @TraceId() traceId: string | undefined,
     @Param('accountId', IsStringNumberPipe) accountId: string,

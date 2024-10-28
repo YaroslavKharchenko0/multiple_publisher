@@ -10,7 +10,7 @@ import { AccountRepository } from '../repositories/account.repository';
 import { ACCOUNT_REPOSITORY } from '../providers/account.providers';
 import { RmqErrorService } from '@app/errors';
 import { AccountFacade } from '@app/utils';
-import { AccountStatus, ProviderKey } from '@app/types';
+import { AccountStatus } from '@app/types';
 @Injectable()
 export class AccountService implements Service {
   constructor(
@@ -20,28 +20,12 @@ export class AccountService implements Service {
   ) { }
 
   async onSignIn(params: OnSignInParams, options?: Options): Promise<void> {
-    const { internalId, accountTokens, provider, userId } = params;
+    const { internalId, accountTokens, accountId } = params;
 
-    const account = await this.findAccountByInternalId(internalId);
+    const account = await this.findAccountById(accountId);
 
     if (!account) {
-      const createAccountParams: CreateAccountParams = {
-        provider,
-        userId,
-        status: AccountStatus.INACTIVE,
-        internalId,
-        name: ProviderKey.GOOGLE,
-      };
-
-      const newAccount = await this.createAccount(createAccountParams, options);
-
-      await this.accountFacade.createAccountTokens(
-        newAccount.id,
-        accountTokens,
-        options,
-      );
-
-      return;
+      throw this.rmqErrorService.notFound();
     }
 
     await this.accountFacade.deleteAccountTokens(account.id, options);
@@ -49,6 +33,12 @@ export class AccountService implements Service {
     await this.accountFacade.createAccountTokens(
       account.id,
       accountTokens,
+      options,
+    );
+
+    await this.accountFacade.updateAccountById(
+      accountId,
+      { internalId },
       options,
     );
   }
@@ -69,7 +59,7 @@ export class AccountService implements Service {
     params: CreateAccountParams,
     options?: Options,
   ): Promise<AccountModel> {
-    const { provider, name, userId, status, internalId } = params;
+    const { provider, name, userId, status = AccountStatus.INACTIVE } = params;
 
     const accountProvider = await this.accountFacade.findByKey(
       provider,
@@ -85,7 +75,6 @@ export class AccountService implements Service {
       name,
       userId,
       status,
-      internalId,
     });
 
     const [entity] = entities;

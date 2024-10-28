@@ -1,7 +1,6 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { Post } from './post.validation';
-import { paginationValidationSchema } from '../common';
+import { PaginationMetadata, paginationValidationSchema } from '../common';
 
 export const findPostsValidationSchema = z.object({
   pagination: paginationValidationSchema,
@@ -9,8 +8,7 @@ export const findPostsValidationSchema = z.object({
 
 export type FindPostsRequest = z.infer<typeof findPostsValidationSchema>;
 
-export class FindPostsBodyDto extends createZodDto(
-  paginationValidationSchema,
-) { }
-
-export type FindPostsResponse = Post[];
+export type FindPostsResponse = {
+  posts: Post[];
+  metadata: PaginationMetadata;
+};

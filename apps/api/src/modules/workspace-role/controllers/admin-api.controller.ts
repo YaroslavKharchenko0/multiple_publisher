@@ -1,20 +1,22 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import { TraceId } from '@app/logger';
-import { IsEnumPipe, Roles } from '@app/utils';
+import { IsEnumPipe, ModuleRoute, Roles, Route } from '@app/utils';
 import { Role, WorkspaceRole } from '@app/types';
 import {
   CreateWorkspaceRoleCommand,
   DeleteWorkspaceRoleCommand,
   FindWorkspaceRoleQuery,
 } from '@app/contracts';
-import { CreateWorkspaceRoleDto } from '@app/validation';
+import { CreateWorkspaceRoleDto } from '@app/dtos';
 
-@Controller('admin/workspace-roles')
+export const moduleName = 'adminRoleWorkspace';
+
+@ModuleRoute(moduleName)
 export class AdminApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/:role')
+  @Route(moduleName, 'findByRole')
   @Roles(Role.ADMIN)
   findByRole(
     @TraceId() traceId: string | undefined,
@@ -34,7 +36,7 @@ export class AdminApiController {
     });
   }
 
-  @Post('/')
+  @Route(moduleName, 'createRole')
   @Roles(Role.ADMIN)
   createRole(
     @TraceId() traceId: string | undefined,
@@ -52,7 +54,7 @@ export class AdminApiController {
     });
   }
 
-  @Delete('/:role')
+  @Route(moduleName, 'deleteRole')
   @Roles(Role.ADMIN)
   deleteRole(
     @TraceId() traceId: string | undefined,

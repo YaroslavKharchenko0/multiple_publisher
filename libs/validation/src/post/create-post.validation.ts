@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { userId } from '../user';
 import { Post, postDescription, postTitle, postType } from './post.validation';
 
@@ -15,9 +14,5 @@ export type CreatePostRequest = z.infer<typeof createPostValidationSchema>;
 export const createPostBodyValidationSchema = createPostValidationSchema.omit({
   userId: true,
 });
-
-export class CreatePostBodyDto extends createZodDto(
-  createPostBodyValidationSchema,
-) { }
 
 export type CreatePostResponse = Post;

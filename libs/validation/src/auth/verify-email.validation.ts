@@ -1,13 +1,11 @@
-import { createZodDto } from 'nestjs-zod'
-import { z } from 'nestjs-zod/z'
+import { z } from 'zod';
+import { userEmail } from '../user';
 
 export const verifyEmailValidationSchema = z.object({
-  code: z.string(),
-  email: z.string().email(),
-})
+  code: z.string().describe('Verification code'),
+  email: userEmail,
+});
 
-export type VerifyEmailRequest = z.infer<typeof verifyEmailValidationSchema>
-
-export class VerifyEmailBodyDto extends createZodDto(verifyEmailValidationSchema) { }
+export type VerifyEmailRequest = z.infer<typeof verifyEmailValidationSchema>;
 
 export type VerifyEmailResponse = null;

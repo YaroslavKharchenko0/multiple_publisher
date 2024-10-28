@@ -1,3 +1,5 @@
+import { Options } from "@app/types";
+
 export interface SignUpParams {
   email: string;
   password: string;
@@ -10,7 +12,7 @@ export interface SignInParams {
   password: string;
 }
 
-export interface SignInReturnParams {
+export interface AuthenticatedTokens {
   accessToken: string;
   idToken: string;
   refreshToken: string;
@@ -22,12 +24,18 @@ export interface VerifyEmailParams {
   code: string;
 }
 
-export type Options = {
-  traceId: string;
-};
+export interface SignOutParams {
+  accessToken: string;
+}
+
+export interface KeepSessionParams {
+  refreshToken: string;
+}
 
 export interface Service {
   signUp(payload: SignUpParams, options?: Options): Promise<void>;
-  signIn(payload: SignInParams): Promise<SignInReturnParams>;
+  signIn(payload: SignInParams): Promise<AuthenticatedTokens>;
   verifyEmail(params: VerifyEmailParams): Promise<void>;
+  signOut(params: SignOutParams): Promise<void>;
+  keepSession(params: KeepSessionParams): Promise<AuthenticatedTokens>;
 }

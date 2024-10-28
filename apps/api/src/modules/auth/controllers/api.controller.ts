@@ -1,22 +1,37 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body } from '@nestjs/common';
 import {
+  KeepSessionCommand,
   SignInCommand,
+  SignOutCommand,
   SignUpCommand,
   VerifyEmailCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
 import {
+  KeepSessionBodyDto,
   SignInBodyDto,
+  SignOutBodyDto,
   SignUpBodyDto,
   VerifyEmailBodyDto,
-} from '@app/validation';
+} from '@app/dtos';
+import {
+  KeepSessionDocs,
+  SignInDocs,
+  SignOutDocs,
+  SignUpDocs,
+  VerifyEmailDocs,
+} from '@app/docs';
+import { ModuleRoute, Route } from '@app/utils';
 
-@Controller('auth')
+export const moduleName = 'auth';
+
+@ModuleRoute(moduleName)
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('/sign-up')
+  @Route(moduleName, 'signUp')
+  @SignUpDocs()
   signUp(@TraceId() traceId: string | undefined, @Body() body: SignUpBodyDto) {
     const payload: SignUpCommand.Request = body;
 
@@ -30,7 +45,8 @@ export class ApiController {
     });
   }
 
-  @Post('/sign-in')
+  @Route(moduleName, 'signIn')
+  @SignInDocs()
   signIn(@TraceId() traceId: string | undefined, @Body() body: SignInBodyDto) {
     const payload: SignInCommand.Request = body;
 
@@ -44,7 +60,26 @@ export class ApiController {
     });
   }
 
-  @Put('/email/verify')
+  @Route(moduleName, 'signOut')
+  @SignOutDocs()
+  signOut(
+    @TraceId() traceId: string | undefined,
+    @Body() body: SignOutBodyDto,
+  ) {
+    const payload: SignOutCommand.Request = body;
+
+    return this.amqpConnection.request<SignOutCommand.Response>({
+      exchange: SignOutCommand.exchange,
+      routingKey: SignOutCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
+
+  @Route(moduleName, 'verifyEmail')
+  @VerifyEmailDocs()
   verifyEmail(
     @TraceId() traceId: string | undefined,
     @Body() body: VerifyEmailBodyDto,
@@ -54,6 +89,23 @@ export class ApiController {
     return this.amqpConnection.request<VerifyEmailCommand.Response>({
       exchange: VerifyEmailCommand.exchange,
       routingKey: VerifyEmailCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
+  @Route(moduleName, 'keepSession')
+  @KeepSessionDocs()
+  keepSession(
+    @TraceId() traceId: string | undefined,
+    @Body() body: KeepSessionBodyDto,
+  ) {
+    const payload: KeepSessionCommand.Request = body;
+
+    return this.amqpConnection.request<KeepSessionCommand.Response>({
+      exchange: KeepSessionCommand.exchange,
+      routingKey: KeepSessionCommand.routingKey,
       payload,
       headers: {
         traceId,

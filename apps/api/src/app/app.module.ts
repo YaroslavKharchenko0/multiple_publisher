@@ -21,6 +21,8 @@ import { PublicationModule } from '../modules/publication';
 import { PublicationFileModule } from '../modules/publication-files';
 import { PublicationProviderModule } from '../modules/publication-provider';
 import { PublisherModule } from '../modules/publisher';
+import { WorkspaceAccountModule } from '../modules/workspace-account';
+import { WorkspacePostModule } from '../modules/workspace-post';
 
 @Module({})
 export class AppModule {
@@ -50,6 +52,8 @@ export class AppModule {
         PublicationFileModule.forRoot(),
         PublicationProviderModule.forRoot(),
         PublisherModule.forRoot(),
+        WorkspaceAccountModule.forRoot(),
+        WorkspacePostModule.forRoot(),
       ],
     };
   }

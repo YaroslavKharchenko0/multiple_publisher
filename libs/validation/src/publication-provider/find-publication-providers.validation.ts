@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { PublicationProvider } from './publication-provider.validation';
 import { paginationValidationSchema } from '../common';
 
@@ -10,9 +9,5 @@ export const findPublicationProvidersValidationSchema = z.object({
 export type FindPublicationProvidersRequest = z.infer<
   typeof findPublicationProvidersValidationSchema
 >;
-
-export class FindPublicationProvidersDto extends createZodDto(
-  paginationValidationSchema,
-) { }
 
 export type FindPublicationProvidersResponse = PublicationProvider[];

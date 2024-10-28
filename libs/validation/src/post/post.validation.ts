@@ -1,12 +1,11 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { userId } from '../user';
 import { PostType } from '@app/types';
 
-export const postId = z.number();
-export const postTitle = z.string().max(100);
-export const postDescription = z.string().max(255);
-export const postType = z.nativeEnum(PostType);
+export const postId = z.number().describe('Post id');
+export const postTitle = z.string().max(100).describe('Title');
+export const postDescription = z.string().max(255).describe('Description');
+export const postType = z.nativeEnum(PostType).describe('Post type');
 
 export const postValidationSchema = z.object({
   id: postId,
@@ -19,5 +18,3 @@ export const postValidationSchema = z.object({
 });
 
 export type Post = z.infer<typeof postValidationSchema>;
-
-export class PostDto extends createZodDto(postValidationSchema) { }

@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import {
   Post,
   postDescription,
@@ -20,9 +19,5 @@ export const updatePostValidationSchema = z.object({
 });
 
 export type UpdatePostRequest = z.infer<typeof updatePostValidationSchema>;
-
-export class UpdatePostBodyDto extends createZodDto(
-  updatePostPayloadValidationSchema,
-) { }
 
 export type UpdatePostResponse = Post;

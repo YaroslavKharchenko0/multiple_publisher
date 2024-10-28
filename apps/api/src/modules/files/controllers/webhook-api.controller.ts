@@ -1,12 +1,12 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Body, Controller, Post } from '@nestjs/common';
 import { TraceId } from '@app/logger';
-import { OnWebhookBodyDto } from '@app/validation';
+import { OnWebhookBodyDto } from '@app/dtos';
 import { OnWebhookEvent } from '@app/contracts';
 
 @Controller('/files')
 export class WebhookController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
   @Post('/webhook')
   async webhook(

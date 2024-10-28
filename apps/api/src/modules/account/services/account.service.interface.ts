@@ -6,7 +6,6 @@ export interface CreateAccountParams {
   name: string;
   userId: number | null;
   status: AccountStatus;
-  internalId: string;
 }
 
 export interface Options {
@@ -21,8 +20,7 @@ export interface AccountTokens {
 export interface OnSignInParams {
   internalId: string;
   accountTokens: AccountTokens;
-  provider: ProviderKey;
-  userId: number;
+  accountId: number;
 }
 
 export interface Service {

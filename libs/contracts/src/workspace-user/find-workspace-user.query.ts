@@ -1,5 +1,8 @@
-import { RmqResponse } from '../common'
-import { FindWorkspaceUserRequest, FindWorkspaceUserResponse } from '@app/validation'
+import { RmqResponse } from '../common';
+import {
+  FindWorkspaceUserRequest,
+  FindWorkspaceUserResponse,
+} from '@app/validation';
 
 export namespace FindWorkspaceUserQuery {
   export const exchange = 'workspace-user';
@@ -12,6 +15,5 @@ export namespace FindWorkspaceUserQuery {
 
   export type ResponsePayload = FindWorkspaceUserResponse;
 
-  export type Response = RmqResponse<FindWorkspaceUserResponse>
+  export type Response = RmqResponse<FindWorkspaceUserResponse>;
 }
-

@@ -1,10 +1,13 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import { accountProviderId } from '../account-provider';
 import { PublicationProvider as PublicationProviderEnum } from '@app/types';
 
-export const publicationProviderId = z.number();
-export const publicationProviderKey = z.nativeEnum(PublicationProviderEnum);
+export const publicationProviderId = z
+  .number()
+  .describe('Publication provider id');
+export const publicationProviderKey = z
+  .nativeEnum(PublicationProviderEnum)
+  .describe('Publication provider key');
 
 export const publicationProviderValidationSchema = z.object({
   id: publicationProviderId,
@@ -15,7 +18,3 @@ export const publicationProviderValidationSchema = z.object({
 export type PublicationProvider = z.infer<
   typeof publicationProviderValidationSchema
 >;
-
-export class PublicationProviderDto extends createZodDto(
-  publicationProviderValidationSchema,
-) { }

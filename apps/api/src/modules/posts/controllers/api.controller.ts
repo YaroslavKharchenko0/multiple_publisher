@@ -1,14 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   CreatePostCommand,
   DeletePostCommand,
@@ -23,14 +14,23 @@ import {
   FindPostsBodyDto,
   FindUserPostsBodyDto,
   UpdatePostBodyDto,
-} from '@app/validation';
-import { IsStringNumberPipe, JWTUser, PostAccess, User } from '@app/utils';
+} from '@app/dtos';
+import {
+  IsStringNumberPipe,
+  ModuleRoute,
+  PostAccess,
+  Route,
+  User,
+} from '@app/utils';
+import { JWTUser } from '@app/types';
 
-@Controller()
+export const moduleName = 'post';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('posts/:postId')
+  @Route(moduleName, 'findPostById')
   @PostAccess({ isAuthor: true })
   findPostById(
     @TraceId() traceId: string | undefined,
@@ -50,7 +50,7 @@ export class ApiController {
     });
   }
 
-  @Get('posts/')
+  @Route(moduleName, 'findPosts')
   @PostAccess({ isAuthor: true })
   findPosts(
     @TraceId() traceId: string | undefined,
@@ -70,7 +70,7 @@ export class ApiController {
     });
   }
 
-  @Get('users/:userId/posts')
+  @Route(moduleName, 'findUserPosts')
   @PostAccess({ isAuthor: true })
   findUserPosts(
     @TraceId() traceId: string | undefined,
@@ -92,7 +92,7 @@ export class ApiController {
     });
   }
 
-  @Post('posts/')
+  @Route(moduleName, 'create')
   @PostAccess({ isAuthor: true })
   create(
     @TraceId() traceId: string | undefined,
@@ -114,7 +114,7 @@ export class ApiController {
     });
   }
 
-  @Delete('posts/:postId')
+  @Route(moduleName, 'delete')
   @PostAccess({ isAuthor: true })
   delete(
     @TraceId() traceId: string | undefined,
@@ -134,7 +134,7 @@ export class ApiController {
     });
   }
 
-  @Patch('posts/:postId')
+  @Route(moduleName, 'update')
   @PostAccess({ isAuthor: true })
   update(
     @TraceId() traceId: string | undefined,

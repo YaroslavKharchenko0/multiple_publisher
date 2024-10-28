@@ -1,7 +1,9 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { Controller, Inject } from '@nestjs/common';
 import {
+  KeepSessionCommand,
   SignInCommand,
+  SignOutCommand,
   SignUpCommand,
   VerifyEmailCommand,
   createSuccessResponse,
@@ -14,7 +16,7 @@ import { TraceId } from '@app/logger';
 export class CommandController {
   constructor(
     @Inject(AUTH_SERVICE) private readonly authService: AuthService,
-  ) {}
+  ) { }
 
   @RabbitRPC({
     exchange: SignUpCommand.exchange,
@@ -49,6 +51,32 @@ export class CommandController {
     const payload = await this.authService.signIn({
       email: message.email,
       password: message.password,
+    });
+
+    return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: SignOutCommand.exchange,
+    routingKey: SignOutCommand.routingKey,
+    queue: SignOutCommand.queue,
+  })
+  async signOut(@RabbitPayload() message: SignOutCommand.Request) {
+    const payload = await this.authService.signOut({
+      accessToken: message.accessToken,
+    });
+
+    return createSuccessResponse(payload);
+  }
+
+  @RabbitRPC({
+    exchange: KeepSessionCommand.exchange,
+    routingKey: KeepSessionCommand.routingKey,
+    queue: KeepSessionCommand.queue,
+  })
+  async keepSession(@RabbitPayload() message: KeepSessionCommand.Request) {
+    const payload = await this.authService.keepSession({
+      refreshToken: message.refreshToken,
     });
 
     return createSuccessResponse(payload);

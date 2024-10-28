@@ -16,6 +16,8 @@ import {
 import { TransformInterceptor } from '@app/response';
 import { HttpErrorFilter, RmqErrorInterceptor } from '@app/errors';
 import { createSwagger } from '@app/docs';
+import { ZodValidationPipe } from '@anatine/zod-nestjs';
+import cors from '@fastify/cors';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -29,6 +31,12 @@ async function bootstrap() {
 
   app.useLogger(logger);
 
+  app.register(cors as unknown as any, {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   app.useGlobalInterceptors(
     new TraceInterceptor(),
     new TransformInterceptor(),
@@ -38,6 +46,8 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new HttpErrorFilter());
+
+  app.useGlobalPipes(new ZodValidationPipe());
 
   const port = Number(configService.getOrThrow<string>('PORT'));
 

@@ -1,6 +1,7 @@
-import { Pagination } from '@app/validation';
+import { Pagination, PaginationMetadata } from '@app/validation';
 import { WorkspaceUserModel } from '../models/workspace-user.model';
 import { WorkspaceRole } from '@app/types';
+import { unique } from 'drizzle-orm/mysql-core';
 
 export interface CreateOne {
   userId: number;
@@ -36,6 +37,15 @@ export interface Options {
   traceId?: string;
 }
 
+export interface FindUserWorkspaces {
+  userId: number;
+  pagination: Pagination;
+}
+
+export interface FindUserWorkspacePaginationMetadata {
+  userId: number;
+}
+
 export interface Service {
   createOneByRole(
     input: CreateOne,
@@ -51,4 +61,8 @@ export interface Service {
   findWorkspaceUsers(
     params: FindWorkspaceUsersParams,
   ): Promise<WorkspaceUserModel[]>;
+  findUserWorkspaces(params: FindUserWorkspaces): Promise<WorkspaceUserModel[]>;
+  findUserWorkspacePaginationMetadata(
+    params: FindUserWorkspacePaginationMetadata,
+  ): Promise<PaginationMetadata>;
 }

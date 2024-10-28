@@ -1,7 +1,7 @@
-import { WorkspaceRole } from '@app/types';
+import { JWTUser, WorkspaceRole } from '@app/types';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { JWTUser, WORKSPACE_ROLES_DECORATOR_KEY } from '../decorators';
+import { WORKSPACE_ROLES_DECORATOR_KEY } from '../decorators';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import {
   FindWorkspaceRoleByIdQuery,

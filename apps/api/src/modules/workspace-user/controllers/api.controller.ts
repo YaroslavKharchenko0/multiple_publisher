@@ -1,16 +1,9 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   CreateWorkspaceUserCommand,
   DeleteWorkspaceUserCommand,
+  FindUserWorkspacesQuery,
   FindWorkspaceUserQuery,
   FindWorkspaceUsersQuery,
   UpdateWorkspaceUserCommand,
@@ -18,22 +11,27 @@ import {
 import { TraceId } from '@app/logger';
 import {
   IsStringNumberPipe,
-  JWTUser,
+  ModuleRoute,
   Roles,
+  Route,
   User,
+  UserAccess,
   WorkspaceRoles,
 } from '@app/utils';
-import { Role, WorkspaceRole } from '@app/types';
+import { JWTUser, Role, WorkspaceRole } from '@app/types';
 import {
   CreateWorkspaceUserDto,
+  PaginationDto,
   UpdateWorkspaceUserDto,
-} from '@app/validation';
+} from '@app/dtos';
 
-@Controller('workspaces/:workspaceId/users')
+export const moduleName = 'workspaceUser';
+
+@ModuleRoute(moduleName)
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('/')
+  @Route(moduleName, 'createWorkspaceUser')
   @Roles(Role.USER)
   @WorkspaceRoles(WorkspaceRole.ADMIN)
   createWorkspaceUser(
@@ -58,7 +56,7 @@ export class ApiController {
     });
   }
 
-  @Delete('/:userId')
+  @Route(moduleName, 'deleteWorkspaceUser')
   @Roles(Role.USER)
   @WorkspaceRoles(WorkspaceRole.ADMIN)
   deleteWorkspaceUser(
@@ -81,7 +79,7 @@ export class ApiController {
     });
   }
 
-  @Patch('/:userId')
+  @Route(moduleName, 'updateWorkspaceUser')
   @Roles(Role.USER)
   @WorkspaceRoles(WorkspaceRole.ADMIN)
   updateWorkspaceUser(
@@ -106,7 +104,7 @@ export class ApiController {
     });
   }
 
-  @Get('/:userId')
+  @Route(moduleName, 'findWorkspaceUser')
   @Roles(Role.USER)
   @WorkspaceRoles(
     WorkspaceRole.ADMIN,
@@ -133,7 +131,7 @@ export class ApiController {
     });
   }
 
-  @Get('/')
+  @Route(moduleName, 'findWorkspaceUsers')
   @Roles(Role.USER)
   @WorkspaceRoles(
     WorkspaceRole.ADMIN,
@@ -151,6 +149,29 @@ export class ApiController {
     return this.amqpConnection.request<FindWorkspaceUsersQuery.Response>({
       exchange: FindWorkspaceUsersQuery.exchange,
       routingKey: FindWorkspaceUsersQuery.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
+
+  @Route(moduleName, 'findUserWorkspaces')
+  @Roles(Role.USER)
+  @UserAccess()
+  findUserWorkspaces(
+    @TraceId() traceId: string | undefined,
+    @Param('userId', IsStringNumberPipe) userId: string,
+    @Query() pagination: PaginationDto,
+  ) {
+    const payload: FindUserWorkspacesQuery.Request = {
+      userId: Number(userId),
+      pagination,
+    };
+
+    return this.amqpConnection.request<FindUserWorkspacesQuery.Response>({
+      exchange: FindUserWorkspacesQuery.exchange,
+      routingKey: FindUserWorkspacesQuery.routingKey,
       payload,
       headers: {
         traceId,

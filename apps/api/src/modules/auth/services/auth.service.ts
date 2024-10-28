@@ -1,22 +1,43 @@
 import { Cognito, CognitoService } from '@app/aws';
 import { Injectable } from '@nestjs/common';
 import {
-  Options,
+  AuthenticatedTokens,
+  KeepSessionParams,
   Service,
   SignInParams,
-  SignInReturnParams,
+  SignOutParams,
   SignUpParams,
   VerifyEmailParams,
 } from './auth.service.interface';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { SignUpSuccessEvent } from '@app/contracts';
+import { Options } from '@app/types';
 
 @Injectable()
 export class AuthService implements Service {
   constructor(
     @Cognito() private readonly cognitoService: CognitoService,
     private readonly amqpConnection: AmqpConnection,
-  ) {}
+  ) { }
+  async signOut(params: SignOutParams): Promise<void> {
+    await this.cognitoService.signOut(params.accessToken);
+  }
+  async keepSession(params: KeepSessionParams): Promise<AuthenticatedTokens> {
+    const result = await this.cognitoService.authByRefreshToken(
+      params.refreshToken,
+    );
+
+    const userAuth = result.AuthenticationResult;
+
+    const output: AuthenticatedTokens = {
+      accessToken: userAuth.AccessToken,
+      idToken: userAuth.IdToken,
+      refreshToken: userAuth.RefreshToken,
+      expiresIn: userAuth.ExpiresIn,
+    };
+
+    return output;
+  }
 
   async signUp(payload: SignUpParams, options?: Options): Promise<void> {
     const result = await this.cognitoService.signUpByEmail({
@@ -42,7 +63,7 @@ export class AuthService implements Service {
     );
   }
 
-  async signIn(payload: SignInParams): Promise<SignInReturnParams> {
+  async signIn(payload: SignInParams): Promise<AuthenticatedTokens> {
     const result = await this.cognitoService.signInByUsername({
       email: payload.email,
       password: payload.password,
@@ -50,7 +71,7 @@ export class AuthService implements Service {
 
     const userAuth = result.AuthenticationResult;
 
-    const output: SignInReturnParams = {
+    const output: AuthenticatedTokens = {
       accessToken: userAuth.AccessToken,
       idToken: userAuth.IdToken,
       refreshToken: userAuth.RefreshToken,

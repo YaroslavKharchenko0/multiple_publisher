@@ -1,4 +1,10 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  Logger,
+} from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 @Catch(HttpException)
@@ -16,13 +22,11 @@ export class HttpErrorFilter implements ExceptionFilter {
 
     this.logger.warn(`${status} | [${method}] ${url}`);
 
-    response
-      .status(status)
-      .send({
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        message: exception.message,
-        path: request.url,
-      });
+    response.status(status).send({
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      message: exception.message,
+      path: request.url,
+    });
   }
 }

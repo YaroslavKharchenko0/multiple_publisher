@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Database, Orm, schema } from '../../../database';
-import { eq } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { Pagination } from '@app/validation';
 
 export type InsertPost = typeof schema.posts.$inferInsert;
@@ -39,6 +39,15 @@ export class PostRepository {
     return result;
   }
 
+  async findPostsCount() {
+    const result = await this.db
+      .select({ count: count() })
+      .from(this.posts)
+      .execute();
+
+    return result;
+  }
+
   async findPostsByUserId(userId: number, pagination: Pagination) {
     const where = eq(this.posts.userId, userId);
 
@@ -47,6 +56,18 @@ export class PostRepository {
       offset: pagination.offset,
       limit: pagination.limit,
     });
+
+    return result;
+  }
+
+  async findPostsCountByUserId(userId: number) {
+    const where = eq(this.posts.userId, userId);
+
+    const result = await this.db
+      .select({ count: count() })
+      .from(this.posts)
+      .where(where)
+      .execute();
 
     return result;
   }

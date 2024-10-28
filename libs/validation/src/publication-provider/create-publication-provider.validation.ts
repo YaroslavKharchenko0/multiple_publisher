@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 import {
   PublicationProvider,
   publicationProviderKey,
@@ -14,9 +13,5 @@ export const createPublicationProviderValidationSchema = z.object({
 export type CreatePublicationProviderRequest = z.infer<
   typeof createPublicationProviderValidationSchema
 >;
-
-export class CreatePublicationProviderDto extends createZodDto(
-  createPublicationProviderValidationSchema,
-) { }
 
 export type CreatePublicationProviderResponse = PublicationProvider;

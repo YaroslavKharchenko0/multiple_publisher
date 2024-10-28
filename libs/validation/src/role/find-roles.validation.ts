@@ -1,8 +1,6 @@
-import { Pagination, PaginationDto } from "../common";
-import { Role } from "./role.validation";
+import { Pagination } from '../common';
+import { Role } from './role.validation';
 
-export type FindRolesRequest = Pagination
-
-export class FindRolesBodyDto extends PaginationDto { }
+export type FindRolesRequest = Pagination;
 
 export type FindRolesResponse = Role[];

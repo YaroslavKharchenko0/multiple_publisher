@@ -1,31 +1,32 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   CreateFileMetadataCommand,
   DeleteFileMetadataCommand,
   FindFileMetadataByFileIdQuery,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { FileAccess, IsStringNumberPipe, Roles, UserAccess } from '@app/utils';
+import {
+  FileAccess,
+  IsStringNumberPipe,
+  ModuleRoute,
+  Roles,
+  Route,
+  UserAccess,
+} from '@app/utils';
 import { Role } from '@app/types';
 import {
   CreateFileMetadataBodyDto,
   FindFileMetadataByFileIdBodyDto,
-} from '@app/validation';
+} from '@app/dtos';
 
-@Controller('/users/:userId/files/:fileId/metadata')
+export const moduleName = 'fileMetadata';
+
+@ModuleRoute(moduleName)
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/')
+  @Route(moduleName, 'findById')
   @Roles(Role.USER)
   @UserAccess()
   @FileAccess({
@@ -58,7 +59,7 @@ export class ApiController {
     });
   }
 
-  @Post('/')
+  @Route(moduleName, 'createMetadata')
   @Roles(Role.USER)
   @UserAccess()
   @FileAccess({
@@ -91,7 +92,7 @@ export class ApiController {
     });
   }
 
-  @Delete('/:metadataId')
+  @Route(moduleName, 'deleteMetadataById')
   @Roles(Role.USER)
   @UserAccess()
   @FileAccess({

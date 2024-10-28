@@ -1,20 +1,24 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Param, Query } from '@nestjs/common';
 import {
   FindAccountProviderQuery,
   FindAccountProvidersQuery,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { Auth, IsEnumPipe } from '@app/utils';
-import { FindAccountProvidersBodyDto } from '@app/validation';
+import { Auth, IsEnumPipe, ModuleRoute, Route } from '@app/utils';
+import { FindAccountProvidersBodyDto } from '@app/dtos';
 import { ProviderKey } from '@app/types';
+import { FindAccountProvidersDocs } from '@app/docs';
 
-@Controller('accounts/providers')
+const moduleName = 'accountProviders';
+
+@ModuleRoute(moduleName)
 export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/')
+  @Route(moduleName, 'findMany')
   @Auth()
+  @FindAccountProvidersDocs()
   findMany(
     @TraceId() traceId: string | undefined,
     @Query() query: FindAccountProvidersBodyDto,
@@ -31,7 +35,7 @@ export class ApiController {
     });
   }
 
-  @Get('/:key')
+  @Route(moduleName, 'findOne')
   @Auth()
   findOne(
     @TraceId() traceId: string | undefined,

@@ -1,15 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UploadedFile,
-} from '@nestjs/common';
+import { Body, Param, Query, UploadedFile } from '@nestjs/common';
 import {
   DeleteFileCommand,
   FindFileByIdQuery,
@@ -25,18 +15,22 @@ import {
   ImageUpload,
   IsStringNumberPipe,
   IsUUIDPipe,
+  ModuleRoute,
   Roles,
+  Route,
   UserAccess,
 } from '@app/utils';
-import { FindUserFilesBodyDto, UpdateFileBodyDto } from '@app/validation';
+import { FindUserFilesBodyDto, UpdateFileBodyDto } from '@app/dtos';
 import { File } from '@nest-lab/fastify-multer';
 import { Role } from '@app/types';
 
-@Controller('/users/:userId/files')
-export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+export const moduleName = 'file';
 
-  @Post('/upload/image')
+@ModuleRoute(moduleName)
+export class ApiController {
+  constructor(private readonly amqpConnection: AmqpConnection) { }
+
+  @Route(moduleName, 'uploadFile')
   @Roles(Role.USER)
   @UserAccess()
   @ImageUpload()
@@ -65,7 +59,7 @@ export class ApiController {
     });
   }
 
-  @Post('/upload/video/signature')
+  @Route(moduleName, 'generateSignature')
   @Roles(Role.USER)
   @UserAccess()
   generateSignature(
@@ -86,7 +80,7 @@ export class ApiController {
     });
   }
 
-  @Get('/:fileId')
+  @Route(moduleName, 'findById')
   @Roles(Role.USER)
   @UserAccess()
   @FileAccess({
@@ -117,7 +111,7 @@ export class ApiController {
     });
   }
 
-  @Get('/providers/:providerId')
+  @Route(moduleName, 'findByProviderId')
   @Roles(Role.USER)
   @UserAccess()
   @FileAccess({
@@ -146,7 +140,7 @@ export class ApiController {
     });
   }
 
-  @Get('/')
+  @Route(moduleName, 'findUserFiles')
   @Roles(Role.USER)
   @UserAccess()
   findUserFiles(
@@ -171,7 +165,7 @@ export class ApiController {
     });
   }
 
-  @Delete('/:fileId')
+  @Route(moduleName, 'deleteUserFile')
   @Roles(Role.USER)
   @FileAccess({
     by: {
@@ -204,7 +198,7 @@ export class ApiController {
     });
   }
 
-  @Patch('/:fileId')
+  @Route(moduleName, 'updateFile')
   @Roles(Role.USER)
   @FileAccess({
     by: {

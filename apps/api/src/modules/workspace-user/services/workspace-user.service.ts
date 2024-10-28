@@ -3,6 +3,8 @@ import {
   CreateOne,
   DeleteOneParams,
   FindOneParams,
+  FindUserWorkspacePaginationMetadata,
+  FindUserWorkspaces,
   FindWorkspaceUsersParams,
   Options,
   Service,
@@ -19,6 +21,7 @@ import { WorkspaceRole } from '@app/types';
 import { RmqErrorService, RmqResponseService } from '@app/errors';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { FindWorkspaceRoleQuery } from '@app/contracts';
+import { PaginationMetadata } from '@app/validation';
 
 @Injectable()
 export class WorkspaceUserService implements Service {
@@ -28,7 +31,7 @@ export class WorkspaceUserService implements Service {
     private readonly amqpConnection: AmqpConnection,
     private readonly rmqResponseService: RmqResponseService,
     private readonly rmqErrorService: RmqErrorService,
-  ) {}
+  ) { }
 
   private async findWorkspaceRole(role: WorkspaceRole, traceId?: string) {
     const requestPayload: FindWorkspaceRoleQuery.Request = {
@@ -142,5 +145,38 @@ export class WorkspaceUserService implements Service {
     });
 
     return entities.map(WorkspaceUserModel.fromEntity);
+  }
+  async findUserWorkspaces(
+    params: FindUserWorkspaces,
+  ): Promise<WorkspaceUserModel[]> {
+    const entities = await this.repository.findUserWorkspaces({
+      userId: params.userId,
+      pagination: {
+        limit: params?.pagination?.limit,
+        offset: params?.pagination?.offset,
+      },
+    });
+
+    return entities.map(WorkspaceUserModel.fromEntity);
+  }
+
+  async findUserWorkspacePaginationMetadata(
+    params: FindUserWorkspacePaginationMetadata,
+  ): Promise<PaginationMetadata> {
+    const results = await this.repository.findUserWorkspaceCount({
+      userId: params.userId,
+    });
+
+    const [result] = results;
+
+    if (!result) {
+      throw this.rmqErrorService.notFound();
+    }
+
+    const metadata: PaginationMetadata = {
+      total: result.count,
+    };
+
+    return metadata;
   }
 }

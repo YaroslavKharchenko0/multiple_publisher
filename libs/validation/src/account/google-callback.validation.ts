@@ -1,5 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'nestjs-zod/z';
+import { z } from 'zod';
 
 export const googleCallbackRequestSchema = z
   .object({
@@ -9,9 +8,5 @@ export const googleCallbackRequestSchema = z
   .required();
 
 export type GoogleCallbackRequest = z.infer<typeof googleCallbackRequestSchema>;
-
-export class GoogleCallbackRequestDto extends createZodDto(
-  googleCallbackRequestSchema,
-) { }
 
 export type GoogleCallbackResponse = null;

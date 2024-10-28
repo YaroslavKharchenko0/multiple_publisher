@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Database, Orm, schema } from '../../../database';
-import { and, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { Pagination } from '@app/validation';
 import { PublicationStatus } from '@app/types';
 
@@ -61,6 +61,18 @@ export class PublicationRepository {
       offset: pagination?.offset,
       limit: pagination?.limit,
     });
+
+    return result;
+  }
+
+  async createPostPublicationsPaginationMetadata(postId: number) {
+    const where = eq(this.publications.postId, postId);
+
+    const result = await this.db
+      .select({ count: count() })
+      .from(this.publications)
+      .where(where)
+      .execute();
 
     return result;
   }

@@ -1,14 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   CreatePublicationCommand,
   DeletePublicationCommand,
@@ -17,18 +8,20 @@ import {
   UpdatePublicationCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe, PostAccess } from '@app/utils';
+import { IsStringNumberPipe, ModuleRoute, PostAccess, Route } from '@app/utils';
 import {
   CreatePublicationDto,
   FindPostPublicationsDto,
   UpdatePublicationDto,
-} from '@app/validation';
+} from '@app/dtos';
 
-@Controller('posts/:postId/publications')
+export const moduleName = 'publication';
+
+@ModuleRoute(moduleName)
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Post('/')
+  @Route(moduleName, 'create')
   @PostAccess({ isAuthor: true })
   create(
     @TraceId() traceId: string | undefined,
@@ -50,7 +43,7 @@ export class ApiController {
     });
   }
 
-  @Patch('/:publicationId')
+  @Route(moduleName, 'update')
   @PostAccess({ isAuthor: true })
   update(
     @TraceId() traceId: string | undefined,
@@ -76,7 +69,7 @@ export class ApiController {
     );
   }
 
-  @Delete('/:publicationId')
+  @Route(moduleName, 'delete')
   @PostAccess({ isAuthor: true })
   delete(
     @TraceId() traceId: string | undefined,
@@ -98,7 +91,7 @@ export class ApiController {
     });
   }
 
-  @Get('/:publicationId')
+  @Route(moduleName, 'findOne')
   @PostAccess({ isAuthor: true })
   findOne(
     @TraceId() traceId: string | undefined,
@@ -120,7 +113,7 @@ export class ApiController {
     });
   }
 
-  @Get('/')
+  @Route(moduleName, 'findMany')
   @PostAccess({ isAuthor: true })
   findMany(
     @TraceId() traceId: string | undefined,

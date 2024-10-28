@@ -1,31 +1,25 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Param, Query } from '@nestjs/common';
 import {
   CreateFileMetadataCommand,
   DeleteFileMetadataCommand,
   FindFileMetadataByFileIdQuery,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe, Roles } from '@app/utils';
+import { IsStringNumberPipe, ModuleRoute, Roles, Route } from '@app/utils';
 import { Role } from '@app/types';
 import {
   CreateFileMetadataBodyDto,
   FindFileMetadataByFileIdBodyDto,
-} from '@app/validation';
+} from '@app/dtos';
 
-@Controller('admin/files/:fileId/metadata')
+export const moduleName = 'adminFileMetadata';
+
+@ModuleRoute(moduleName)
 export class AdminApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(private readonly amqpConnection: AmqpConnection) { }
 
-  @Get('/')
+  @Route(moduleName, 'findByFileId')
   @Roles(Role.ADMIN)
   findByFileId(
     @TraceId() traceId: string | undefined,
@@ -49,7 +43,7 @@ export class AdminApiController {
     });
   }
 
-  @Post('/')
+  @Route(moduleName, 'createMetadata')
   @Roles(Role.ADMIN)
   createMetadata(
     @TraceId() traceId: string | undefined,
@@ -73,7 +67,7 @@ export class AdminApiController {
     });
   }
 
-  @Delete('/:metadataId')
+  @Route(moduleName, 'deleteMetadataById')
   @Roles(Role.ADMIN)
   deleteMetadataById(
     @TraceId() traceId: string | undefined,

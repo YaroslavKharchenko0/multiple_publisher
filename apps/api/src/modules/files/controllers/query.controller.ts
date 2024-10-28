@@ -49,13 +49,26 @@ export class QueryController {
   async findUserFiles(
     @RabbitPayload() message: FindUserFilesQuery.Request,
   ): Promise<FindUserFilesQuery.Response> {
-    const payload = await this.fileService.findUserFiles(
+    const findUserFiles = this.fileService.findUserFiles(
       message.userId,
       message.pagination,
     );
 
-    const files = payload.map((file) => file.toFile());
+    const findUserFilesMetadata =
+      this.fileService.findUserFilesPaginationMetadata(message.userId);
 
-    return createSuccessResponse(files);
+    const [fileModels, metadata] = await Promise.all([
+      findUserFiles,
+      findUserFilesMetadata,
+    ]);
+
+    const files = fileModels.map((file) => file.toFile());
+
+    const payload: FindUserFilesQuery.ResponsePayload = {
+      files,
+      metadata,
+    };
+
+    return createSuccessResponse(payload);
   }
 }

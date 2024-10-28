@@ -18,3 +18,5 @@ export * from './publication';
 export * from './publication-file';
 export * from './publication-provider';
 export * from './publisher';
+export * from './workspace-account';
+export * from './workspace-post';

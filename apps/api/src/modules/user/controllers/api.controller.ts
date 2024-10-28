@@ -1,20 +1,28 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import { Body, Param } from '@nestjs/common';
 import {
   FindUserByIdQuery,
   UpdateUserCommand,
   DeleteUserCommand,
 } from '@app/contracts';
 import { TraceId } from '@app/logger';
-import { IsStringNumberPipe, Roles, UserAccess } from '@app/utils';
-import { UpdateUserBodyDto } from '@app/validation';
+import {
+  IsStringNumberPipe,
+  ModuleRoute,
+  Roles,
+  Route,
+  UserAccess,
+} from '@app/utils';
+import { UpdateUserBodyDto } from '@app/dtos';
 import { Role } from '@app/types';
 
-@Controller('users')
-export class ApiController {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+export const moduleName = 'user';
 
-  @Get('/:userId')
+@ModuleRoute(moduleName)
+export class ApiController {
+  constructor(private readonly amqpConnection: AmqpConnection) { }
+
+  @Route(moduleName, 'findUserById')
   @Roles(Role.USER)
   @UserAccess()
   findUserById(
@@ -35,7 +43,7 @@ export class ApiController {
     });
   }
 
-  @Patch('/:userId')
+  @Route(moduleName, 'updateUser')
   @Roles(Role.USER)
   @UserAccess()
   updateUser(
@@ -58,7 +66,7 @@ export class ApiController {
     });
   }
 
-  @Delete('/:userId')
+  @Route(moduleName, 'deleteUser')
   @Roles(Role.USER)
   @UserAccess()
   deleteUser(

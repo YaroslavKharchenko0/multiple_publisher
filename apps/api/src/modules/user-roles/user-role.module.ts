@@ -10,6 +10,7 @@ import {
   USER_ROLE_SERVICE,
 } from './providers/user-role.providers';
 import { AWSModule } from '@app/aws';
+import { ApiController } from './controllers/api.controller';
 
 @Module({})
 export class UserRoleModule {
@@ -17,7 +18,12 @@ export class UserRoleModule {
     return {
       module: UserRoleModule,
       imports: [RmqModule.forRoot(), AWSModule.forRoot()],
-      controllers: [AdminApiController, CommandController, QueryController],
+      controllers: [
+        AdminApiController,
+        ApiController,
+        CommandController,
+        QueryController,
+      ],
       providers: [userRoleServiceProvider, userRoleRepositoryProvider],
       exports: [USER_ROLE_SERVICE, USER_ROLE_REPOSITORY],
     };

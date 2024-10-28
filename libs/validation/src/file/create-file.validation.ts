@@ -1,7 +1,12 @@
-import { z } from 'nestjs-zod/z'
-import { File, filePath, fileProviderId, fileType, fileUploadStatus } from './file.validation'
-import { userId } from '../user'
-import { createZodDto } from 'nestjs-zod'
+import { z } from 'zod';
+import {
+  File,
+  filePath,
+  fileProviderId,
+  fileType,
+  fileUploadStatus,
+} from './file.validation';
+import { userId } from '../user';
 
 export const createFileValidationSchema = z.object({
   providerId: fileProviderId,
@@ -9,10 +14,8 @@ export const createFileValidationSchema = z.object({
   authorId: userId,
   uploadStatus: fileUploadStatus,
   path: filePath,
-})
+});
 
-export type CreateFileRequest = z.infer<typeof createFileValidationSchema>
+export type CreateFileRequest = z.infer<typeof createFileValidationSchema>;
 
-export class CreateFileBodyDto extends createZodDto(createFileValidationSchema) { }
-
-export type CreateFileResponse = File
+export type CreateFileResponse = File;

@@ -1,5 +1,5 @@
-import { RmqResponse } from '../common'
-import { CreateAccountRequest, CreateAccountResponse } from '@app/validation'
+import { RmqResponse } from '../common';
+import { CreateAccountRequest, CreateAccountResponse } from '@app/validation';
 
 export namespace CreateAccountCommand {
   export const exchange = 'account';
@@ -12,6 +12,5 @@ export namespace CreateAccountCommand {
 
   export type ResponsePayload = CreateAccountResponse;
 
-  export type Response = RmqResponse<CreateAccountResponse>
+  export type Response = RmqResponse<CreateAccountResponse>;
 }
-

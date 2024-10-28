@@ -1,22 +1,29 @@
-import { z } from 'nestjs-zod/z'
-import { Account, accountId, accountName, accountStatus, accountUserId } from './account.validation'
-import { createZodDto } from 'nestjs-zod'
-import { accountProviderId } from '../account-provider'
+import { z } from 'zod';
+import {
+  Account,
+  accountId,
+  accountInternalId,
+  accountName,
+  accountStatus,
+  accountUserId,
+} from './account.validation';
+import { accountProviderId } from '../account-provider';
 
 export const updateAccountPayloadSchema = z.object({
-  name: accountName,
-  userId: accountUserId,
-  providerId: accountProviderId,
-  status: accountStatus,
-})
+  name: accountName.optional(),
+  userId: accountUserId.optional(),
+  providerId: accountProviderId.optional(),
+  status: accountStatus.optional(),
+  internalId: accountInternalId.optional(),
+});
 
 export const updateAccountValidationSchema = z.object({
   id: accountId,
-  payload: updateAccountPayloadSchema
-})
+  payload: updateAccountPayloadSchema,
+});
 
-export type UpdateAccountRequest = z.infer<typeof updateAccountValidationSchema>
+export type UpdateAccountRequest = z.infer<
+  typeof updateAccountValidationSchema
+>;
 
-export class UpdateAccountBodyDto extends createZodDto(updateAccountPayloadSchema) { }
-
-export type UpdateAccountResponse = Account
+export type UpdateAccountResponse = Account;
