@@ -29,7 +29,6 @@ export class AccountService implements Service {
         provider,
         userId,
         status: AccountStatus.INACTIVE,
-        internalId,
         name: ProviderKey.GOOGLE,
       };
 
@@ -69,7 +68,7 @@ export class AccountService implements Service {
     params: CreateAccountParams,
     options?: Options,
   ): Promise<AccountModel> {
-    const { provider, name, userId, status, internalId } = params;
+    const { provider, name, userId, status } = params;
 
     const accountProvider = await this.accountFacade.findByKey(
       provider,
@@ -85,7 +84,6 @@ export class AccountService implements Service {
       name,
       userId,
       status,
-      internalId,
     });
 
     const [entity] = entities;

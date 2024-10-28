@@ -40,7 +40,6 @@ export class CommandController {
         provider: message.provider,
         status: message.status,
         userId: message.userId,
-        internalId: message.internalId,
       },
       { traceId },
     );
