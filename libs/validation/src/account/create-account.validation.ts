@@ -19,4 +19,11 @@ export type CreateAccountRequest = z.infer<
   typeof createAccountValidationSchema
 >;
 
+export const createAccountBodyValidationSchema =
+  createAccountValidationSchema.pick({ name: true, provider: true });
+
+export type CreateAccountBodyRequest = z.infer<
+  typeof createAccountBodyValidationSchema
+>;
+
 export type CreateAccountResponse = Account;

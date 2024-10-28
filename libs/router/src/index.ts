@@ -4,9 +4,13 @@ export const router: Router = {
   account: {
     basePath: 'accounts',
     routes: {
+      create: {
+        method: 'POST',
+        path: '/',
+      },
       googleAuthUrl: {
         method: 'GET',
-        path: '/auth/google/url',
+        path: '/:accountId/auth/google/url',
       },
       googleCallback: {
         method: 'GET',

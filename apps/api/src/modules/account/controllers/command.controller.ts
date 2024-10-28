@@ -13,7 +13,6 @@ import { AccountService } from '../services/account.service';
 import { TraceId } from '@app/logger';
 import { GcpAuth, GoogleAuthService } from '@app/gcp';
 import * as jwt from 'jsonwebtoken';
-import { ProviderKey } from '@app/types';
 import { CryptoJwt, JwtService, CryptoJwe, JweService } from '@app/crypto';
 
 @Controller()
@@ -84,7 +83,7 @@ export class CommandController {
   async googleSignInUrl(
     @RabbitPayload() message: GoogleSingInUrlCommand.Request,
   ): Promise<GoogleSingInUrlCommand.Response> {
-    const jwtSign = this.jwtService.sign(String(message.userId));
+    const jwtSign = this.jwtService.sign(String(message.accountId));
 
     const state = await this.jweService.encryptJWE(jwtSign);
 
@@ -117,14 +116,15 @@ export class CommandController {
 
     const jwtSign = await this.jweService.decryptJWE<string>(message.state);
 
-    const { data } = this.jwtService.verify(jwtSign);
+    const { data: accountIdString } = this.jwtService.verify(jwtSign);
+
+    const accountId = Number(accountIdString);
 
     await this.service.onSignIn(
       {
         internalId: providerId,
         accountTokens,
-        provider: ProviderKey.GOOGLE,
-        userId: Number(data),
+        accountId,
       },
       { traceId },
     );

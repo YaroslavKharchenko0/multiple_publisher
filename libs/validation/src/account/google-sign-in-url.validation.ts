@@ -1,9 +1,11 @@
 import { z } from 'zod';
 import { userId } from '../user';
+import { accountId } from './account.validation';
 
 export const googleSingInUrlRequestSchema = z
   .object({
     userId,
+    accountId,
   })
   .required();
 

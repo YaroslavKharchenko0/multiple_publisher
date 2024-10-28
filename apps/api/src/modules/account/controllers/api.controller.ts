@@ -1,6 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Body, Param, Query } from '@nestjs/common';
 import {
+  CreateAccountCommand,
   DeleteAccountCommand,
   FindAccountQuery,
   GoogleCallbackCommand,
@@ -16,9 +17,10 @@ import {
   Roles,
   User,
 } from '@app/utils';
-import { UpdateAccountBodyDto } from '@app/dtos';
-import { JWTUser, Role } from '@app/types';
+import { CreateAccountBodyDto, UpdateAccountBodyDto } from '@app/dtos';
+import { AccountStatus, JWTUser, Role } from '@app/types';
 import {
+  CreateAccountDocs,
   DeleteAccountDocs,
   FindAccountDocs,
   GoogleAuthUrlDocs,
@@ -32,12 +34,64 @@ const moduleName = 'account';
 export class ApiController {
   constructor(private readonly amqpConnection: AmqpConnection) { }
 
+  @Route(moduleName, 'findOne')
+  @Roles(Role.ADMIN, Role.USER)
+  @AccountAccess()
+  @FindAccountDocs()
+  findOne(
+    @TraceId() traceId: string | undefined,
+    @Param('accountId', IsStringNumberPipe) accountId: string,
+  ) {
+    const payload: FindAccountQuery.Request = {
+      id: Number(accountId),
+    };
+
+    return this.amqpConnection.request<FindAccountQuery.Response>({
+      exchange: FindAccountQuery.exchange,
+      routingKey: FindAccountQuery.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
+
+  @Route(moduleName, 'create')
+  @Roles(Role.ADMIN, Role.USER)
+  @CreateAccountDocs()
+  create(
+    @TraceId() traceId: string | undefined,
+    @User() user: JWTUser,
+    @Body() body: CreateAccountBodyDto,
+  ) {
+    const payload: CreateAccountCommand.Request = {
+      userId: user.app_id,
+      name: body.name,
+      provider: body.provider,
+      status: AccountStatus.INACTIVE,
+    };
+
+    return this.amqpConnection.request<CreateAccountCommand.Response>({
+      exchange: CreateAccountCommand.exchange,
+      routingKey: CreateAccountCommand.routingKey,
+      payload,
+      headers: {
+        traceId,
+      },
+    });
+  }
+
   @Route(moduleName, 'googleAuthUrl')
   @Roles(Role.ADMIN, Role.USER)
   @GoogleAuthUrlDocs()
-  googleAuthUrl(@TraceId() traceId: string | undefined, @User() user: JWTUser) {
+  googleAuthUrl(
+    @TraceId() traceId: string | undefined,
+    @User() user: JWTUser,
+    @Param('accountId', IsStringNumberPipe) accountId: string,
+  ) {
     const payload: GoogleSingInUrlCommand.Request = {
       userId: user.app_id,
+      accountId: Number(accountId),
     };
 
     return this.amqpConnection.request<string>({
@@ -87,28 +141,6 @@ export class ApiController {
     return this.amqpConnection.request<DeleteAccountCommand.Response>({
       exchange: DeleteAccountCommand.exchange,
       routingKey: DeleteAccountCommand.routingKey,
-      payload,
-      headers: {
-        traceId,
-      },
-    });
-  }
-
-  @Route(moduleName, 'findOne')
-  @Roles(Role.ADMIN, Role.USER)
-  @AccountAccess()
-  @FindAccountDocs()
-  findOne(
-    @TraceId() traceId: string | undefined,
-    @Param('accountId', IsStringNumberPipe) accountId: string,
-  ) {
-    const payload: FindAccountQuery.Request = {
-      id: Number(accountId),
-    };
-
-    return this.amqpConnection.request<FindAccountQuery.Response>({
-      exchange: FindAccountQuery.exchange,
-      routingKey: FindAccountQuery.routingKey,
       payload,
       headers: {
         traceId,

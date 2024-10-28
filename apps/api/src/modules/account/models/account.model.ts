@@ -18,6 +18,7 @@ export class AccountModel {
     this.userId = input.userId ?? this.userId;
     this.status = input.status ?? this.status;
     this.updatedAt = input.updatedAt ?? this.updatedAt;
+    this.internalId = input.internalId ?? this.internalId;
 
     return this;
   }

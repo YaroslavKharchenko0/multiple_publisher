@@ -8,6 +8,12 @@ export const GoogleAuthUrlDocs = () =>
     ApiOperation({ summary: 'Get google auth url' }),
   );
 
+export const CreateAccountDocs = () =>
+  applyDecorators(
+    ...defaultDecorators,
+    ApiOperation({ summary: 'Create account' }),
+  );
+
 export const GoogleCallbackDocs = () =>
   applyDecorators(
     ...defaultDecorators,

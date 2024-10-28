@@ -1,5 +1,8 @@
-import { RmqResponse } from '../common'
-import { GoogleSingInUrlRequest, GoogleSingInUrlResponse } from '@app/validation'
+import { RmqResponse } from '../common';
+import {
+  GoogleSingInUrlRequest,
+  GoogleSingInUrlResponse,
+} from '@app/validation';
 
 export namespace GoogleSingInUrlCommand {
   export const exchange = 'account';
@@ -12,6 +15,5 @@ export namespace GoogleSingInUrlCommand {
 
   export type ResponsePayload = GoogleSingInUrlResponse;
 
-  export type Response = RmqResponse<GoogleSingInUrlResponse>
+  export type Response = RmqResponse<GoogleSingInUrlResponse>;
 }
-
