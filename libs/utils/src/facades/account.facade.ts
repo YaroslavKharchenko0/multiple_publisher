@@ -5,9 +5,10 @@ import {
   FindAccountQuery,
   GetAccountTokensQuery,
   SuccessResponse,
+  UpdateAccountCommand,
 } from '@app/contracts';
 import { AccountTokenType, ProviderKey } from '@app/types';
-import { AccountToken } from '@app/validation';
+import { Account, AccountToken } from '@app/validation';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 
@@ -44,6 +45,42 @@ export class AccountFacade {
 
     const successResponse =
       accountResponse as SuccessResponse<FindAccountQuery.ResponsePayload>;
+
+    return successResponse.payload;
+  }
+
+  async updateAccountById(
+    accountId: number,
+    payload: Partial<Account>,
+    options?: Options,
+  ) {
+    const requestPayload: UpdateAccountCommand.Request = {
+      id: accountId,
+      payload: {
+        internalId: payload.internalId,
+        name: payload.name,
+        providerId: payload.providerId,
+        status: payload.status,
+        userId: payload.userId,
+      },
+    };
+
+    const accountResponse =
+      await this.amqpConnection.request<UpdateAccountCommand.Response>({
+        exchange: UpdateAccountCommand.exchange,
+        routingKey: UpdateAccountCommand.routingKey,
+        payload: requestPayload,
+        headers: {
+          traceId: options?.traceId,
+        },
+      });
+
+    if (accountResponse.isError) {
+      return null;
+    }
+
+    const successResponse =
+      accountResponse as SuccessResponse<UpdateAccountCommand.ResponsePayload>;
 
     return successResponse.payload;
   }

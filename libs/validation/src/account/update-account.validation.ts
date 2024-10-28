@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   Account,
   accountId,
+  accountInternalId,
   accountName,
   accountStatus,
   accountUserId,
@@ -9,10 +10,11 @@ import {
 import { accountProviderId } from '../account-provider';
 
 export const updateAccountPayloadSchema = z.object({
-  name: accountName,
-  userId: accountUserId,
-  providerId: accountProviderId,
-  status: accountStatus,
+  name: accountName.optional(),
+  userId: accountUserId.optional(),
+  providerId: accountProviderId.optional(),
+  status: accountStatus.optional(),
+  internalId: accountInternalId.optional(),
 });
 
 export const updateAccountValidationSchema = z.object({
